@@ -61,8 +61,29 @@
         >
       </div>
 
-      <!-- CTA Auth Buttons -->
-      <div class="flex items-center gap-x-4">
+      <!-- Mobile Menu Button -->
+      <div class="flex md:hidden">
+        <button 
+          type="button" 
+          (click)="toggleMenu()"
+          class="inline-flex items-center justify-center rounded-md p-2.5 text-slate-700 hover:bg-slate-50 transition-colors"
+          [attr.aria-expanded]="isMenuOpen()"
+        >
+          <span class="sr-only">Abrir menú principal</span>
+          @if (!isMenuOpen()) {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          } @else {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          }
+        </button>
+      </div>
+
+      <!-- CTA Auth Buttons (Desktop) -->
+      <div class="hidden md:flex items-center gap-x-4">
         @if (authService.isAuthenticated()) {
           <div class="flex items-center gap-4">
             <span class="hidden md:inline-block text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser() }}</span></span>
@@ -88,6 +109,70 @@
         }
       </div>
     </div>
+
+    <!-- Mobile Menu Overlay -->
+    @if (isMenuOpen()) {
+      <div class="md:hidden animate-fade-in-down" style="animation-duration: 0.2s;">
+        <div class="space-y-1 px-6 pb-6 pt-2 border-t border-slate-50 bg-white shadow-lg">
+          <a
+            routerLink="/"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Credits</a>
+          <a
+            routerLink="/"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Atracciones</a>
+          <a
+            routerLink="/"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Parques Temáticos</a>
+          <a
+            routerLink="/viajes"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Viajes</a>
+          <a
+            href="#contact"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Contacto</a>
+          
+          <div class="py-4 mt-2 border-t border-slate-100 italic">
+            @if (authService.isAuthenticated()) {
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser() }}</span></span>
+                  <button (click)="authService.logout(); closeMenu()" class="text-sm font-bold text-red-600">Cerrar sesión</button>
+                </div>
+                <a 
+                  routerLink="/viajes" 
+                  (click)="closeMenu()"
+                  class="flex justify-center rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                >
+                  Ir a Mi Cuenta
+                </a>
+              </div>
+            } @else {
+              <div class="flex flex-col gap-3">
+                <a
+                  routerLink="/login"
+                  (click)="closeMenu()"
+                  class="flex justify-center rounded-xl px-4 py-3 text-sm font-bold text-slate-700 bg-slate-50 transition-colors"
+                >Iniciar sesión</a>
+                <a
+                  routerLink="/register"
+                  (click)="closeMenu()"
+                  class="flex justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all"
+                >Registrate</a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
   </nav>
 
 

@@ -15,4 +15,14 @@ import { AuthService } from './core/services/auth.service';
 export class App {
   protected readonly title = signal('RCManager');
   authService = inject(AuthService);
+  
+  isMenuOpen = signal(false);
+
+  toggleMenu() {
+    this.isMenuOpen.update(s => !s);
+  }
+
+  closeMenu() {
+    this.isMenuOpen.set(false);
+  }
 }
