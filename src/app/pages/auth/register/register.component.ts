@@ -34,6 +34,11 @@ export class RegisterComponent {
 
   constructor() {}
 
+  get username() { return this.registerForm.get('username'); }
+  get email() { return this.registerForm.get('email'); }
+  get password() { return this.registerForm.get('password'); }
+  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
+
   passwordStrength = computed(() => {
     const pw = this.passwordValue() || '';
     if (!pw) return 0;
