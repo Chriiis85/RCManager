@@ -1,0 +1,141 @@
+<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-6 lg:px-8">
+  <!-- Header / Internal Navbar -->
+  <div class="max-w-7xl mx-auto mb-12">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Parques Temáticos</h1>
+        <p class="text-slate-500 text-sm">Explora los mejores destinos de entretenimiento del mundo.</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 flex-1 max-w-2xl">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            [ngModel]="searchQuery()"
+            (ngModelChange)="updateSearch($event)"
+            placeholder="Buscar por nombre, ciudad o país..."
+            class="block w-full rounded-2xl border-0 py-3 pl-11 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6"
+          >
+        </div>
+
+        <!-- Category Filter -->
+        <div class="relative min-w-[160px]">
+          <select 
+            [ngModel]="selectedCategory()"
+            (ngModelChange)="updateCategory($event)"
+            class="block w-full rounded-2xl border-0 py-3 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6 appearance-none"
+          >
+            @for (cat of categories(); track cat) {
+              <option [value]="cat">{{ cat === 'all' ? 'Todas las categorías' : cat }}</option>
+            }
+          </select>
+          <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Park Grid -->
+  <div class="max-w-7xl mx-auto">
+    @if (filteredParks().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        @for (park of filteredParks(); track park.id) {
+          <div class="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col">
+            <!-- Image Section -->
+            <div class="relative h-64 overflow-hidden">
+              <img 
+                [src]="park.image" 
+                [alt]="park.name"
+                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              >
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+              
+              <div class="absolute top-6 left-6">
+                <span class="inline-flex items-center rounded-full bg-blue-600/90 backdrop-blur-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg">
+                  {{ park.category }}
+                </span>
+              </div>
+
+              <div class="absolute bottom-6 left-6 text-white">
+                <p class="text-xs font-bold opacity-80 uppercase tracking-tighter">{{ park.location }}</p>
+                <h3 class="text-2xl font-black">{{ park.name }}</h3>
+              </div>
+
+              <div class="absolute bottom-6 right-6">
+                <div class="flex flex-col items-center justify-center h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xl">
+                  <span class="text-[10px] font-bold opacity-70 leading-none">EST.</span>
+                  <span class="text-lg font-black leading-none">{{ park.opened }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 divide-x divide-slate-50 bg-slate-50/50 border-b border-slate-50">
+                <div class="py-4 text-center group/stat hover:bg-white transition-colors">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover/stat:text-blue-600 transition-colors">Coasters</p>
+                    <p class="text-xl font-black text-slate-800">{{ park.coasters }}</p>
+                </div>
+                <div class="py-4 text-center group/stat hover:bg-white transition-colors">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover/stat:text-blue-600 transition-colors">Atracción</p>
+                    <p class="text-xl font-black text-slate-800">{{ park.attractions }}</p>
+                </div>
+                <div class="py-4 text-center group/stat hover:bg-white transition-colors">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover/stat:text-blue-600 transition-colors">Shows</p>
+                    <p class="text-xl font-black text-slate-800">{{ park.shows }}</p>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8 flex-1 flex flex-col">
+              <p class="text-slate-600 text-sm leading-relaxed mb-8 flex-1">
+                {{ park.description }}
+              </p>
+
+              <div class="flex items-center justify-between mt-auto">
+                <div class="flex -space-x-2">
+                    <img src="https://ui-avatars.com/api/?name=User+1&background=random" class="h-8 w-8 rounded-full border-2 border-white shadow-sm" alt="U1">
+                    <img src="https://ui-avatars.com/api/?name=User+2&background=random" class="h-8 w-8 rounded-full border-2 border-white shadow-sm" alt="U2">
+                    <div class="h-8 w-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 shadow-sm">+12k</div>
+                </div>
+                
+                <button class="flex items-center gap-2 text-sm font-black text-blue-600 hover:text-blue-700 transition-colors group/btn">
+                  Explorar Parque
+                  <svg class="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
+        <div class="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-slate-50 text-slate-300 mb-6 transition-transform hover:rotate-12 duration-500">
+          <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 21L21 3.75m0 0V21m0-17.25H3.75" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">No encontramos ese destino</h3>
+        <p class="text-slate-500 mt-2 max-w-xs mx-auto">Prueba con un nombre diferente o explora por categoría.</p>
+        <button 
+          (click)="updateSearch(''); updateCategory('all')"
+          class="mt-8 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 transition-all active:scale-95"
+        >
+          Ver todos los parques
+        </button>
+      </div>
+    }
+  </div>
+</main>

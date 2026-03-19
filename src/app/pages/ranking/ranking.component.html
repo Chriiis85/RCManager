@@ -1,0 +1,107 @@
+<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="text-center mb-16 space-y-4">
+      <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Ranking Global</h1>
+      <p class="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
+        Descubre cuáles son los destinos y experiencias más valorados por la comunidad internacional.
+      </p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12">
+      @for (cat of categories(); track cat.id) {
+        <button 
+          (click)="selectCategory(cat.id)"
+          [class]="activeCategoryId() === cat.id 
+            ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' 
+            : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 shadow-sm'"
+          class="flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all duration-300 active:scale-95"
+        >
+          <span class="text-xl">{{ cat.icon }}</span>
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+
+    <!-- Ranking List -->
+    <div class="space-y-6">
+      @for (item of activeCategory().items; track item.id) {
+        <div 
+          class="group relative bg-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100"
+          [style.z-index]="10 - item.position"
+        >
+          <!-- Position Highlight -->
+          <div 
+            class="flex items-center justify-center h-16 w-16 md:h-20 md:w-20 rounded-2xl font-black text-2xl md:text-3xl shrink-0 transition-transform group-hover:scale-110 duration-500"
+            [ngClass]="{
+              'bg-amber-100 text-amber-600 ring-4 ring-amber-50': item.position === 1,
+              'bg-slate-100 text-slate-500 ring-4 ring-slate-50': item.position === 2,
+              'bg-orange-100 text-orange-600 ring-4 ring-orange-50': item.position === 3,
+              'bg-slate-50 text-slate-400': item.position > 3
+            }"
+          >
+            #{{ item.position }}
+          </div>
+
+          <!-- Image Container -->
+          <div class="h-28 w-28 md:h-32 md:w-48 rounded-2xl overflow-hidden shrink-0 shadow-lg group-hover:rotate-1 transition-transform">
+            <img [src]="item.image" [alt]="item.name" class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110">
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 text-center md:text-left space-y-1">
+            <h3 class="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{{ item.name }}</h3>
+            <p class="text-slate-500 font-bold uppercase tracking-wider text-xs">
+              {{ item.park ? item.park + ' • ' : '' }}{{ item.subtitle }}
+            </p>
+            <div class="mt-4 flex flex-wrap justify-center md:justify-start gap-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                Puntuación: <span class="text-slate-900 ml-1">{{ item.score }}</span>
+              </span>
+              @if (item.trend === 'up') {
+                <span class="inline-flex items-center text-emerald-600 text-[10px] font-black uppercase">
+                  <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                  Subiendo
+                </span>
+              } @else if (item.trend === 'down') {
+                <span class="inline-flex items-center text-red-500 text-[10px] font-black uppercase">
+                  <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                  Bajando
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="shrink-0 w-full md:w-auto">
+            <button class="w-full md:w-auto px-6 py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 shadow-md">
+              Ver Detalles
+            </button>
+          </div>
+
+          <!-- Ribbon for #1 -->
+          @if (item.position === 1) {
+            <div class="absolute top-0 right-10 -translate-y-1/2 bg-amber-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+              BEST CHOICE
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Empty/Footer Section -->
+    <div class="mt-20 text-center p-12 bg-blue-600 rounded-[3rem] text-white shadow-2xl shadow-blue-500/40 relative overflow-hidden">
+        <div class="relative z-10">
+            <h2 class="text-3xl font-black mb-4">¿Echas de menos algo?</h2>
+            <p class="opacity-80 max-w-xl mx-auto mb-8 font-medium">Ayúdanos a mantener el ranking actualizado enviándonos tus valoraciones y experiencias en los parques.</p>
+            <button class="bg-white text-blue-600 px-8 py-4 rounded-2xl font-black hover:bg-slate-100 transition-all shadow-xl active:scale-95">
+                Enviar Valoración
+            </button>
+        </div>
+        <!-- Background decorative elements -->
+        <div class="absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div class="absolute -top-10 -left-10 h-48 w-48 rounded-full bg-blue-500/20 blur-2xl"></div>
+    </div>
+  </div>
+</main>

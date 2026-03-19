@@ -35,19 +35,24 @@
       <!-- Desktop Menu Links -->
       <div class="hidden md:flex md:gap-x-8">
         <a
-          routerLink="/"
+          routerLink="/credits"
           class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
           >Credits</a
         >
         <a
-          routerLink="/"
+          routerLink="/atracciones"
           class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
           >Atracciones</a
         >
         <a
-          routerLink="/"
+          routerLink="/parques"
           class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
           >Parques Temáticos</a
+        >
+        <a
+          routerLink="/ranking"
+          class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+          >Ranking</a
         >
         <a
           routerLink="/viajes"
@@ -115,20 +120,25 @@
       <div class="md:hidden animate-fade-in-down" style="animation-duration: 0.2s;">
         <div class="space-y-1 px-6 pb-6 pt-2 border-t border-slate-50 bg-white shadow-lg">
           <a
-            routerLink="/"
+            routerLink="/credits"
             (click)="closeMenu()"
             class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
           >Credits</a>
           <a
-            routerLink="/"
+            routerLink="/atracciones"
             (click)="closeMenu()"
             class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
           >Atracciones</a>
           <a
-            routerLink="/"
+            routerLink="/parques"
             (click)="closeMenu()"
             class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
           >Parques Temáticos</a>
+          <a
+            routerLink="/ranking"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+          >Ranking</a>
           <a
             routerLink="/viajes"
             (click)="closeMenu()"
