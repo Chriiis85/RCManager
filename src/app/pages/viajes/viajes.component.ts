@@ -43,7 +43,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
       parkName: 'Parque Warner',
       subtitle: 'Movie World Studios & Superhéroes.',
       description: 'Sumérgete en el universo cinematográfico y del cómic. Montañas rusas espectaculares como la de Superman o Batman te esperan en uno de los parques más completos del país.',
-      image: 'https://images.unsplash.com/photo-1550986518-a620f4ae91e5?q=80&w=2074&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1606767051141-8316e6f43702?q=80&w=2074&auto=format&fit=crop',
       targetDate: new Date(new Date().getTime() + 120 * 24 * 60 * 60 * 1000), // 120 days
       companions: [
         { name: 'Sofía', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop' }
@@ -56,7 +56,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
       parkName: 'PortAventura World',
       subtitle: 'Seis mundos apasionantes.',
       description: 'Descubre increíbles atracciones como Shambhala y Dragon Khan. Un viaje épico que combina adrenalina pura con espectáculos de primer nivel en la Costa Dorada.',
-      image: 'https://images.unsplash.com/photo-1533282960533-51328aa26620?q=80&w=2074&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop',
       targetDate: new Date(new Date().getTime() + 210 * 24 * 60 * 60 * 1000), // 210 days
       companions: [
         { name: 'Carlos', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop' },

@@ -15,6 +15,8 @@ interface ThemePark {
   image: string;
   description: string;
   category: 'Resort' | 'Temático' | 'Acuático';
+  status: 'Abierto' | 'Cerrado';
+  crowds: 'Baja' | 'Media' | 'Alta';
 }
 
 @Component({
@@ -38,9 +40,11 @@ export class ParksComponent {
       coasters: 9,
       attractions: 43,
       shows: 15,
-      image: 'https://images.unsplash.com/photo-1513889953293-4ad464ff1d79?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800',
       description: 'El resort más visitado de España, con 6 mundos fascinantes y PortAventura Park, Ferrari Land y Caribe Aquatic Park.',
-      category: 'Resort'
+      category: 'Resort',
+      status: 'Abierto',
+      crowds: 'Alta'
     },
     {
       id: 2,
@@ -51,9 +55,11 @@ export class ParksComponent {
       coasters: 18,
       attractions: 71,
       shows: 10,
-      image: 'https://images.unsplash.com/photo-1603123853880-a92fafb7809f?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1600229783609-26c4ebb3fb49?auto=format&fit=crop&q=80&w=800',
       description: 'Conocido como la "Capital Mundial de las Montañas Rusas", situado en una península sobre el Lago Erie.',
-      category: 'Temático'
+      category: 'Temático',
+      status: 'Cerrado',
+      crowds: 'Baja'
     },
     {
       id: 3,
@@ -64,9 +70,11 @@ export class ParksComponent {
       coasters: 7,
       attractions: 54,
       shows: 12,
-      image: 'https://images.unsplash.com/photo-1513889953293-4ad464ff1d79?auto=format&fit=crop&q=80&w=800', // Placeholder
+      image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800',
       description: 'Donde los sueños se hacen realidad. Dividido en Disneyland Park y Walt Disney Studios Park.',
-      category: 'Resort'
+      category: 'Resort',
+      status: 'Abierto',
+      crowds: 'Media'
     },
     {
       id: 4,
@@ -77,9 +85,11 @@ export class ParksComponent {
       coasters: 8,
       attractions: 38,
       shows: 8,
-      image: 'https://images.unsplash.com/photo-1544081031-64906dc9017f?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=800',
       description: 'Famoso por su tematización inmersiva de clase mundial y atracciones récord.',
-      category: 'Temático'
+      category: 'Temático',
+      status: 'Abierto',
+      crowds: 'Alta'
     },
     {
       id: 5,
@@ -90,9 +100,11 @@ export class ParksComponent {
       coasters: 14,
       attractions: 100,
       shows: 23,
-      image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1719640502390-5c6e85176ea9?auto=format&fit=crop&q=80&w=800',
       description: 'El parque más grande de Alemania, con áreas dedicadas a diferentes países europeos.',
-      category: 'Resort'
+      category: 'Resort',
+      status: 'Abierto',
+      crowds: 'Media'
     },
     {
       id: 6,
@@ -103,9 +115,11 @@ export class ParksComponent {
       coasters: 10,
       attractions: 40,
       shows: 6,
-      image: 'https://images.unsplash.com/photo-1563811771046-ba984ff30900?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1628835788312-41d61f5ddce8?auto=format&fit=crop&q=80&w=800',
       description: 'Un parque temático único construido alrededor de una mansión gótica y sus jardines históricos.',
-      category: 'Temático'
+      category: 'Temático',
+      status: 'Cerrado',
+      crowds: 'Baja'
     }
   ]);
 

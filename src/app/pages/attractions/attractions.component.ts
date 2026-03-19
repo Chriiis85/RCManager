@@ -37,7 +37,7 @@ export class AttractionsComponent {
       intensity: 'Media',
       minHeight: '1.20m',
       duration: '5:00 min',
-      image: 'https://images.unsplash.com/photo-1506477331477-33d3184f4543?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1473216891040-2057398b1897?auto=format&fit=crop&q=80&w=800',
       description: 'Un volcán en erupción y una caída refrescante en la Polinesia.'
     },
     {
@@ -49,7 +49,7 @@ export class AttractionsComponent {
       intensity: 'Baja',
       minHeight: 'Sin mín.',
       duration: '7:00 min',
-      image: 'https://images.unsplash.com/photo-1616091093714-c64882e9bd55?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=800',
       description: 'Una mansión encantada llena de secretos y misterios del lejano oeste.'
     },
     {
@@ -61,7 +61,7 @@ export class AttractionsComponent {
       intensity: 'Alta',
       minHeight: '1.02m',
       duration: '4:00 min',
-      image: 'https://images.unsplash.com/photo-1545153205-091916388484?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1565867226341-34084fb1a40d?auto=format&fit=crop&q=80&w=800',
       description: 'Adéntrate en la Dimensión Desconocida en este hotel abandonado.'
     },
     {
@@ -85,7 +85,7 @@ export class AttractionsComponent {
       intensity: 'Extrema',
       minHeight: '1.40m',
       duration: '2:30 min',
-      image: 'https://images.unsplash.com/photo-1563293750-2d88697b919d?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800',
       description: '100 metros de caída libre pura para los más valientes.'
     },
     {
@@ -97,7 +97,7 @@ export class AttractionsComponent {
       intensity: 'Baja',
       minHeight: 'Sin mín.',
       duration: '5:00 min',
-      image: 'https://images.unsplash.com/photo-1590480000000-000000000000?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1707508465463-989ccfddbafa?auto=format&fit=crop&q=80&w=800',
       description: 'Encoge al tamaño de Remy en esta aventura gastronómica 4D.'
     }
   ]);

@@ -37,7 +37,7 @@ export class CreditsComponent {
       height: '76m',
       speed: '134 km/h',
       length: '1,564m',
-      image: 'https://images.unsplash.com/photo-1513889953293-4ad464ff1d79?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1773430647628-05fca7d2bd13?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Bolliger & Mabillard'
     },
     {
@@ -49,7 +49,7 @@ export class CreditsComponent {
       height: '62m',
       speed: '119 km/h',
       length: '1,750m',
-      image: 'https://images.unsplash.com/photo-1603123853880-a92fafb7809f?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Rocky Mountain Construction'
     },
     {
@@ -61,7 +61,7 @@ export class CreditsComponent {
       height: '112m',
       speed: '180 km/h',
       length: '880m',
-      image: 'https://images.unsplash.com/photo-1502120000000-000000000000?auto=format&fit=crop&q=80&w=800', // Placeholder
+      image: 'https://images.unsplash.com/photo-1567201372773-7a1b5c67604d?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Intamin'
     },
     {
@@ -73,7 +73,7 @@ export class CreditsComponent {
       height: '30m',
       speed: '117 km/h',
       length: '1,320m',
-      image: 'https://images.unsplash.com/photo-1544081031-64906dc9017f?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Intamin'
     },
     {
@@ -85,7 +85,7 @@ export class CreditsComponent {
       height: '99m',
       speed: '153 km/h',
       length: '2,012m',
-      image: 'https://images.unsplash.com/photo-1563811771046-ba984ff30900?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Bolliger & Mabillard'
     },
     {
@@ -97,7 +97,7 @@ export class CreditsComponent {
       height: '33m',
       speed: '95 km/h',
       length: '920m',
-      image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1628835788312-41d61f5ddce8?auto=format&fit=crop&q=80&w=800',
       manufacturer: 'Mack Rides'
     }
   ]);
