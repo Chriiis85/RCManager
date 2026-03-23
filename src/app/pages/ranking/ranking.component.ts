@@ -2,8 +2,10 @@ import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+import { MAPPED_THEME_PARKS } from './theme-parks-data';
+
 interface RankingItem {
-  id: number;
+  id: number | string;
   position: number;
   name: string;
   subtitle: string;
@@ -11,6 +13,8 @@ interface RankingItem {
   image: string;
   score: number;
   trend: 'up' | 'down' | 'stable';
+  tipo?: string;
+  gestor?: string;
 }
 
 interface RankingCategory {
@@ -28,24 +32,27 @@ interface RankingCategory {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RankingComponent {
-  activeCategoryId = signal<string>('parks');
+  activeCategoryId = signal<string>('theme_parks');
 
   categories = signal<RankingCategory[]>([
     {
-      id: 'parks',
-      name: 'Mejores Parques',
+      id: 'theme_parks',
+      name: 'Mejor Parque Temático',
       icon: '🎡',
+      items: MAPPED_THEME_PARKS
+    },
+    {
+      id: 'water_parks',
+      name: 'Mejor Parque Acuático',
+      icon: '💦',
       items: [
-        { id: 1, position: 1, name: 'Europa-Park', subtitle: 'Rust, Alemania', image: 'https://images.unsplash.com/photo-1719640502390-5c6e85176ea9?auto=format&fit=crop&q=80&w=800', score: 9.8, trend: 'stable' },
-        { id: 2, position: 2, name: 'PortAventura Park', subtitle: 'Salou, España', image: 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800', score: 9.6, trend: 'up' },
-        { id: 3, position: 3, name: 'Cedar Point', subtitle: 'Ohio, USA', image: 'https://images.unsplash.com/photo-1600229783609-26c4ebb3fb49?auto=format&fit=crop&q=80&w=800', score: 9.5, trend: 'down' },
-        { id: 4, position: 4, name: 'Phantasialand', subtitle: 'Brühl, Alemania', image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=800', score: 9.4, trend: 'up' },
-        { id: 5, position: 5, name: 'Alton Towers', subtitle: 'Staffordshire, UK', image: 'https://images.unsplash.com/photo-1628835788312-41d61f5ddce8?auto=format&fit=crop&q=80&w=800', score: 9.2, trend: 'stable' }
+        { id: 40, position: 1, name: 'Siam Park', subtitle: 'Tenerife, España', image: 'https://images.unsplash.com/photo-1582239634584-18e4c76b1585?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
+        { id: 41, position: 2, name: 'Volcano Bay', subtitle: 'Florida, USA', image: 'https://images.unsplash.com/photo-1588665798951-4091a9235cb3?auto=format&fit=crop&q=80&w=800', score: 9.6, trend: 'up' }
       ]
     },
     {
       id: 'coasters',
-      name: 'Montañas Rusas',
+      name: 'Mejor Montaña Rusa',
       icon: '🎢',
       items: [
         { id: 10, position: 1, name: 'Steel Vengeance', park: 'Cedar Point', subtitle: 'RMC Hybrid', image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
@@ -56,8 +63,17 @@ export class RankingComponent {
       ]
     },
     {
+      id: 'attractions',
+      name: 'Mejores Atracciones',
+      icon: '🎠',
+      items: [
+        { id: 50, position: 1, name: 'Rise of the Resistance', park: 'Disney\'s Hollywood Studios', subtitle: 'Trackless Dark Ride', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
+        { id: 51, position: 2, name: 'Avatar Flight of Passage', park: 'Disney\'s Animal Kingdom', subtitle: 'Flying Theater', image: 'https://images.unsplash.com/photo-1620005001234-a123e98cc56a?auto=format&fit=crop&q=80&w=800', score: 9.7, trend: 'stable' }
+      ]
+    },
+    {
       id: 'water_rides',
-      name: 'Atracciones Acuáticas',
+      name: 'Mejores Atracciones Acuáticas',
       icon: '🌊',
       items: [
         { id: 20, position: 1, name: 'Chiapas', park: 'Phantasialand', subtitle: 'Log Flume', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800', score: 9.8, trend: 'stable' },
@@ -77,11 +93,44 @@ export class RankingComponent {
     }
   ]);
 
+  displayLimit = signal<number>(20);
+
   activeCategory = computed(() => 
     this.categories().find(c => c.id === this.activeCategoryId()) || this.categories()[0]
   );
 
+  displayedItems = computed(() => 
+    this.activeCategory().items.slice(0, this.displayLimit())
+  );
+
+  hasMoreItems = computed(() => 
+    this.activeCategory().items.length > this.displayLimit()
+  );
+
   selectCategory(id: string) {
     this.activeCategoryId.set(id);
+    this.displayLimit.set(20);
+  }
+
+  loadMore() {
+    this.displayLimit.update(limit => limit + 20);
+  }
+
+  getScale(position: number): number {
+    // Del 1 al 3
+    if (position === 1) return 0.95;
+    if (position === 2) return 0.90;
+    if (position === 3) return 0.86;
+    
+    // Del 4 al 10 va bajando escalonadamente (ej. 0.83, 0.80, 0.78...)
+    if (position >= 4 && position <= 10) {
+      // Restamos progresivamente 0.02 o 0.03 por puesto
+      const baseFor4 = 0.84;
+      const step = 0.02;
+      return +(baseFor4 - ((position - 4) * step)).toFixed(2);
+    }
+    
+    // Del 11 en adelante se quedan igual al tamaño más pequeño del top 10
+    return 0.72;
   }
 }
