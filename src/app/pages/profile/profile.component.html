@@ -238,4 +238,34 @@
       </div>
     </div>
   }
+
+  <!-- Feedback Modal -->
+  @if (showFeedbackModal()) {
+    <div class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-auto text-center border border-slate-100 animate-slide-up relative">
+        <button (click)="showFeedbackModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        
+        @if (feedbackContent().type === 'success') {
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-6 shadow-inner border border-emerald-50">
+            <svg class="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+          </div>
+        } @else {
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-6 shadow-inner border border-blue-50">
+            <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
+          </div>
+        }
+        
+        <h3 class="text-xl font-black text-slate-900 mb-2">{{ feedbackContent().title }}</h3>
+        <p class="text-slate-500 font-medium mb-8">{{ feedbackContent().message }}</p>
+        
+        @if (feedbackContent().type === 'success') {
+          <button (click)="showFeedbackModal.set(false)" class="cursor-pointer mt-4 w-full rounded-2xl bg-emerald-600 py-3.5 text-sm font-bold text-white hover:bg-emerald-500 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all focus:outline-none">Entendido</button>
+        } @else {
+          <button (click)="showFeedbackModal.set(false)" class="cursor-pointer mt-4 w-full rounded-2xl bg-blue-600 py-3.5 text-sm font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20 active:scale-95 transition-all focus:outline-none">Entendido</button>
+        }
+      </div>
+    </div>
+  }
 </main>

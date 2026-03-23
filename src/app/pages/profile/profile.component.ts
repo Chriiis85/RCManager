@@ -77,19 +77,27 @@ export class ProfileComponent {
   showEditProfileModal = signal(false);
   editForm = signal<UserInfo>({ ...this.userInfo() });
 
+  showFeedbackModal = signal(false);
+  feedbackContent = signal({ title: '', message: '', type: 'success' });
+
+  showFeedback(title: string, message: string, type: 'success' | 'info' = 'success') {
+    this.feedbackContent.set({ title, message, type });
+    this.showFeedbackModal.set(true);
+  }
+
   changeAvatar() {
-    alert('Simulación: Apertura de explorador de archivos para subir nueva foto.');
+    this.showFeedback('Fotografía', 'Simulación: Apertura de explorador de archivos para subir nueva foto.', 'info');
   }
 
   changePassword() {
     this.showPasswordModal.set(false);
-    alert('Contraseña cambiada exitosamente (Simulación)');
+    this.showFeedback('Contraseña Cambiada', 'Tu contraseña se ha cambiado exitosamente (Simulación).', 'success');
   }
 
   toggleTwoFactor() {
     this.isTwoFactorEnabled.set(!this.isTwoFactorEnabled());
     const status = this.isTwoFactorEnabled() ? 'activada' : 'desactivada';
-    alert(`Verificación en dos pasos ${status} (Simulación)`);
+    this.showFeedback('Seguridad Actualizada', `La verificación en dos pasos ha sido ${status} (Simulación).`, 'success');
   }
 
   openEditProfile() {
@@ -100,6 +108,6 @@ export class ProfileComponent {
   saveProfile() {
     this.userInfo.set({ ...this.editForm() });
     this.showEditProfileModal.set(false);
-    alert('Datos de perfil actualizados (Simulación)');
+    this.showFeedback('Datos Guardados', 'Los datos de tu perfil se actualizaron correctamente (Simulación).', 'success');
   }
 }
