@@ -20,7 +20,7 @@
             [ngModel]="searchQuery()"
             (ngModelChange)="updateSearch($event)"
             placeholder="Buscar por nombre, parque o país..."
-            class="block w-full rounded-2xl border-0 py-3 pl-11 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6"
+            class="cursor-pointer block w-full rounded-2xl border-0 py-3 pl-11 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6"
           >
         </div>
 
@@ -29,7 +29,7 @@
           <select 
             [ngModel]="selectedType()"
             (ngModelChange)="updateType($event)"
-            class="block w-full rounded-2xl border-0 py-3 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6 appearance-none"
+            class="cursor-pointer block w-full rounded-2xl border-0 py-3 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-slate-50/50 transition-all sm:text-sm sm:leading-6 appearance-none"
           >
             @for (type of types(); track type) {
               <option [value]="type">{{ type === 'all' ? 'Todos los tipos' : type }}</option>
@@ -108,7 +108,7 @@
 
               <!-- Action -->
               <div class="mt-6">
-                <button class="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition-all shadow-md active:scale-95">
+                <button (click)="handleAction(item)" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition-all shadow-md active:scale-95">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
@@ -131,11 +131,50 @@
         <p class="text-slate-500 mt-1">Intenta con otros términos o cambia el filtro de tipo.</p>
         <button 
           (click)="updateSearch(''); updateType('all')"
-          class="mt-6 text-sm font-bold text-blue-600 hover:text-blue-500 transition-colors"
+          class="cursor-pointer mt-6 text-sm font-bold text-blue-600 hover:text-blue-500 transition-colors"
         >
           Limpiar filtros
         </button>
       </div>
     }
   </div>
+
+  <!-- Success Modal -->
+  @if (showSuccessModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative">
+        <button (click)="showSuccessModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-6 shadow-inner border border-emerald-50">
+          <svg class="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900 mb-2">¡Añadido Correctamente!</h3>
+        <p class="text-slate-500 font-medium">La atracción se ha registrado en tus visitas con éxito.</p>
+        <button (click)="showSuccessModal.set(false)" class="cursor-pointer mt-8 w-full rounded-2xl bg-emerald-600 py-3.5 text-sm font-bold text-white hover:bg-emerald-500 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all focus:outline-none">Aceptar</button>
+      </div>
+    </div>
+  }
+
+  <!-- Login Prompt Modal -->
+  @if (showLoginPromptModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative">
+        <button (click)="showLoginPromptModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-6 shadow-inner border border-blue-50">
+          <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900 mb-2">¡Acceso Requerido!</h3>
+        <p class="text-slate-500 font-medium mb-8">Debes iniciar sesión o registrarte para poder guardar visitas en tu perfil.</p>
+        <div class="flex flex-col gap-3">
+          <button (click)="router.navigate(['/login'])" class="cursor-pointer w-full rounded-2xl bg-blue-600 py-3.5 text-sm font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20 active:scale-95 transition-all focus:outline-none">Iniciar Sesión</button>
+          <button (click)="router.navigate(['/register'])" class="cursor-pointer w-full rounded-2xl bg-slate-50 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-100 active:scale-95 transition-all focus:outline-none border border-slate-200">Registrarse</button>
+        </div>
+      </div>
+    </div>
+  }
 </main>

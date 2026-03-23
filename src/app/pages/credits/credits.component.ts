@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 interface Coaster {
   id: number;
@@ -26,6 +27,22 @@ interface Coaster {
 export class CreditsComponent {
   searchQuery = signal('');
   selectedFilter = signal('all');
+
+  showSuccessModal = signal(false);
+  showLoginPromptModal = signal(false);
+  authService = inject(AuthService);
+  router = inject(Router);
+
+  handleAction(item: Coaster) {
+    if (!this.authService.isAuthenticated()) {
+      this.showLoginPromptModal.set(true);
+    } else {
+      this.showSuccessModal.set(true);
+      setTimeout(() => {
+        this.showSuccessModal.set(false);
+      }, 3000);
+    }
+  }
 
   coasters = signal<Coaster[]>([
     {

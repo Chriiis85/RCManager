@@ -16,5 +16,6 @@ export class AuthService {
   logout() {
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
+    window.location.href = '/';
   }
 }

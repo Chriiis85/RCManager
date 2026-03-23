@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 interface ThemePark {
   id: number;
@@ -29,6 +30,22 @@ interface ThemePark {
 export class ParksComponent {
   searchQuery = signal('');
   selectedCategory = signal('all');
+
+  showSuccessModal = signal(false);
+  showLoginPromptModal = signal(false);
+  authService = inject(AuthService);
+  router = inject(Router);
+
+  handleAction(item: ThemePark) {
+    if (!this.authService.isAuthenticated()) {
+      this.showLoginPromptModal.set(true);
+    } else {
+      this.showSuccessModal.set(true);
+      setTimeout(() => {
+        this.showSuccessModal.set(false);
+      }, 3000);
+    }
+  }
 
   parks = signal<ThemePark[]>([
     {
