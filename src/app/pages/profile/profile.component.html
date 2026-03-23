@@ -1,0 +1,241 @@
+<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-6 lg:px-8 animate-fade-in-up">
+  <div class="max-w-7xl mx-auto space-y-8">
+    
+    <!-- Header Page -->
+    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Mi Cuenta</h1>
+        <p class="text-slate-500 mt-1">Gestiona tu perfil, seguridad y el resumen de tus aventuras.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column: User Info & Security -->
+      <div class="space-y-8">
+        <!-- User Profile Card -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative text-center flex flex-col items-center">
+          <!-- Profile Avatar Editor -->
+          <div class="relative inline-block mb-6 group cursor-pointer" title="Cambiar foto de perfil" (click)="changeAvatar()">
+            <img [src]="userInfo().avatar" alt="User Avatar" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md mx-auto">
+            <!-- Edit Overlay -->
+            <div class="absolute inset-0 bg-slate-900/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <!-- Edit Icon Badge -->
+            <div class="absolute bottom-1 right-1 bg-blue-600 text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </div>
+          </div>
+          
+          <h2 class="text-2xl font-bold text-slate-900 mb-1">{{ userInfo().firstName }} {{ userInfo().lastName }}</h2>
+          <p class="text-blue-600 font-bold mb-3 tracking-wide">&#64;{{ userInfo().username }}</p>
+          
+          <div class="w-full pt-4 mt-3 border-t border-slate-100 flex flex-col gap-4">
+            <div class="flex items-center justify-center gap-2 cursor-pointer group">
+              <svg class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              <span class="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">{{ userInfo().email }}</span>
+            </div>
+            
+            <button (click)="openEditProfile()" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-blue-50 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-100 transition-all active:scale-95 ring-1 ring-inset ring-blue-700/10">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              Editar Datos Personales
+            </button>
+          </div>
+        </div>
+
+        <!-- Security Card -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+          <h3 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+            <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Seguridad
+          </h3>
+          <p class="text-sm text-slate-500 mb-6">Protege tu cuenta activando opciones de seguridad avanzadas.</p>
+          
+          <div class="space-y-4">
+            <!-- 2-Step Verification Toggle -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div>
+                <p class="text-sm font-bold text-slate-900">Verificación 2 Pasos</p>
+                <p class="text-[11px] text-slate-500 mt-0.5 max-w-[140px] leading-tight flex-wrap">Seguridad por código SMS o correo extra.</p>
+              </div>
+              <button 
+                (click)="toggleTwoFactor()" 
+                [class]="'cursor-pointer relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ' + (isTwoFactorEnabled() ? 'bg-emerald-500' : 'bg-slate-200')"
+                role="switch" 
+                [attr.aria-checked]="isTwoFactorEnabled()">
+                <span class="sr-only">Habilitar verificación en dos pasos</span>
+                <span 
+                  [class]="'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ' + (isTwoFactorEnabled() ? 'translate-x-5' : 'translate-x-0')">
+                </span>
+              </button>
+            </div>
+            
+            <button (click)="showPasswordModal.set(true)" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 py-3 text-sm font-bold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-all active:scale-95 shadow-sm">
+              Cambiar Contraseña
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Stats, Upcoming Trips & Friends -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Summary Stats (Top Grid) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+           <!-- Credits -->
+           <div class="bg-blue-600 p-6 rounded-3xl shadow-md border border-blue-500 text-white flex flex-col justify-between cursor-pointer hover:bg-blue-700 transition-colors">
+             <div class="flex justify-between items-start mb-4">
+                <span class="text-blue-100 font-semibold tracking-wider text-sm uppercase">Mis Credits</span>
+                <span class="bg-white/20 p-2 rounded-xl"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+             </div>
+             <p class="text-4xl font-black">{{ stats().credits }}</p>
+           </div>
+           
+           <!-- Parks -->
+           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between cursor-pointer hover:border-slate-300 transition-colors">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-slate-500 font-semibold tracking-wider text-sm uppercase">Parques Visitados</span>
+                <span class="bg-emerald-100 text-emerald-600 p-2 rounded-xl"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+              </div>
+              <p class="text-4xl font-black text-slate-900">{{ stats().parks }}</p>
+           </div>
+
+           <!-- Attractions -->
+           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between cursor-pointer hover:border-slate-300 transition-colors">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-slate-500 font-semibold tracking-wider text-sm uppercase">Atracciones</span>
+                <span class="bg-rose-100 text-rose-600 p-2 rounded-xl"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+              </div>
+              <p class="text-4xl font-black text-slate-900">{{ stats().attractions }}</p>
+           </div>
+        </div>
+
+        <!-- Upcoming Trips -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-900">Próximos Viajes</h3>
+            <a routerLink="/viajes" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">Ver pestaña viajes</a>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (trip of upcomingTrips(); track trip.id) {
+               <div class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm group">
+                  <img [src]="trip.image" class="w-16 h-16 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <div>
+                    <h4 class="font-bold text-slate-900 mx-1 line-clamp-1 group-hover:text-blue-600 transition-colors text-base">{{ trip.parkName }}</h4>
+                    <p class="text-sm font-medium text-slate-500 mt-1 flex items-center gap-1 mx-1">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      {{ trip.date }}
+                    </p>
+                  </div>
+               </div>
+            }
+          </div>
+        </div>
+
+        <!-- Friends List -->
+        <div class="bg-[#0d1b3e] p-8 rounded-3xl shadow-lg border border-blue-900/40 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M54.627 0l1.373 1.373v57.254l-1.373 1.373H5.373L4 58.627V1.373L5.373 0h49.254zM26.5 28.5V5h-7v23.5H5v7h14.5V55h7V35.5H55v-7H26.5z\' fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
+          <div class="relative z-10">
+            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              Amigos Coasteros
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+               @for (friend of friends(); track friend.id) {
+                  <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/20 transition-all group">
+                    <img [src]="friend.avatar" class="w-14 h-14 rounded-full border-2 border-transparent group-hover:border-blue-400 mb-2 shadow-sm transition-all duration-300 group-hover:scale-105">
+                    <span class="text-sm font-bold text-blue-100 group-hover:text-white line-clamp-1 w-full text-center transition-colors">{{ friend.username }}</span>
+                  </div>
+               }
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Change Modal -->
+  @if (showPasswordModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-slide-up border border-slate-100">
+        <button (click)="showPasswordModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 mb-6 border border-slate-200 shadow-inner">
+          <svg class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        
+        <h3 class="text-xl font-bold text-center text-slate-900 mb-6">Cambiar Contraseña</h3>
+        
+        <form class="space-y-4" (submit)="$event.preventDefault(); changePassword()">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">CONTRASEÑA ACTUAL</label>
+            <input type="password" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NUEVA CONTRASEÑA</label>
+            <input type="password" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">REPETIR NUEVA</label>
+            <input type="password" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow mb-4">
+          </div>
+          <button type="submit" class="cursor-pointer w-full rounded-2xl bg-slate-900 py-3 text-sm font-bold text-white hover:bg-slate-800 shadow-md active:scale-95 transition-all focus:outline-none mt-2">
+            Confirmar Cambio
+          </button>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Profile Modal -->
+  @if (showEditProfileModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100">
+        <button (click)="showEditProfileModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        
+        <h3 class="text-xl font-bold text-slate-900 mb-6">Editar Datos Personales</h3>
+        
+        <form class="space-y-4" (submit)="$event.preventDefault(); saveProfile()">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE</label>
+              <input type="text" [ngModel]="editForm().firstName" (ngModelChange)="editForm.set({...editForm(), firstName: $event})" name="firstName" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">APELLIDOS</label>
+              <input type="text" [ngModel]="editForm().lastName" (ngModelChange)="editForm.set({...editForm(), lastName: $event})" name="lastName" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE DE USUARIO</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-slate-400 font-bold">&#64;</span>
+              </div>
+              <input type="text" [ngModel]="editForm().username" (ngModelChange)="editForm.set({...editForm(), username: $event})" name="username" class="cursor-pointer pl-8 text-slate-900 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">CORREO ELECTRÓNICO</label>
+            <input type="email" [ngModel]="editForm().email" (ngModelChange)="editForm.set({...editForm(), email: $event})" name="email" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow mb-4">
+          </div>
+          <button type="submit" class="cursor-pointer w-full rounded-2xl bg-blue-600 py-3 text-sm font-bold text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 active:scale-95 transition-all focus:outline-none mt-2">
+            Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
+  }
+</main>

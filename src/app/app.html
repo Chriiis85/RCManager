@@ -89,7 +89,7 @@
         @if (authService.isAuthenticated()) {
           <div class="flex items-center gap-4">
             <span class="hidden md:inline-block text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser() }}</span></span>
-            <a routerLink="/viajes" class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-100 transition-colors cursor-pointer ring-1 ring-inset ring-blue-700/10">
+            <a routerLink="/profile" class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-100 transition-colors cursor-pointer ring-1 ring-inset ring-blue-700/10">
               Mi Cuenta
             </a>
             <button (click)="authService.logout()" class="text-slate-400 hover:text-red-500 transition-colors ml-2 cursor-pointer" title="Cerrar sesión">
@@ -152,7 +152,7 @@
                   <button (click)="authService.logout(); closeMenu()" class="text-sm font-bold text-red-600">Cerrar sesión</button>
                 </div>
                 <a 
-                  routerLink="/viajes" 
+                  routerLink="/profile" 
                   (click)="closeMenu()"
                   class="flex justify-center rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 ring-1 ring-inset ring-blue-700/10"
                 >

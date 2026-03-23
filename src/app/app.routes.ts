@@ -7,14 +7,17 @@ import { CreditsComponent } from './pages/credits/credits.component';
 import { AttractionsComponent } from './pages/attractions/attractions.component';
 import { ParksComponent } from './pages/parks/parks.component';
 import { RankingComponent } from './pages/ranking/ranking.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { authGuard, unAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'viajes', component: ViajesComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'viajes', component: ViajesComponent, canActivate: [authGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [unAuthGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [unAuthGuard] },
   { path: 'credits', component: CreditsComponent },
   { path: 'atracciones', component: AttractionsComponent },
   { path: 'parques', component: ParksComponent },
-  { path: 'ranking', component: RankingComponent }
+  { path: 'ranking', component: RankingComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] }
 ];
