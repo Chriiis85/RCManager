@@ -7,6 +7,7 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,9 +41,11 @@ interface ThemePark {
 export class ParksComponent implements OnInit {
   @ViewChild('rideListContainer') rideListContainer!: ElementRef;
   searchQuery = signal('');
-  selectedCategory = signal('all');
-  selectedCountry = signal('all');
+  selectedCountries = signal<string[]>([]);
+  selectedStatuses = signal<string[]>([]); // 'Abierto', 'Cerrado', 'Sin Datos'
+  selectedCrowds = signal<string[]>([]);
   visibleParksLimit = signal(15);
+  showFilters = signal(false);
 
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
@@ -280,23 +283,36 @@ export class ParksComponent implements OnInit {
 
   filteredParks = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    const cat = this.selectedCategory();
-    const country = this.selectedCountry();
+    const selCountries = this.selectedCountries();
+    const selStatuses = this.selectedStatuses();
+    const selCrowds = this.selectedCrowds();
 
     return this.parks()
       .filter((p) => {
-        // Filtro de "Solo datos de hoy"
-        if (!p.hasTodayData) return false;
-
+        // 1. Búsqueda por texto
         const matchesSearch =
           p.name.toLowerCase().includes(query) ||
           p.location.toLowerCase().includes(query) ||
           p.country.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
 
-        const matchesCategory = cat === 'all' || p.category === cat;
-        const matchesCountry = country === 'all' || p.country === country;
+        // 2. Filtro de País
+        if (selCountries.length > 0 && !selCountries.includes(p.country)) return false;
 
-        return matchesSearch && matchesCategory && matchesCountry;
+        // 3. Filtro de Estado
+        if (selStatuses.length > 0) {
+          const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
+          if (!selStatuses.includes(pStatus)) return false;
+        } else {
+           // Si no hay filtro de estado, por defecto mostramos solo los que tienen hoy data (comportamiento actual)
+           // unless the user adds "Sin Datos"
+           if (!p.hasTodayData && selStatuses.length === 0) return false;
+        }
+
+        // 4. Filtro de Afluencia
+        if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
+
+        return true;
       })
       .sort((a, b) => {
         // 1. Estado: Abierto (primero) > Cerrado (después)
@@ -311,18 +327,25 @@ export class ParksComponent implements OnInit {
 
   hasMoreParks = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    const cat = this.selectedCategory();
-    const country = this.selectedCountry();
+    const selCountries = this.selectedCountries();
+    const selStatuses = this.selectedStatuses();
+    const selCrowds = this.selectedCrowds();
 
     const totalFilteredCount = this.parks().filter((p) => {
-      if (!p.hasTodayData) return false;
       const matchesSearch =
         p.name.toLowerCase().includes(query) ||
         p.location.toLowerCase().includes(query) ||
         p.country.toLowerCase().includes(query);
-      const matchesCategory = cat === 'all' || p.category === cat;
-      const matchesCountry = country === 'all' || p.country === country;
-      return matchesSearch && matchesCategory && matchesCountry;
+      if (!matchesSearch) return false;
+      if (selCountries.length > 0 && !selCountries.includes(p.country)) return false;
+      if (selStatuses.length > 0) {
+        const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
+        if (!selStatuses.includes(pStatus)) return false;
+      } else {
+         if (!p.hasTodayData) return false;
+      }
+      if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
+      return true;
     }).length;
 
     return totalFilteredCount > this.visibleParksLimit();
@@ -332,31 +355,56 @@ export class ParksComponent implements OnInit {
     this.visibleParksLimit.update((limit) => limit + 12);
   }
 
-  categories = computed(() => {
-    const allCats = this.parks().map((p) => p.category);
-    return ['all', ...new Set(allCats)];
-  });
-
   countries = computed(() => {
-    const allCountries = this.parks()
-      .filter((p) => p.hasTodayData)
-      .map((p) => p.country)
-      .sort();
-    return ['all', ...new Set(allCountries)];
+    const allC = this.parks().map((p) => p.country);
+    return [...new Set(allC)].sort();
   });
 
   updateSearch(query: string) {
     this.searchQuery.set(query);
-    this.visibleParksLimit.set(15); // Reset limit on search
+    this.visibleParksLimit.set(15);
   }
 
-  updateCategory(cat: string) {
-    this.selectedCategory.set(cat);
-    this.visibleParksLimit.set(15); // Reset limit on category change
+  toggleCountry(country: string) {
+    this.selectedCountries.update(list => 
+      list.includes(country) ? list.filter(c => c !== country) : [...list, country]
+    );
+    this.visibleParksLimit.set(15);
   }
 
-  updateCountry(country: string) {
-    this.selectedCountry.set(country);
-    this.visibleParksLimit.set(15); // Reset limit on country change
+  toggleStatus(status: string) {
+    this.selectedStatuses.update(list => 
+      list.includes(status) ? list.filter(s => s !== status) : [...list, status]
+    );
+    this.visibleParksLimit.set(15);
+  }
+
+  toggleCrowd(crowd: string) {
+    this.selectedCrowds.update(list => 
+      list.includes(crowd) ? list.filter(c => c !== crowd) : [...list, crowd]
+    );
+    this.visibleParksLimit.set(15);
+  }
+
+  clearAllFilters() {
+    this.selectedCountries.set([]);
+    this.selectedStatuses.set([]);
+    this.selectedCrowds.set([]);
+    this.searchQuery.set('');
+    this.visibleParksLimit.set(15);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.showFilters()) return;
+
+    const target = event.target as HTMLElement;
+    // Buscamos si el click fue dentro del botón o del panel
+    const isFilterButton = target.closest('.filter-toggle-btn');
+    const isFilterPanel = target.closest('.filter-panel');
+
+    if (!isFilterButton && !isFilterPanel) {
+      this.showFilters.set(false);
+    }
   }
 }
