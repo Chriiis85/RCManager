@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/queue-times-api/:path*",
+      "destination": "https://queue-times.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
