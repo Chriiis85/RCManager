@@ -101,26 +101,28 @@
                 {{ park.description }}
               </p>
 
-              <div class="flex items-center justify-between mt-auto">
-                <div class="flex flex-col gap-1.5">
-                  <div class="flex items-center gap-2">
-                    <span class="relative flex h-2.5 w-2.5 items-center justify-center">
-                      <span class="animate-ping absolute h-full w-full rounded-full opacity-75" [ngClass]="park.status === 'Abierto' ? 'bg-emerald-400' : 'bg-red-400'"></span>
-                      <span class="relative h-2 w-2 rounded-full shadow-sm" [ngClass]="park.status === 'Abierto' ? 'bg-emerald-500' : 'bg-red-500'"></span>
-                    </span>
-                    <span class="text-xs font-bold leading-none" [ngClass]="park.status === 'Abierto' ? 'text-emerald-600' : 'text-red-500'">{{ park.status }}</span>
-                  </div>
-                  <div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100">
-                    <svg class="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span class="text-[10px] font-black uppercase text-slate-500">Afluencia: <span [ngClass]="{'text-emerald-500': park.crowds === 'Baja', 'text-yellow-500': park.crowds === 'Media', 'text-red-500': park.crowds === 'Alta'}">{{ park.crowds }}</span></span>
-                  </div>
+              <!-- Status info -->
+              <div class="flex flex-col gap-1.5 mb-6">
+                <div class="flex items-center gap-2">
+                  <span class="relative flex h-2.5 w-2.5 items-center justify-center">
+                    <span class="animate-ping absolute h-full w-full rounded-full opacity-75" [ngClass]="park.status === 'Abierto' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+                    <span class="relative h-2 w-2 rounded-full shadow-sm" [ngClass]="park.status === 'Abierto' ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                  </span>
+                  <span class="text-xs font-bold leading-none" [ngClass]="park.status === 'Abierto' ? 'text-emerald-600' : 'text-red-500'">{{ park.status }}</span>
                 </div>
-                
-                <button (click)="handleAction(park)" class="cursor-pointer flex items-center gap-2 text-sm font-black text-slate-900 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl transition-all shadow-sm active:scale-95 group/btn">
+                <div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100">
+                  <svg class="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span class="text-[10px] font-black uppercase text-slate-500">Afluencia: <span [ngClass]="{'text-emerald-500': park.crowds === 'Baja', 'text-yellow-500': park.crowds === 'Media', 'text-red-500': park.crowds === 'Alta'}">{{ park.crowds }}</span></span>
+                </div>
+              </div>
+
+              <!-- Action button - same as attractions -->
+              <div class="mt-auto">
+                <button (click)="handleAction(park)" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition-all shadow-md active:scale-95">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
                   Registrar Visita
                 </button>

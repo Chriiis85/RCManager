@@ -122,14 +122,14 @@ export class CreditsComponent {
   filteredCoasters = computed(() => {
     const query = this.searchQuery().toLowerCase();
     const filter = this.selectedFilter();
-    
+
     return this.coasters().filter(c => {
-      const matchesSearch = c.name.toLowerCase().includes(query) || 
-                          c.park.toLowerCase().includes(query) ||
-                          c.country.toLowerCase().includes(query);
-      
+      const matchesSearch = c.name.toLowerCase().includes(query) ||
+        c.park.toLowerCase().includes(query) ||
+        c.country.toLowerCase().includes(query);
+
       const matchesFilter = filter === 'all' || c.country === filter;
-      
+
       return matchesSearch && matchesFilter;
     });
   });
