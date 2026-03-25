@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/queue-times-api/:path*",
-      "destination": "https://queue-times.com/:path*"
+      "source": "/queue-times-api/(.*)",
+      "destination": "/api/proxy/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
