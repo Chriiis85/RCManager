@@ -60,7 +60,8 @@
               "buildTarget": "RCManager:build:production"
             },
             "development": {
-              "buildTarget": "RCManager:build:development"
+              "buildTarget": "RCManager:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
