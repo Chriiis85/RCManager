@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,14 +24,53 @@ interface Coaster {
   templateUrl: './credits.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreditsComponent {
+export class CreditsComponent implements OnInit {
   searchQuery = signal('');
-  selectedFilter = signal('all');
+  showFilters = signal(false);
+  
+  selectedCountries = signal<string[]>([]);
+  selectedParks = signal<string[]>([]);
+  selectedTypes = signal<string[]>([]);
+  selectedManufacturers = signal<string[]>([]);
 
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
+  isLoading = signal(true);
   authService = inject(AuthService);
   router = inject(Router);
+
+  coasters = signal<Coaster[]>([]);
+
+  ngOnInit() {
+    this.fetchCoasters();
+  }
+
+  async fetchCoasters() {
+    this.isLoading.set(true);
+    try {
+      const response = await fetch('https://rc-manager-api.vercel.app/api/coasters');
+      const data = await response.json();
+      
+      const mappedCoasters: Coaster[] = data.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        park: c.park?.name || 'Desconocido',
+        country: c.park?.country || 'Desconocido',
+        type: c.model || 'N/A',
+        height: c.height ? `${c.height}m` : 'N/A',
+        speed: c.speed ? `${c.speed} km/h` : 'N/A',
+        length: c.length ? `${c.length}m` : 'N/A',
+        image: c.imageUrl || `https://images.unsplash.com/photo-1513413173474-29c9161a04d3?auto=format&fit=crop&q=80&w=800&q=80&id=${c.id}`,
+        manufacturer: c.manufacturer || 'Desconocido'
+      }));
+
+      this.coasters.set(mappedCoasters);
+    } catch (error) {
+      console.error('Error fetching coasters:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 
   handleAction(item: Coaster) {
     if (!this.authService.isAuthenticated()) {
@@ -44,106 +83,93 @@ export class CreditsComponent {
     }
   }
 
-  coasters = signal<Coaster[]>([
-    {
-      id: 1,
-      name: 'Shambhala',
-      park: 'PortAventura Park',
-      country: 'España',
-      type: 'Hyper Coaster',
-      height: '76m',
-      speed: '134 km/h',
-      length: '1,564m',
-      image: 'https://images.unsplash.com/photo-1773430647628-05fca7d2bd13?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Bolliger & Mabillard'
-    },
-    {
-      id: 2,
-      name: 'Steel Vengeance',
-      park: 'Cedar Point',
-      country: 'USA',
-      type: 'Hybrid Coaster',
-      height: '62m',
-      speed: '119 km/h',
-      length: '1,750m',
-      image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Rocky Mountain Construction'
-    },
-    {
-      id: 3,
-      name: 'Red Force',
-      park: 'Ferrari Land',
-      country: 'España',
-      type: 'Giga Coaster',
-      height: '112m',
-      speed: '180 km/h',
-      length: '880m',
-      image: 'https://images.unsplash.com/photo-1567201372773-7a1b5c67604d?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Intamin'
-    },
-    {
-      id: 4,
-      name: 'Taron',
-      park: 'Phantasialand',
-      country: 'Alemania',
-      type: 'Multi Launch',
-      height: '30m',
-      speed: '117 km/h',
-      length: '1,320m',
-      image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Intamin'
-    },
-    {
-      id: 5,
-      name: 'Fury 325',
-      park: 'Carowinds',
-      country: 'USA',
-      type: 'Giga Coaster',
-      height: '99m',
-      speed: '153 km/h',
-      length: '2,012m',
-      image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Bolliger & Mabillard'
-    },
-    {
-      id: 6,
-      name: 'The Ride to Happiness',
-      park: 'Plopsaland De Panne',
-      country: 'Bélgica',
-      type: 'Extreme Spinning',
-      height: '33m',
-      speed: '95 km/h',
-      length: '920m',
-      image: 'https://images.unsplash.com/photo-1628835788312-41d61f5ddce8?auto=format&fit=crop&q=80&w=800',
-      manufacturer: 'Mack Rides'
-    }
-  ]);
-
   filteredCoasters = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    const filter = this.selectedFilter();
+    const selCountries = this.selectedCountries();
+    const selParks = this.selectedParks();
+    const selTypes = this.selectedTypes();
+    const selManufacturers = this.selectedManufacturers();
 
     return this.coasters().filter(c => {
+      // 1. Search Query
       const matchesSearch = c.name.toLowerCase().includes(query) ||
         c.park.toLowerCase().includes(query) ||
-        c.country.toLowerCase().includes(query);
+        c.country.toLowerCase().includes(query) ||
+        c.manufacturer.toLowerCase().includes(query);
+      if (!matchesSearch) return false;
 
-      const matchesFilter = filter === 'all' || c.country === filter;
+      // 2. Multi-select Filters
+      if (selCountries.length > 0 && !selCountries.includes(c.country)) return false;
+      if (selParks.length > 0 && !selParks.includes(c.park)) return false;
+      if (selTypes.length > 0 && !selTypes.includes(c.type)) return false;
+      if (selManufacturers.length > 0 && !selManufacturers.includes(c.manufacturer)) return false;
 
-      return matchesSearch && matchesFilter;
+      return true;
     });
   });
 
   countries = computed(() => {
-    const allCountries = this.coasters().map(c => c.country);
-    return ['all', ...new Set(allCountries)];
+    const all = this.coasters().map(c => c.country);
+    return [...new Set(all)].sort();
+  });
+
+  parks = computed(() => {
+    const all = this.coasters().map(c => c.park);
+    return [...new Set(all)].sort();
+  });
+
+  types = computed(() => {
+    const all = this.coasters().map(c => c.type);
+    return [...new Set(all)].sort();
+  });
+
+  manufacturers = computed(() => {
+    const all = this.coasters().map(c => c.manufacturer);
+    return [...new Set(all)].sort();
   });
 
   updateSearch(query: string) {
     this.searchQuery.set(query);
   }
 
-  updateFilter(filter: string) {
-    this.selectedFilter.set(filter);
+  toggleCountry(name: string) {
+    this.selectedCountries.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  togglePark(name: string) {
+    this.selectedParks.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  toggleType(name: string) {
+    this.selectedTypes.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  toggleManufacturer(name: string) {
+    this.selectedManufacturers.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  clearAllFilters() {
+    this.selectedCountries.set([]);
+    this.selectedParks.set([]);
+    this.selectedTypes.set([]);
+    this.selectedManufacturers.set([]);
+    this.searchQuery.set('');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.showFilters()) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.filter-toggle-btn') && !target.closest('.filter-panel')) {
+      this.showFilters.set(false);
+    }
   }
 }

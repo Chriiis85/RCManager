@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,9 +10,9 @@ interface Attraction {
   park: string;
   country: string;
   type: string;
-  intensity: 'Baja' | 'Media' | 'Alta' | 'Extrema';
-  minHeight: string;
-  duration: string;
+  manufacturer: string;
+  openingYear: number;
+  status: string;
   image: string;
   description: string;
 }
@@ -24,14 +24,137 @@ interface Attraction {
   templateUrl: './attractions.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AttractionsComponent {
+export class AttractionsComponent implements OnInit {
   searchQuery = signal('');
-  selectedType = signal('all');
+  selectedCountries = signal<string[]>([]);
+  selectedTypes = signal<string[]>([]);
+  selectedManufacturers = signal<string[]>([]);
+  selectedParks = signal<string[]>([]);
+  
+  isLoading = signal(true);
+  showFilters = signal(false);
 
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
   authService = inject(AuthService);
   router = inject(Router);
+
+  attractions = signal<Attraction[]>([]);
+
+  ngOnInit() {
+    this.fetchAttractions();
+  }
+
+  private fetchAttractions() {
+    this.isLoading.set(true);
+    fetch('https://rc-manager-api.vercel.app/api/attractions')
+      .then(res => res.json())
+      .then(data => {
+        const mappedData: Attraction[] = data.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          park: a.park?.name || 'Desconocido',
+          country: a.park?.country || 'Desconocido',
+          type: this.mapType(a.type),
+          manufacturer: a.manufacturer || 'Desconocido',
+          openingYear: a.openingYear || 0,
+          status: this.mapStatus(a.status),
+          image: a.imageUrl || `https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800&id=${a.id}`,
+          description: `Disfruta de la emocionante atracción ${a.name} en ${a.park?.name}.`
+        }));
+        this.attractions.set(mappedData);
+        this.isLoading.set(false);
+      })
+      .catch(err => {
+        console.error('Error fetching attractions:', err);
+        this.isLoading.set(false);
+      });
+  }
+
+  private mapType(type: string): string {
+    const types: Record<string, string> = {
+      'WATER_RIDE': 'Acuática',
+      'FLAT_RIDE': 'Flat Ride',
+      'DARK_RIDE': 'Dark Ride',
+      'OTHER': 'Otros',
+      'ROLLER_COASTER': 'Montaña Rusa'
+    };
+    return types[type] || type;
+  }
+
+  private mapStatus(status: string): string {
+    const statuses: Record<string, string> = {
+      'OPERATING': 'Operativa',
+      'SBNO': 'Cerrada Temporalmente',
+      'REMOVED': 'Eliminada',
+      'CONSTRUCTION': 'En Construcción'
+    };
+    return statuses[status] || status;
+  }
+
+  filteredAttractions = computed(() => {
+    const query = this.searchQuery().toLowerCase();
+    const selCountries = this.selectedCountries();
+    const selTypes = this.selectedTypes();
+    const selManufacturers = this.selectedManufacturers();
+    const selParks = this.selectedParks();
+
+    return this.attractions().filter(a => {
+      const matchesSearch = a.name.toLowerCase().includes(query) || 
+                          a.park.toLowerCase().includes(query) ||
+                          a.country.toLowerCase().includes(query);
+      
+      if (!matchesSearch) return false;
+
+      if (selCountries.length > 0 && !selCountries.includes(a.country)) return false;
+      if (selTypes.length > 0 && !selTypes.includes(a.type)) return false;
+      if (selManufacturers.length > 0 && !selManufacturers.includes(a.manufacturer)) return false;
+      if (selParks.length > 0 && !selParks.includes(a.park)) return false;
+
+      return true;
+    });
+  });
+
+  countries = computed(() => [...new Set(this.attractions().map(a => a.country))].sort());
+  types = computed(() => [...new Set(this.attractions().map(a => a.type))].sort());
+  manufacturers = computed(() => [...new Set(this.attractions().map(a => a.manufacturer))].sort());
+  parks = computed(() => [...new Set(this.attractions().map(a => a.park))].sort());
+
+  updateSearch(query: string) {
+    this.searchQuery.set(query);
+  }
+
+  toggleCountry(name: string) {
+    this.selectedCountries.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  toggleType(name: string) {
+    this.selectedTypes.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  toggleManufacturer(name: string) {
+    this.selectedManufacturers.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  togglePark(name: string) {
+    this.selectedParks.update(list => 
+      list.includes(name) ? list.filter(i => i !== name) : [...list, name]
+    );
+  }
+
+  clearAllFilters() {
+    this.selectedCountries.set([]);
+    this.selectedTypes.set([]);
+    this.selectedManufacturers.set([]);
+    this.selectedParks.set([]);
+    this.searchQuery.set('');
+  }
 
   handleAction(item: Attraction) {
     if (!this.authService.isAuthenticated()) {
@@ -44,115 +167,12 @@ export class AttractionsComponent {
     }
   }
 
-  attractions = signal<Attraction[]>([
-    {
-      id: 1,
-      name: 'Tutuki Splash',
-      park: 'PortAventura Park',
-      country: 'España',
-      type: 'Acuática',
-      intensity: 'Media',
-      minHeight: '1.20m',
-      duration: '5:00 min',
-      image: 'https://images.unsplash.com/photo-1473216891040-2057398b1897?auto=format&fit=crop&q=80&w=800',
-      description: 'Un volcán en erupción y una caída refrescante en la Polinesia.'
-    },
-    {
-      id: 2,
-      name: 'Phantom Manor',
-      park: 'Disneyland Paris',
-      country: 'Francia',
-      type: 'Dark Ride',
-      intensity: 'Baja',
-      minHeight: 'Sin mín.',
-      duration: '7:00 min',
-      image: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=800',
-      description: 'Una mansión encantada llena de secretos y misterios del lejano oeste.'
-    },
-    {
-      id: 3,
-      name: 'Tower of Terror',
-      park: 'Disney\'s Hollywood Studios',
-      country: 'USA',
-      type: 'Caída Libre',
-      intensity: 'Alta',
-      minHeight: '1.02m',
-      duration: '4:00 min',
-      image: 'https://images.unsplash.com/photo-1565867226341-34084fb1a40d?auto=format&fit=crop&q=80&w=800',
-      description: 'Adéntrate en la Dimensión Desconocida en este hotel abandonado.'
-    },
-    {
-      id: 4,
-      name: 'Chiapas',
-      park: 'Phantasialand',
-      country: 'Alemania',
-      type: 'Acuática',
-      intensity: 'Media',
-      minHeight: '1.20m',
-      duration: '6:00 min',
-      image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800',
-      description: 'El log flume con la caída más inclinada del mundo.'
-    },
-    {
-      id: 5,
-      name: 'Hurakan Condor',
-      park: 'PortAventura Park',
-      country: 'España',
-      type: 'Caída Libre',
-      intensity: 'Extrema',
-      minHeight: '1.40m',
-      duration: '2:30 min',
-      image: 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800',
-      description: '100 metros de caída libre pura para los más valientes.'
-    },
-    {
-      id: 6,
-      name: 'Ratatouille: The Adventure',
-      park: 'Walt Disney Studios',
-      country: 'Francia',
-      type: '4D Experience',
-      intensity: 'Baja',
-      minHeight: 'Sin mín.',
-      duration: '5:00 min',
-      image: 'https://images.unsplash.com/photo-1707508465463-989ccfddbafa?auto=format&fit=crop&q=80&w=800',
-      description: 'Encoge al tamaño de Remy en esta aventura gastronómica 4D.'
-    }
-  ]);
-
-  filteredAttractions = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    const type = this.selectedType();
-    
-    return this.attractions().filter(a => {
-      const matchesSearch = a.name.toLowerCase().includes(query) || 
-                          a.park.toLowerCase().includes(query) ||
-                          a.country.toLowerCase().includes(query);
-      
-      const matchesType = type === 'all' || a.type === type;
-      
-      return matchesSearch && matchesType;
-    });
-  });
-
-  types = computed(() => {
-    const allTypes = this.attractions().map(a => a.type);
-    return ['all', ...new Set(allTypes)];
-  });
-
-  updateSearch(query: string) {
-    this.searchQuery.set(query);
-  }
-
-  updateType(type: string) {
-    this.selectedType.set(type);
-  }
-
-  getIntensityClass(intensity: Attraction['intensity']) {
-    switch (intensity) {
-      case 'Baja': return 'bg-blue-100 text-blue-700 ring-blue-700/10';
-      case 'Media': return 'bg-yellow-100 text-yellow-700 ring-yellow-700/10';
-      case 'Alta': return 'bg-orange-100 text-orange-700 ring-orange-700/10';
-      case 'Extrema': return 'bg-red-100 text-red-700 ring-red-700/10';
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.showFilters()) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.filter-toggle-btn') && !target.closest('.filter-panel')) {
+      this.showFilters.set(false);
     }
   }
 }

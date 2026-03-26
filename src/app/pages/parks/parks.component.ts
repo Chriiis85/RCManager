@@ -304,9 +304,9 @@ export class ParksComponent implements OnInit {
           const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
           if (!selStatuses.includes(pStatus)) return false;
         } else {
-           // Si no hay filtro de estado, por defecto mostramos solo los que tienen hoy data (comportamiento actual)
-           // unless the user adds "Sin Datos"
-           if (!p.hasTodayData && selStatuses.length === 0) return false;
+          // Si no hay filtro de estado, por defecto mostramos solo los que tienen hoy data (comportamiento actual)
+          // unless the user adds "Sin Datos"
+          if (!p.hasTodayData && selStatuses.length === 0) return false;
         }
 
         // 4. Filtro de Afluencia
@@ -342,7 +342,7 @@ export class ParksComponent implements OnInit {
         const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
         if (!selStatuses.includes(pStatus)) return false;
       } else {
-         if (!p.hasTodayData) return false;
+        if (!p.hasTodayData) return false;
       }
       if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
       return true;
@@ -366,22 +366,22 @@ export class ParksComponent implements OnInit {
   }
 
   toggleCountry(country: string) {
-    this.selectedCountries.update(list => 
-      list.includes(country) ? list.filter(c => c !== country) : [...list, country]
+    this.selectedCountries.update((list) =>
+      list.includes(country) ? list.filter((c) => c !== country) : [...list, country],
     );
     this.visibleParksLimit.set(15);
   }
 
   toggleStatus(status: string) {
-    this.selectedStatuses.update(list => 
-      list.includes(status) ? list.filter(s => s !== status) : [...list, status]
+    this.selectedStatuses.update((list) =>
+      list.includes(status) ? list.filter((s) => s !== status) : [...list, status],
     );
     this.visibleParksLimit.set(15);
   }
 
   toggleCrowd(crowd: string) {
-    this.selectedCrowds.update(list => 
-      list.includes(crowd) ? list.filter(c => c !== crowd) : [...list, crowd]
+    this.selectedCrowds.update((list) =>
+      list.includes(crowd) ? list.filter((c) => c !== crowd) : [...list, crowd],
     );
     this.visibleParksLimit.set(15);
   }
