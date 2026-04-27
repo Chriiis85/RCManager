@@ -41,6 +41,16 @@ export class CreditsComponent implements OnInit {
 
   coasters = signal<Coaster[]>([]);
 
+  visibleCount = signal(20);
+
+  visibleCoasters = computed(() => {
+    return this.filteredCoasters().slice(0, this.visibleCount());
+  });
+
+  loadMore() {
+    this.visibleCount.update(c => c + 20);
+  }
+
   ngOnInit() {
     this.fetchCoasters();
   }
@@ -130,30 +140,35 @@ export class CreditsComponent implements OnInit {
 
   updateSearch(query: string) {
     this.searchQuery.set(query);
+    this.visibleCount.set(20);
   }
 
   toggleCountry(name: string) {
     this.selectedCountries.update(list => 
       list.includes(name) ? list.filter(i => i !== name) : [...list, name]
     );
+    this.visibleCount.set(20);
   }
 
   togglePark(name: string) {
     this.selectedParks.update(list => 
       list.includes(name) ? list.filter(i => i !== name) : [...list, name]
     );
+    this.visibleCount.set(20);
   }
 
   toggleType(name: string) {
     this.selectedTypes.update(list => 
       list.includes(name) ? list.filter(i => i !== name) : [...list, name]
     );
+    this.visibleCount.set(20);
   }
 
   toggleManufacturer(name: string) {
     this.selectedManufacturers.update(list => 
       list.includes(name) ? list.filter(i => i !== name) : [...list, name]
     );
+    this.visibleCount.set(20);
   }
 
   clearAllFilters() {
@@ -162,6 +177,7 @@ export class CreditsComponent implements OnInit {
     this.selectedTypes.set([]);
     this.selectedManufacturers.set([]);
     this.searchQuery.set('');
+    this.visibleCount.set(20);
   }
 
   @HostListener('document:click', ['$event'])
@@ -171,5 +187,16 @@ export class CreditsComponent implements OnInit {
     if (!target.closest('.filter-toggle-btn') && !target.closest('.filter-panel')) {
       this.showFilters.set(false);
     }
+  }
+
+  showScrollTop = signal(false);
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollTop.set(window.scrollY > 400);
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

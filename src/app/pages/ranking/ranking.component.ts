@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -132,5 +132,16 @@ export class RankingComponent {
     
     // Del 11 en adelante se quedan igual al tamaño más pequeño del top 10
     return 0.72;
+  }
+
+  showScrollTop = signal(false);
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollTop.set(window.scrollY > 400);
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

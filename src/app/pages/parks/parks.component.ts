@@ -407,4 +407,15 @@ export class ParksComponent implements OnInit {
       this.showFilters.set(false);
     }
   }
+
+  showScrollTop = signal(false);
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollTop.set(window.scrollY > 400);
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
