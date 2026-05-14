@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+// Protege rutas que requieren autenticación
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -10,10 +11,10 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Si no está autenticado, llévalo a login
-  return router.navigate(['/']);
+  return router.navigate(['/login']);
 };
 
+// Protege rutas de login/registro (redirige si ya estás autenticado)
 export const unAuthGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -22,6 +23,5 @@ export const unAuthGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Si ya está autenticado, no tiene sentido que entre en Login o Registro
   return router.navigate(['/profile']);
 };

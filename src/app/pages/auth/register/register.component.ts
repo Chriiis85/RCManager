@@ -19,7 +19,10 @@ export class RegisterComponent {
 
   showPassword = signal(false);
   showConfirmPassword = signal(false);
-  
+  isSubmitted = signal(false);
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+
   registerForm = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -27,12 +30,8 @@ export class RegisterComponent {
     confirmPassword: ['', [Validators.required]]
   }, { validators: this.passwordMatchValidator });
 
-  // Automatically track password control changes via signals to update the UI reactively
+  // Track password value reactively for strength indicator
   passwordValue = toSignal(this.registerForm.get('password')!.valueChanges, { initialValue: '' });
-
-  isSubmitted = signal(false);
-
-  constructor() {}
 
   get username() { return this.registerForm.get('username'); }
   get email() { return this.registerForm.get('email'); }
@@ -86,12 +85,25 @@ export class RegisterComponent {
 
   onSubmit() {
     this.isSubmitted.set(true);
-    if (this.registerForm.valid) {
-      const email = this.registerForm.get('email')?.value;
-      if (email) {
-        this.authService.login(email);
-        this.router.navigate(['/viajes']);
+    this.errorMessage.set(null);
+
+    if (this.registerForm.invalid) return;
+
+    const { username, email, password } = this.registerForm.value;
+    if (!username || !email || !password) return;
+
+    this.isLoading.set(true);
+
+    this.authService.register({ username, email, password }).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/profile']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const msg = err?.error?.error || 'Error al registrarse. Inténtalo de nuevo.';
+        this.errorMessage.set(msg);
       }
-    }
+    });
   }
 }

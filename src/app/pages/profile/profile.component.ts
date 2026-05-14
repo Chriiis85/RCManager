@@ -35,12 +35,15 @@ interface TripSummary {
 export class ProfileComponent {
   authService = inject(AuthService);
   
+  // Datos del usuario autenticado (desde el servicio real)
+  private get _user() { return this.authService.currentUser(); }
+
   userInfo = signal<UserInfo>({
-    username: this.authService.currentUser() || 'UsuarioAventurero',
-    firstName: 'Kriz',
-    lastName: 'Martinez',
-    email: 'kriz.martinez@example.com',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'
+    username: this._user?.username || 'UsuarioAventurero',
+    firstName: '',
+    lastName: '',
+    email: this._user?.email || '',
+    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this._user?.username || 'User')}&background=1D4ED8&color=fff&size=200`
   });
 
   stats = signal({

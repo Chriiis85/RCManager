@@ -17,15 +17,14 @@ export class LoginComponent {
   private router = inject(Router);
 
   showPassword = signal(false);
-  
+  isSubmitted = signal(false);
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
-
-  isSubmitted = signal(false);
-
-  constructor() {}
 
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
@@ -36,12 +35,23 @@ export class LoginComponent {
 
   onSubmit() {
     this.isSubmitted.set(true);
-    if (this.loginForm.valid) {
-      const { email } = this.loginForm.value;
-      if (email) {
-        this.authService.login(email);
-        this.router.navigate(['/viajes']);
+    this.errorMessage.set(null);
+
+    if (this.loginForm.invalid) return;
+
+    const { email, password } = this.loginForm.getRawValue();
+    this.isLoading.set(true);
+
+    this.authService.login({ email, password }).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/profile']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const msg = err?.error?.error || 'Error al iniciar sesión. Inténtalo de nuevo.';
+        this.errorMessage.set(msg);
       }
-    }
+    });
   }
 }

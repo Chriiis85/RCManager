@@ -133,8 +133,28 @@
         </div>
 
         <div>
-          <button type="submit" class="group relative flex w-full justify-center rounded-xl bg-blue-600 px-3 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300">
-            Registrarse
+          <!-- API Error Message -->
+          @if (errorMessage()) {
+            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in-up" style="animation-duration: 0.3s;">
+              <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+            </div>
+          }
+          <button
+            type="submit"
+            [disabled]="isLoading()"
+            class="group relative flex w-full justify-center rounded-xl bg-blue-600 px-3 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            @if (isLoading()) {
+              <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Creando cuenta...
+            } @else {
+              Registrarse
+            }
             <div class="absolute inset-0 rounded-xl ring-2 ring-white/20 group-hover:ring-white/40 transition-all pointer-events-none"></div>
           </button>
         </div>
