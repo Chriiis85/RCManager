@@ -8,6 +8,8 @@ import { AttractionsComponent } from './pages/attractions/attractions.component'
 import { ParksComponent } from './pages/parks/parks.component';
 import { RankingComponent } from './pages/ranking/ranking.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { MisCreditsComponent } from './pages/mis-credits/mis-credits.component';
+import { MisAtraccionesComponent } from './pages/mis-atracciones/mis-atracciones.component';
 import { authGuard, unAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -19,5 +21,7 @@ export const routes: Routes = [
   { path: 'atracciones', component: AttractionsComponent },
   { path: 'parques', component: ParksComponent },
   { path: 'ranking', component: RankingComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] }
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'mis-credits', component: MisCreditsComponent, canActivate: [authGuard] },
+  { path: 'mis-atracciones', component: MisAtraccionesComponent, canActivate: [authGuard] }
 ];

@@ -57,6 +57,10 @@ export class RecordsService {
     return this.http.delete(`${API_BASE}/credits/${coasterId}`, this.opts());
   }
 
+  updateCreditCount(creditId: number, count: number): Observable<CoasterCredit> {
+    return this.http.patch<CoasterCredit>(`${API_BASE}/credits/${creditId}`, { rating: count }, this.opts());
+  }
+
   // ── ATTRACTION RECORDS ───────────────────────────────────────────────────────
 
   getAttractions(): Observable<AttractionRecord[]> {
@@ -69,6 +73,10 @@ export class RecordsService {
 
   removeAttraction(attractionId: number): Observable<any> {
     return this.http.delete(`${API_BASE}/attractions/${attractionId}`, this.opts());
+  }
+
+  updateAttractionCount(attractionId: number, count: number): Observable<AttractionRecord> {
+    return this.http.patch<AttractionRecord>(`${API_BASE}/attractions/${attractionId}`, { rating: count }, this.opts());
   }
 
   // ── PARK VISITS ──────────────────────────────────────────────────────────────

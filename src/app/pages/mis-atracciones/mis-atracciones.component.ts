@@ -1,0 +1,104 @@
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RecordsService, AttractionRecord } from '../../core/services/records.service';
+import { AuthService } from '../../core/services/auth.service';
+
+@Component({
+  selector: 'app-mis-atracciones',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './mis-atracciones.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MisAtraccionesComponent implements OnInit {
+  recordsService = inject(RecordsService);
+  authService = inject(AuthService);
+  router = inject(Router);
+
+  attractions = signal<AttractionRecord[]>([]);
+  isLoading = signal(true);
+  searchQuery = signal('');
+
+  // Modal states
+  showDeleteModal = signal(false);
+  showCountModal = signal(false);
+  selectedAttraction = signal<AttractionRecord | null>(null);
+  rideCount = signal(1);
+  isSubmitting = signal(false);
+
+  filteredAttractions = computed(() => {
+    const q = this.searchQuery().toLowerCase();
+    if (!q) return this.attractions();
+    return this.attractions().filter(a =>
+      (a.attraction?.name || '').toLowerCase().includes(q) ||
+      (a.attraction?.park?.name || '').toLowerCase().includes(q)
+    );
+  });
+
+  ngOnInit() {
+    this.loadAttractions();
+  }
+
+  loadAttractions() {
+    this.isLoading.set(true);
+    this.recordsService.getAttractions().subscribe({
+      next: (data) => {
+        this.attractions.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  openDeleteModal(attraction: AttractionRecord) {
+    this.selectedAttraction.set(attraction);
+    this.showDeleteModal.set(true);
+  }
+
+  confirmDelete() {
+    const attraction = this.selectedAttraction();
+    if (!attraction) return;
+    this.isSubmitting.set(true);
+
+    const idToDelete = attraction.attraction?.apiId || attraction.attractionId;
+    this.recordsService.removeAttraction(idToDelete).subscribe({
+      next: () => {
+        this.attractions.update(list => list.filter(a => a.id !== attraction.id));
+        this.showDeleteModal.set(false);
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  openCountModal(attraction: AttractionRecord) {
+    this.selectedAttraction.set(attraction);
+    this.rideCount.set(attraction.rating || 1);
+    this.showCountModal.set(true);
+  }
+
+  saveCount() {
+    const attraction = this.selectedAttraction();
+    if (!attraction) return;
+    this.isSubmitting.set(true);
+
+    this.recordsService.updateAttractionCount(attraction.id, this.rideCount()).subscribe({
+      next: (updated) => {
+        this.attractions.update(list => list.map(a => a.id === attraction.id ? { ...a, rating: updated.rating } : a));
+        this.showCountModal.set(false);
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  incrementCount() {
+    this.rideCount.update(v => v + 1);
+  }
+
+  decrementCount() {
+    this.rideCount.update(v => Math.max(1, v - 1));
+  }
+}
