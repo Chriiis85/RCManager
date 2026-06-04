@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { RecordsService } from '../../core/services/records.service';
 
 interface Attraction {
   id: number;
@@ -37,9 +38,11 @@ export class AttractionsComponent implements OnInit {
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
   authService = inject(AuthService);
+  recordsService = inject(RecordsService);
   router = inject(Router);
 
   attractions = signal<Attraction[]>([]);
+  userAttractions = signal<Set<number>>(new Set());
 
   visibleCount = signal(20);
 
@@ -53,6 +56,19 @@ export class AttractionsComponent implements OnInit {
 
   ngOnInit() {
     this.fetchAttractions();
+    if (this.authService.isAuthenticated()) {
+      this.fetchUserAttractions();
+    }
+  }
+
+  fetchUserAttractions() {
+    this.recordsService.getAttractions().subscribe({
+      next: (records) => {
+        const ids = new Set(records.map(r => r.attractionId));
+        this.userAttractions.set(ids);
+      },
+      error: (err) => console.error('Error fetching user attractions:', err)
+    });
   }
 
   private fetchAttractions() {
@@ -175,11 +191,35 @@ export class AttractionsComponent implements OnInit {
   handleAction(item: Attraction) {
     if (!this.authService.isAuthenticated()) {
       this.showLoginPromptModal.set(true);
+      return;
+    }
+
+    const hasRecord = this.userAttractions().has(item.id);
+
+    if (hasRecord) {
+      this.recordsService.removeAttraction(item.id).subscribe({
+        next: () => {
+          this.userAttractions.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(item.id);
+            return newSet;
+          });
+        },
+        error: (err) => console.error('Error al eliminar atracción', err)
+      });
     } else {
-      this.showSuccessModal.set(true);
-      setTimeout(() => {
-        this.showSuccessModal.set(false);
-      }, 3000);
+      this.recordsService.addAttraction(item.id).subscribe({
+        next: () => {
+          this.userAttractions.update(set => {
+            const newSet = new Set(set);
+            newSet.add(item.id);
+            return newSet;
+          });
+          this.showSuccessModal.set(true);
+          setTimeout(() => this.showSuccessModal.set(false), 3000);
+        },
+        error: (err) => console.error('Error al añadir atracción', err)
+      });
     }
   }
 

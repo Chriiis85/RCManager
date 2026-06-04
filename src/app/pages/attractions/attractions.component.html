@@ -260,11 +260,28 @@
 
                 <!-- Action -->
                 <div class="mt-6">
-                  <button (click)="handleAction(item)" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-900 py-3 text-[11px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg active:scale-95 group/btn">
-                    <svg class="h-4 w-4 transition-transform group-hover/btn:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Registrar Visita
+                  <button 
+                    (click)="handleAction(item)"
+                    [ngClass]="userAttractions().has(item.id) 
+                      ? 'bg-emerald-500 hover:bg-red-500 text-white' 
+                      : 'bg-slate-900 hover:bg-slate-800 text-white'"
+                    class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-2xl py-3 text-[11px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 group/btn"
+                  >
+                    @if (userAttractions().has(item.id)) {
+                      <svg class="h-4 w-4 group-hover/btn:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <svg class="h-4 w-4 hidden group-hover/btn:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                      </svg>
+                      <span class="group-hover/btn:hidden">Visitada</span>
+                      <span class="hidden group-hover/btn:block">Eliminar registro</span>
+                    } @else {
+                      <svg class="h-4 w-4 transition-transform group-hover/btn:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Registrar Visita
+                    }
                   </button>
                 </div>
               </div>
