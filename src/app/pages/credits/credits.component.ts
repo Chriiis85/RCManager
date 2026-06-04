@@ -64,7 +64,12 @@ export class CreditsComponent implements OnInit {
   async fetchUserCredits() {
     this.recordsService.getCredits().subscribe({
       next: (credits) => {
-        const creditIds = new Set(credits.map(c => c.coasterId));
+        // Store both the local DB id and the apiId so we can match external IDs
+        const creditIds = new Set<number>();
+        credits.forEach(c => {
+          creditIds.add(c.coasterId);
+          if (c.coaster?.apiId) creditIds.add(c.coaster.apiId);
+        });
         this.userCredits.set(creditIds);
       },
       error: (err) => console.error('Error fetching user credits:', err)
@@ -118,7 +123,12 @@ export class CreditsComponent implements OnInit {
         error: (err) => console.error('Error al eliminar credit', err)
       });
     } else {
-      this.recordsService.addCredit(item.id).subscribe({
+      this.recordsService.addCredit(item.id, undefined, undefined, undefined, {
+          name: item.name,
+          park: item.park,
+          country: item.country,
+          manufacturer: item.manufacturer
+        }).subscribe({
         next: () => {
           this.userCredits.update(set => {
             const newSet = new Set(set);

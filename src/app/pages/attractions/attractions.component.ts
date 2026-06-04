@@ -64,7 +64,11 @@ export class AttractionsComponent implements OnInit {
   fetchUserAttractions() {
     this.recordsService.getAttractions().subscribe({
       next: (records) => {
-        const ids = new Set(records.map(r => r.attractionId));
+        const ids = new Set<number>();
+        records.forEach(r => {
+          ids.add(r.attractionId);
+          if (r.attraction?.apiId) ids.add(r.attraction.apiId);
+        });
         this.userAttractions.set(ids);
       },
       error: (err) => console.error('Error fetching user attractions:', err)
@@ -208,7 +212,12 @@ export class AttractionsComponent implements OnInit {
         error: (err) => console.error('Error al eliminar atracción', err)
       });
     } else {
-      this.recordsService.addAttraction(item.id).subscribe({
+      this.recordsService.addAttraction(item.id, undefined, undefined, {
+          name: item.name,
+          park: item.park,
+          country: item.country,
+          manufacturer: item.manufacturer
+        }).subscribe({
         next: () => {
           this.userAttractions.update(set => {
             const newSet = new Set(set);
