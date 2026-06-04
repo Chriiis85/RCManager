@@ -28,7 +28,7 @@ export interface RegisterPayload {
   password: string;
 }
 
-const API_BASE = 'https://rcmanagerapi.vercel.app/api/auth';
+const API_BASE = 'https://rc-manager-api.vercel.app/api/auth';
 const TOKEN_KEY = 'rcm_token';
 const USER_KEY = 'rcm_user';
 
