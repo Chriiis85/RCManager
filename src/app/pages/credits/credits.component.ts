@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { RecordsService } from '../../core/services/records.service';
 
 interface Coaster {
   id: number;
@@ -37,9 +38,11 @@ export class CreditsComponent implements OnInit {
   showLoginPromptModal = signal(false);
   isLoading = signal(true);
   authService = inject(AuthService);
+  recordsService = inject(RecordsService);
   router = inject(Router);
 
   coasters = signal<Coaster[]>([]);
+  userCredits = signal<Set<number>>(new Set());
 
   visibleCount = signal(20);
 
@@ -53,6 +56,19 @@ export class CreditsComponent implements OnInit {
 
   ngOnInit() {
     this.fetchCoasters();
+    if (this.authService.isAuthenticated()) {
+      this.fetchUserCredits();
+    }
+  }
+
+  async fetchUserCredits() {
+    this.recordsService.getCredits().subscribe({
+      next: (credits) => {
+        const creditIds = new Set(credits.map(c => c.coasterId));
+        this.userCredits.set(creditIds);
+      },
+      error: (err) => console.error('Error fetching user credits:', err)
+    });
   }
 
   async fetchCoasters() {
@@ -85,11 +101,37 @@ export class CreditsComponent implements OnInit {
   handleAction(item: Coaster) {
     if (!this.authService.isAuthenticated()) {
       this.showLoginPromptModal.set(true);
+      return;
+    }
+
+    const hasCredit = this.userCredits().has(item.id);
+
+    if (hasCredit) {
+      this.recordsService.removeCredit(item.id).subscribe({
+        next: () => {
+          this.userCredits.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(item.id);
+            return newSet;
+          });
+        },
+        error: (err) => console.error('Error al eliminar credit', err)
+      });
     } else {
-      this.showSuccessModal.set(true);
-      setTimeout(() => {
-        this.showSuccessModal.set(false);
-      }, 3000);
+      this.recordsService.addCredit(item.id).subscribe({
+        next: () => {
+          this.userCredits.update(set => {
+            const newSet = new Set(set);
+            newSet.add(item.id);
+            return newSet;
+          });
+          this.showSuccessModal.set(true);
+          setTimeout(() => {
+            this.showSuccessModal.set(false);
+          }, 3000);
+        },
+        error: (err) => console.error('Error al añadir credit', err)
+      });
     }
   }
 
