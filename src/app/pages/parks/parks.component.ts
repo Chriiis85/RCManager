@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { RecordsService } from '../../core/services/records.service';
 
 interface ThemePark {
   id: number;
@@ -50,7 +51,9 @@ export class ParksComponent implements OnInit {
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
   authService = inject(AuthService);
+  recordsService = inject(RecordsService);
   router = inject(Router);
+  userParks = signal<Set<number>>(new Set());
 
   // Estados para el detalle del parque
   selectedPark = signal<ThemePark | null>(null);
@@ -103,6 +106,9 @@ export class ParksComponent implements OnInit {
   });
 
   ngOnInit() {
+    if (this.authService.isAuthenticated()) {
+      this.fetchUserParks();
+    }
     // 1. Petición para conseguir todos los parques
     fetch('/queue-times-api/parks.json', {
       method: 'GET',
@@ -268,14 +274,48 @@ export class ParksComponent implements OnInit {
     }
   }
 
+  fetchUserParks() {
+    this.recordsService.getParks().subscribe({
+      next: (visits) => {
+        const ids = new Set(visits.map(v => v.parkId));
+        this.userParks.set(ids);
+      },
+      error: (err) => console.error('Error fetching user parks:', err)
+    });
+  }
+
   handleAction(item: ThemePark) {
     if (!this.authService.isAuthenticated()) {
       this.showLoginPromptModal.set(true);
+      return;
+    }
+
+    const hasVisit = this.userParks().has(item.id);
+
+    if (hasVisit) {
+      this.recordsService.removePark(item.id).subscribe({
+        next: () => {
+          this.userParks.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(item.id);
+            return newSet;
+          });
+        },
+        error: (err) => console.error('Error al eliminar parque', err)
+      });
     } else {
-      this.showSuccessModal.set(true);
-      setTimeout(() => {
-        this.showSuccessModal.set(false);
-      }, 3000);
+      this.recordsService.addPark(item.id).subscribe({
+        next: () => {
+          this.userParks.update(set => {
+            const newSet = new Set(set);
+            newSet.add(item.id);
+            return newSet;
+          });
+          this.showSuccessModal.set(true);
+          setTimeout(() => this.showSuccessModal.set(false), 3000);
+        },
+        error: (err) => console.error('Error al añadir parque', err)
+      });
     }
   }
 

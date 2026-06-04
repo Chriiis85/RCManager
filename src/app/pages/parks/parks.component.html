@@ -277,11 +277,28 @@
 
                 <!-- Action button -->
                 <div class="mt-auto">
-                  <button (click)="handleAction(park)" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition-all shadow-md active:scale-95">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Registrar Visita
+                  <button 
+                    (click)="handleAction(park)"
+                    [ngClass]="userParks().has(park.id) 
+                      ? 'bg-emerald-500 hover:bg-red-500 text-white' 
+                      : 'bg-slate-900 hover:bg-slate-800 text-white'"
+                    class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all shadow-md active:scale-95 group/btn"
+                  >
+                    @if (userParks().has(park.id)) {
+                      <svg class="h-4 w-4 group-hover/btn:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <svg class="h-4 w-4 hidden group-hover/btn:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                      </svg>
+                      <span class="group-hover/btn:hidden">Visitado</span>
+                      <span class="hidden group-hover/btn:block">Eliminar visita</span>
+                    } @else {
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Registrar Visita
+                    }
                   </button>
                 </div>
               </div>
