@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { RecordsService } from '../../core/services/records.service';
 
 interface UserInfo {
   username: string;
@@ -32,8 +33,9 @@ interface TripSummary {
   templateUrl: './profile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
+  recordsService = inject(RecordsService);
   
   // Datos del usuario autenticado (desde el servicio real)
   private get _user() { return this.authService.currentUser(); }
@@ -47,10 +49,26 @@ export class ProfileComponent {
   });
 
   stats = signal({
-    credits: 42,
-    parks: 12,
-    attractions: 156
+    credits: 0,
+    parks: 0,
+    attractions: 0
   });
+
+  ngOnInit() {
+    this.loadStats();
+  }
+
+  loadStats() {
+    this.recordsService.getCredits().subscribe(credits => {
+      this.stats.update(s => ({ ...s, credits: credits.length }));
+    });
+    this.recordsService.getAttractions().subscribe(attractions => {
+      this.stats.update(s => ({ ...s, attractions: attractions.length }));
+    });
+    this.recordsService.getParks().subscribe(parks => {
+      this.stats.update(s => ({ ...s, parks: parks.length }));
+    });
+  }
 
   friends = signal<Friend[]>([
     { id: 1, username: 'RollerFan99', avatar: 'https://ui-avatars.com/api/?name=Roller+Fan&background=0D1B3E&color=fff' },
