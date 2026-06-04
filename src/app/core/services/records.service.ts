@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
@@ -12,7 +12,7 @@ export interface CoasterCredit {
   rideDate: string | null;
   rating: number | null;
   review: string | null;
-  coaster?: any; // Añadido para acceder a los datos de la montaña rusa
+  coaster?: any;
 }
 
 export interface AttractionRecord {
@@ -39,52 +39,49 @@ export class RecordsService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+  private opts() {
+    return { headers: this.authService.getAuthHeaders() };
   }
 
   // ── COASTER CREDITS ────────────────────────────────────────────────────────
 
   getCredits(): Observable<CoasterCredit[]> {
-    return this.http.get<CoasterCredit[]>(`${API_BASE}/credits`, { headers: this.getHeaders() });
+    return this.http.get<CoasterCredit[]>(`${API_BASE}/credits`, this.opts());
   }
 
   addCredit(coasterId: number, rideDate?: Date, rating?: number, review?: string): Observable<CoasterCredit> {
-    return this.http.post<CoasterCredit>(`${API_BASE}/credits`, { coasterId, rideDate, rating, review }, { headers: this.getHeaders() });
+    return this.http.post<CoasterCredit>(`${API_BASE}/credits`, { coasterId, rideDate, rating, review }, this.opts());
   }
 
   removeCredit(coasterId: number): Observable<any> {
-    return this.http.delete(`${API_BASE}/credits/${coasterId}`, { headers: this.getHeaders() });
+    return this.http.delete(`${API_BASE}/credits/${coasterId}`, this.opts());
   }
 
   // ── ATTRACTION RECORDS ───────────────────────────────────────────────────────
 
   getAttractions(): Observable<AttractionRecord[]> {
-    return this.http.get<AttractionRecord[]>(`${API_BASE}/attractions`, { headers: this.getHeaders() });
+    return this.http.get<AttractionRecord[]>(`${API_BASE}/attractions`, this.opts());
   }
 
   addAttraction(attractionId: number, rideDate?: Date, rating?: number): Observable<AttractionRecord> {
-    return this.http.post<AttractionRecord>(`${API_BASE}/attractions`, { attractionId, rideDate, rating }, { headers: this.getHeaders() });
+    return this.http.post<AttractionRecord>(`${API_BASE}/attractions`, { attractionId, rideDate, rating }, this.opts());
   }
 
   removeAttraction(attractionId: number): Observable<any> {
-    return this.http.delete(`${API_BASE}/attractions/${attractionId}`, { headers: this.getHeaders() });
+    return this.http.delete(`${API_BASE}/attractions/${attractionId}`, this.opts());
   }
 
   // ── PARK VISITS ──────────────────────────────────────────────────────────────
 
   getParks(): Observable<ParkVisit[]> {
-    return this.http.get<ParkVisit[]>(`${API_BASE}/parks`, { headers: this.getHeaders() });
+    return this.http.get<ParkVisit[]>(`${API_BASE}/parks`, this.opts());
   }
 
   addPark(parkId: number, visitDate?: Date): Observable<ParkVisit> {
-    return this.http.post<ParkVisit>(`${API_BASE}/parks`, { parkId, visitDate }, { headers: this.getHeaders() });
+    return this.http.post<ParkVisit>(`${API_BASE}/parks`, { parkId, visitDate }, this.opts());
   }
 
   removePark(parkId: number): Observable<any> {
-    return this.http.delete(`${API_BASE}/parks/${parkId}`, { headers: this.getHeaders() });
+    return this.http.delete(`${API_BASE}/parks/${parkId}`, this.opts());
   }
 }
