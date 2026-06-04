@@ -277,7 +277,7 @@ export class ParksComponent implements OnInit {
   fetchUserParks() {
     this.recordsService.getParks().subscribe({
       next: (visits) => {
-        const ids = new Set(visits.map(v => v.parkId));
+        const ids = new Set(visits.map(v => v.park?.apiId || v.parkId));
         this.userParks.set(ids);
       },
       error: (err) => console.error('Error fetching user parks:', err)
@@ -304,7 +304,7 @@ export class ParksComponent implements OnInit {
         error: (err) => console.error('Error al eliminar parque', err)
       });
     } else {
-      this.recordsService.addPark(item.id).subscribe({
+      this.recordsService.addPark(item.id, undefined, { name: item.name, country: item.country }).subscribe({
         next: () => {
           this.userParks.update(set => {
             const newSet = new Set(set);
