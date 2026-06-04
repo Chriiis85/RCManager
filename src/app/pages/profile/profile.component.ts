@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { RecordsService } from '../../core/services/records.service';
+import { RecordsService, CoasterCredit, AttractionRecord, ParkVisit } from '../../core/services/records.service';
 
 interface UserInfo {
   username: string;
@@ -37,7 +37,6 @@ export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
   
-  // Datos del usuario autenticado (desde el servicio real)
   private get _user() { return this.authService.currentUser(); }
 
   userInfo = signal<UserInfo>({
@@ -48,11 +47,12 @@ export class ProfileComponent implements OnInit {
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this._user?.username || 'User')}&background=1D4ED8&color=fff&size=200`
   });
 
-  stats = signal({
-    credits: 0,
-    parks: 0,
-    attractions: 0
-  });
+  stats = signal({ credits: 0, parks: 0, attractions: 0 });
+
+  // Listas completas de registros reales
+  creditsList = signal<CoasterCredit[]>([]);
+  attractionsList = signal<AttractionRecord[]>([]);
+  parksList = signal<ParkVisit[]>([]);
 
   ngOnInit() {
     this.loadStats();
@@ -60,12 +60,15 @@ export class ProfileComponent implements OnInit {
 
   loadStats() {
     this.recordsService.getCredits().subscribe(credits => {
+      this.creditsList.set(credits);
       this.stats.update(s => ({ ...s, credits: credits.length }));
     });
     this.recordsService.getAttractions().subscribe(attractions => {
+      this.attractionsList.set(attractions);
       this.stats.update(s => ({ ...s, attractions: attractions.length }));
     });
     this.recordsService.getParks().subscribe(parks => {
+      this.parksList.set(parks);
       this.stats.update(s => ({ ...s, parks: parks.length }));
     });
   }

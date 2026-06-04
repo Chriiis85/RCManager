@@ -114,45 +114,98 @@
            </div>
         </div>
 
-        <!-- Upcoming Trips -->
+        <!-- Mis Credits (Montañas Rusas) -->
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900">Próximos Viajes</h3>
-            <a routerLink="/viajes" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">Ver pestaña viajes</a>
+            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <span class="text-2xl">🎢</span> Mis Credits
+            </h3>
+            <a routerLink="/credits" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">Explorar más</a>
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for (trip of upcomingTrips(); track trip.id) {
-               <div class="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm group">
-                  <img [src]="trip.image" class="w-16 h-16 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform duration-300">
-                  <div>
-                    <h4 class="font-bold text-slate-900 mx-1 line-clamp-1 group-hover:text-blue-600 transition-colors text-base">{{ trip.parkName }}</h4>
-                    <p class="text-sm font-medium text-slate-500 mt-1 flex items-center gap-1 mx-1">
-                      <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                      {{ trip.date }}
-                    </p>
+          @if (creditsList().length === 0) {
+            <div class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <p class="text-slate-400 font-bold text-sm">Aún no has añadido ningún credit.</p>
+              <a routerLink="/credits" class="inline-block mt-3 text-sm font-bold text-blue-600 hover:underline">¡Añade tu primera montaña rusa!</a>
+            </div>
+          } @else {
+            <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+              @for (item of creditsList(); track item.id) {
+                <div class="flex items-center gap-4 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
+                  <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 font-black text-sm">
+                    🎢
                   </div>
-               </div>
-            }
-          </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-900 text-sm truncate">{{ item.coaster?.name || 'Montaña Rusa #' + item.coasterId }}</p>
+                    <p class="text-xs text-slate-400 truncate">{{ item.coaster?.park?.name || '' }}</p>
+                  </div>
+                  @if (item.rating) {
+                    <span class="text-xs font-black text-amber-500">★ {{ item.rating }}/10</span>
+                  }
+                </div>
+              }
+            </div>
+          }
         </div>
 
-        <!-- Friends List -->
-        <div class="bg-[#0d1b3e] p-8 rounded-3xl shadow-lg border border-blue-900/40 relative overflow-hidden">
-          <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M54.627 0l1.373 1.373v57.254l-1.373 1.373H5.373L4 58.627V1.373L5.373 0h49.254zM26.5 28.5V5h-7v23.5H5v7h14.5V55h7V35.5H55v-7H26.5z\' fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
-          <div class="relative z-10">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-              Amigos Coasteros
+        <!-- Atracciones Visitadas -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <span class="text-2xl">🎡</span> Atracciones Visitadas
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-               @for (friend of friends(); track friend.id) {
-                  <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/20 transition-all group">
-                    <img [src]="friend.avatar" class="w-14 h-14 rounded-full border-2 border-transparent group-hover:border-blue-400 mb-2 shadow-sm transition-all duration-300 group-hover:scale-105">
-                    <span class="text-sm font-bold text-blue-100 group-hover:text-white line-clamp-1 w-full text-center transition-colors">{{ friend.username }}</span>
-                  </div>
-               }
+            <a routerLink="/attractions" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">Explorar más</a>
+          </div>
+          @if (attractionsList().length === 0) {
+            <div class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <p class="text-slate-400 font-bold text-sm">Aún no has registrado ninguna atracción.</p>
+              <a routerLink="/attractions" class="inline-block mt-3 text-sm font-bold text-blue-600 hover:underline">¡Registra tu primera visita!</a>
             </div>
+          } @else {
+            <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+              @for (item of attractionsList(); track item.id) {
+                <div class="flex items-center gap-4 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
+                  <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 font-black text-sm">
+                    🎡
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-900 text-sm truncate">{{ item.attraction?.name || 'Atracción #' + item.attractionId }}</p>
+                    <p class="text-xs text-slate-400 truncate">{{ item.attraction?.park?.name || '' }}</p>
+                  </div>
+                  @if (item.rating) {
+                    <span class="text-xs font-black text-amber-500">★ {{ item.rating }}/10</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Parques Visitados -->
+        <div class="bg-[#0d1b3e] p-8 rounded-3xl shadow-lg border border-blue-900/40 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-5" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M54.627 0l1.373 1.373v57.254l-1.373 1.373H5.373L4 58.627V1.373L5.373 0h49.254z\' fill=\'%23ffffff\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <span class="text-2xl">🏞️</span> Parques Visitados
+              </h3>
+              <a routerLink="/parks" class="text-sm font-bold text-blue-300 hover:text-white transition-colors cursor-pointer">Explorar más</a>
+            </div>
+            @if (parksList().length === 0) {
+              <div class="text-center py-10 bg-white/5 rounded-2xl border border-dashed border-white/20">
+                <p class="text-blue-200 font-bold text-sm">Aún no has visitado ningún parque.</p>
+                <a routerLink="/parks" class="inline-block mt-3 text-sm font-bold text-blue-400 hover:underline">¡Registra tu primera visita!</a>
+              </div>
+            } @else {
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-1">
+                @for (item of parksList(); track item.id) {
+                  <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-3 hover:bg-white/20 transition-all">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-xl mb-1">🏞️</div>
+                    <span class="text-xs font-bold text-blue-100 line-clamp-2 text-center leading-tight">{{ item.park?.name || 'Parque #' + item.parkId }}</span>
+                    <span class="text-[10px] text-blue-300 mt-0.5">{{ item.park?.country || '' }}</span>
+                  </div>
+                }
+              </div>
+            }
           </div>
         </div>
 
