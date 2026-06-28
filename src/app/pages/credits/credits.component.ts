@@ -35,8 +35,30 @@ export class CreditsComponent implements OnInit {
   selectedManufacturers = signal<string[]>([]);
 
   showSuccessModal = signal(false);
+  showDeleteSuccessModal = signal(false);
   showLoginPromptModal = signal(false);
+  showDeleteConfirmModal = signal(false);
+  showAddConfirmModal = signal(false);
+  selectedCoaster = signal<Coaster | null>(null);
+  countdown = signal(2);
   isLoading = signal(true);
+
+  successTimer: any;
+  successInterval: any;
+
+  closeAddSuccess() {
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+    this.showSuccessModal.set(false);
+    this.selectedCoaster.set(null);
+  }
+
+  closeDeleteSuccess() {
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+    this.showDeleteSuccessModal.set(false);
+    this.selectedCoaster.set(null);
+  }
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
   router = inject(Router);
@@ -109,40 +131,101 @@ export class CreditsComponent implements OnInit {
       return;
     }
 
+    this.selectedCoaster.set(item);
     const hasCredit = this.userCredits().has(item.id);
 
     if (hasCredit) {
-      this.recordsService.removeCredit(item.id).subscribe({
-        next: () => {
-          this.userCredits.update(set => {
-            const newSet = new Set(set);
-            newSet.delete(item.id);
-            return newSet;
-          });
-        },
-        error: (err) => console.error('Error al eliminar credit', err)
-      });
+      this.showDeleteConfirmModal.set(true);
     } else {
-      this.recordsService.addCredit(item.id, undefined, undefined, undefined, {
-          name: item.name,
-          park: item.park,
-          country: item.country,
-          manufacturer: item.manufacturer
-        }).subscribe({
-        next: () => {
+      this.showAddConfirmModal.set(true);
+    }
+  }
+
+  confirmDelete() {
+    const item = this.selectedCoaster();
+    if (!item) return;
+
+    this.recordsService.removeCredit(item.id).subscribe({
+      next: () => {
+        this.userCredits.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(item.id);
+          return newSet;
+        });
+        this.showDeleteConfirmModal.set(false);
+        this.showDeleteSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeDeleteSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error al eliminar credit', err);
+        this.showDeleteConfirmModal.set(false);
+        this.selectedCoaster.set(null);
+      }
+    });
+  }
+
+  confirmAdd() {
+    const item = this.selectedCoaster();
+    if (!item) return;
+
+    // Comprobación defensiva antes de llamar a la API
+    if (this.userCredits().has(item.id)) {
+      this.showAddConfirmModal.set(false);
+      this.selectedCoaster.set(null);
+      return;
+    }
+
+    this.recordsService.addCredit(item.id, undefined, undefined, undefined, {
+      name: item.name,
+      park: item.park,
+      country: item.country,
+      manufacturer: item.manufacturer
+    }).subscribe({
+      next: () => {
+        this.userCredits.update(set => {
+          const newSet = new Set(set);
+          newSet.add(item.id);
+          return newSet;
+        });
+        this.showAddConfirmModal.set(false);
+        this.showSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeAddSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        // Si la API responde 409 (ya existe), actualizamos el estado local sin mostrar error
+        if (err.status === 409) {
           this.userCredits.update(set => {
             const newSet = new Set(set);
             newSet.add(item.id);
             return newSet;
           });
-          this.showSuccessModal.set(true);
-          setTimeout(() => {
-            this.showSuccessModal.set(false);
-          }, 3000);
-        },
-        error: (err) => console.error('Error al añadir credit', err)
-      });
-    }
+        } else {
+          console.error('Error al añadir credit', err);
+        }
+        this.showAddConfirmModal.set(false);
+        this.selectedCoaster.set(null);
+      }
+    });
   }
 
   filteredCoasters = computed(() => {

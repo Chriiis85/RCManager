@@ -192,44 +192,138 @@ export class AttractionsComponent implements OnInit {
     this.visibleCount.set(20);
   }
 
+  showDeleteSuccessModal = signal(false);
+  showDeleteConfirmModal = signal(false);
+  showAddConfirmModal = signal(false);
+  selectedAttraction = signal<Attraction | null>(null);
+
+  countdown = signal(2);
+  successInterval: any;
+  successTimer: any;
+
   handleAction(item: Attraction) {
     if (!this.authService.isAuthenticated()) {
       this.showLoginPromptModal.set(true);
       return;
     }
 
+    this.selectedAttraction.set(item);
     const hasRecord = this.userAttractions().has(item.id);
 
     if (hasRecord) {
-      this.recordsService.removeAttraction(item.id).subscribe({
-        next: () => {
-          this.userAttractions.update(set => {
-            const newSet = new Set(set);
-            newSet.delete(item.id);
-            return newSet;
-          });
-        },
-        error: (err) => console.error('Error al eliminar atracción', err)
-      });
+      this.showDeleteConfirmModal.set(true);
     } else {
-      this.recordsService.addAttraction(item.id, undefined, undefined, {
-          name: item.name,
-          park: item.park,
-          country: item.country,
-          manufacturer: item.manufacturer
-        }).subscribe({
-        next: () => {
+      this.showAddConfirmModal.set(true);
+    }
+  }
+
+  confirmDelete() {
+    const item = this.selectedAttraction();
+    if (!item) return;
+
+    this.recordsService.removeAttraction(item.id).subscribe({
+      next: () => {
+        this.userAttractions.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(item.id);
+          return newSet;
+        });
+        this.showDeleteConfirmModal.set(false);
+        this.showDeleteSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeDeleteSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error al eliminar atracción', err);
+        this.showDeleteConfirmModal.set(false);
+        this.selectedAttraction.set(null);
+      }
+    });
+  }
+
+  confirmAdd() {
+    const item = this.selectedAttraction();
+    if (!item) return;
+
+    if (this.userAttractions().has(item.id)) {
+      this.showAddConfirmModal.set(false);
+      this.selectedAttraction.set(null);
+      return;
+    }
+
+    this.recordsService.addAttraction(item.id, undefined, undefined, {
+      name: item.name,
+      park: item.park,
+      country: item.country,
+      manufacturer: item.manufacturer
+    }).subscribe({
+      next: () => {
+        this.userAttractions.update(set => {
+          const newSet = new Set(set);
+          newSet.add(item.id);
+          return newSet;
+        });
+        this.showAddConfirmModal.set(false);
+        this.showSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeAddSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        if (err.status === 409) {
           this.userAttractions.update(set => {
             const newSet = new Set(set);
             newSet.add(item.id);
             return newSet;
           });
-          this.showSuccessModal.set(true);
-          setTimeout(() => this.showSuccessModal.set(false), 3000);
-        },
-        error: (err) => console.error('Error al añadir atracción', err)
-      });
-    }
+        } else {
+          console.error('Error al añadir atracción', err);
+        }
+        this.showAddConfirmModal.set(false);
+        this.selectedAttraction.set(null);
+      }
+    });
+  }
+
+  closeAddSuccess() {
+    this.showSuccessModal.set(false);
+    this.selectedAttraction.set(null);
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+  }
+
+  closeDeleteSuccess() {
+    this.showDeleteSuccessModal.set(false);
+    this.selectedAttraction.set(null);
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+  }
+
+  closeAddConfirm() {
+    this.showAddConfirmModal.set(false);
+    this.selectedAttraction.set(null);
+  }
+
+  closeDeleteConfirm() {
+    this.showDeleteConfirmModal.set(false);
+    this.selectedAttraction.set(null);
   }
 
   @HostListener('document:click', ['$event'])

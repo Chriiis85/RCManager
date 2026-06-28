@@ -49,11 +49,43 @@ export class ParksComponent implements OnInit {
   showFilters = signal(false);
 
   showSuccessModal = signal(false);
+  showDeleteSuccessModal = signal(false);
+  showAddConfirmModal = signal(false);
+  showDeleteConfirmModal = signal(false);
   showLoginPromptModal = signal(false);
+  selectedParkAction = signal<ThemePark | null>(null);
+  countdown = signal(2);
+  successTimer: any;
+  successInterval: any;
+
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
   router = inject(Router);
   userParks = signal<Set<number>>(new Set());
+
+  closeAddSuccess() {
+    this.showSuccessModal.set(false);
+    this.selectedParkAction.set(null);
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+  }
+
+  closeDeleteSuccess() {
+    this.showDeleteSuccessModal.set(false);
+    this.selectedParkAction.set(null);
+    if (this.successTimer) clearTimeout(this.successTimer);
+    if (this.successInterval) clearInterval(this.successInterval);
+  }
+
+  closeAddConfirm() {
+    this.showAddConfirmModal.set(false);
+    this.selectedParkAction.set(null);
+  }
+
+  closeDeleteConfirm() {
+    this.showDeleteConfirmModal.set(false);
+    this.selectedParkAction.set(null);
+  }
 
   // Estados para el detalle del parque
   selectedPark = signal<ThemePark | null>(null);
@@ -105,6 +137,58 @@ export class ParksComponent implements OnInit {
     });
   });
 
+  // Imágenes por defecto por país/región si Wikipedia falla
+  private readonly FALLBACK_IMAGES: Record<string, string> = {
+    'United States': 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800',
+    'United Kingdom': 'https://images.unsplash.com/photo-1517086822157-2b0358e7684a?auto=format&fit=crop&q=80&w=800',
+    'Germany':        'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&q=80&w=800',
+    'France':         'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=80&w=800',
+    'Spain':          'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800',
+    'Netherlands':    'https://images.unsplash.com/photo-1535213761639-0f69d1f2e2d0?auto=format&fit=crop&q=80&w=800',
+    'Japan':          'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&q=80&w=800',
+    'China':          'https://images.unsplash.com/photo-1547523220717-3c9f2882b28d?auto=format&fit=crop&q=80&w=800',
+    'DEFAULT':        'https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800',
+  };
+
+  private async fetchWikipediaImage(parkName: string): Promise<string | null> {
+    try {
+      const encoded = encodeURIComponent(parkName);
+      const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encoded}&prop=pageimages&format=json&pithumbsize=800&origin=*`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const pages = data?.query?.pages;
+      if (!pages) return null;
+      const page = Object.values(pages)[0] as any;
+      return page?.thumbnail?.source ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getFallbackImage(country: string, id: number): string {
+    const base = this.FALLBACK_IMAGES[country] ?? this.FALLBACK_IMAGES['DEFAULT'];
+    // añadimos un parámetro único para evitar que el navegador use una única caché
+    return `${base}&park_id=${id}`;
+  }
+
+  private async loadParkImagesBatch(parks: ThemePark[]) {
+    const BATCH_SIZE = 8;
+    for (let i = 0; i < parks.length; i += BATCH_SIZE) {
+      const batch = parks.slice(i, i + BATCH_SIZE);
+      await Promise.all(
+        batch.map(async (park) => {
+          const img = await this.fetchWikipediaImage(park.name);
+          if (img) {
+            this.parks.update(list =>
+              list.map(p => p.id === park.id ? { ...p, image: img } : p)
+            );
+          }
+        })
+      );
+    }
+  }
+
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
       this.fetchUserParks();
@@ -121,23 +205,27 @@ export class ParksComponent implements OnInit {
         const mappedParks: ThemePark[] = allParks.map((p: any) => ({
           id: p.id,
           name: p.name,
-          location: p.country || 'Resort', // Usamos el país como ubicación temporal
+          location: p.country || 'Resort',
           country: p.country || 'Desconocido',
           opened: 0,
           coasters: 0,
           attractions: 0,
           shows: 0,
-          image: `https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800&id=${p.id}`, // Evitamos caché con el ID
+          // Imagen de fallback por país mientras carga Wikipedia
+          image: this.getFallbackImage(p.country || 'DEFAULT', p.id),
           description: `Disfruta de la mejor experiencia en ${p.name}.`,
           category: 'Temático' as const,
-          status: 'Abierto' as const, // Estado inicial
+          status: 'Abierto' as const,
           crowds: 'Normal' as const,
         }));
 
         this.parks.set(mappedParks);
 
-        // Actualizamos los estados dinámicamente en lotes
-        this.updateAllParkStatuses(mappedParks).finally(() => {
+        // 2. Lanzamos en paralelo: estados Y imágenes de Wikipedia
+        const statusPromise = this.updateAllParkStatuses(mappedParks);
+        const imagePromise = this.loadParkImagesBatch(mappedParks);
+
+        Promise.all([statusPromise, imagePromise]).finally(() => {
           this.isInitialLoading.set(false);
         });
       })
@@ -290,33 +378,94 @@ export class ParksComponent implements OnInit {
       return;
     }
 
+    this.selectedParkAction.set(item);
     const hasVisit = this.userParks().has(item.id);
 
     if (hasVisit) {
-      this.recordsService.removePark(item.id).subscribe({
-        next: () => {
-          this.userParks.update(set => {
-            const newSet = new Set(set);
-            newSet.delete(item.id);
-            return newSet;
-          });
-        },
-        error: (err) => console.error('Error al eliminar parque', err)
-      });
+      this.showDeleteConfirmModal.set(true);
     } else {
-      this.recordsService.addPark(item.id, undefined, { name: item.name, country: item.country }).subscribe({
-        next: () => {
+      this.showAddConfirmModal.set(true);
+    }
+  }
+
+  confirmDelete() {
+    const item = this.selectedParkAction();
+    if (!item) return;
+
+    this.recordsService.removePark(item.id).subscribe({
+      next: () => {
+        this.userParks.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(item.id);
+          return newSet;
+        });
+        this.showDeleteConfirmModal.set(false);
+        this.showDeleteSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeDeleteSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error al eliminar parque', err);
+        this.showDeleteConfirmModal.set(false);
+        this.selectedParkAction.set(null);
+      }
+    });
+  }
+
+  confirmAdd() {
+    const item = this.selectedParkAction();
+    if (!item) return;
+
+    if (this.userParks().has(item.id)) {
+      this.showAddConfirmModal.set(false);
+      this.selectedParkAction.set(null);
+      return;
+    }
+
+    this.recordsService.addPark(item.id, undefined, { name: item.name, country: item.country }).subscribe({
+      next: () => {
+        this.userParks.update(set => {
+          const newSet = new Set(set);
+          newSet.add(item.id);
+          return newSet;
+        });
+        this.showAddConfirmModal.set(false);
+        this.showSuccessModal.set(true);
+        this.countdown.set(2);
+        if (this.successTimer) clearTimeout(this.successTimer);
+        if (this.successInterval) clearInterval(this.successInterval);
+
+        this.successInterval = setInterval(() => {
+          this.countdown.update(c => Math.max(0, c - 1));
+        }, 1000);
+
+        this.successTimer = setTimeout(() => {
+          this.closeAddSuccess();
+        }, 2000);
+      },
+      error: (err) => {
+        if (err.status === 409) {
           this.userParks.update(set => {
             const newSet = new Set(set);
             newSet.add(item.id);
             return newSet;
           });
-          this.showSuccessModal.set(true);
-          setTimeout(() => this.showSuccessModal.set(false), 3000);
-        },
-        error: (err) => console.error('Error al añadir parque', err)
-      });
-    }
+        } else {
+          console.error('Error al añadir parque', err);
+        }
+        this.showAddConfirmModal.set(false);
+        this.selectedParkAction.set(null);
+      }
+    });
   }
 
   parks = signal<ThemePark[]>([]);

@@ -6,6 +6,7 @@
 
   --animate-fade-in-up: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-fade-in-down: fade-in-down 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-progress-shrink: progress-shrink 2s linear forwards;
 
   @keyframes fade-in-up {
     0% {
@@ -26,6 +27,15 @@
     100% {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes progress-shrink {
+    0% {
+      width: 100%;
+    }
+    100% {
+      width: 0%;
     }
   }
 }

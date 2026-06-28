@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './mis-credits.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MisCreditsComponent implements OnInit {
+export class MisCreditsComponent implements OnInit, OnDestroy {
   recordsService = inject(RecordsService);
   authService = inject(AuthService);
   router = inject(Router);
@@ -23,10 +23,13 @@ export class MisCreditsComponent implements OnInit {
 
   // Modal states
   showDeleteModal = signal(false);
+  showDeleteSuccessModal = signal(false);
   showCountModal = signal(false);
   selectedCredit = signal<CoasterCredit | null>(null);
   rideCount = signal(1);
   isSubmitting = signal(false);
+  countdown = signal(2);
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   filteredCredits = computed(() => {
     const q = this.searchQuery().toLowerCase();
@@ -68,9 +71,30 @@ export class MisCreditsComponent implements OnInit {
         this.credits.update(list => list.filter(c => c.id !== credit.id));
         this.showDeleteModal.set(false);
         this.isSubmitting.set(false);
+        this.openDeleteSuccessModal();
       },
       error: () => this.isSubmitting.set(false)
     });
+  }
+
+  openDeleteSuccessModal() {
+    this.countdown.set(2);
+    this.showDeleteSuccessModal.set(true);
+    this.countdownInterval = setInterval(() => {
+      const c = this.countdown() - 1;
+      this.countdown.set(c);
+      if (c <= 0) this.closeDeleteSuccess();
+    }, 1000);
+  }
+
+  closeDeleteSuccess() {
+    if (this.countdownInterval) { clearInterval(this.countdownInterval); this.countdownInterval = null; }
+    this.showDeleteSuccessModal.set(false);
+    this.selectedCredit.set(null);
+  }
+
+  ngOnDestroy() {
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
   }
 
   openCountModal(credit: CoasterCredit) {

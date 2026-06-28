@@ -10,6 +10,7 @@ import { RankingComponent } from './pages/ranking/ranking.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MisCreditsComponent } from './pages/mis-credits/mis-credits.component';
 import { MisAtraccionesComponent } from './pages/mis-atracciones/mis-atracciones.component';
+import { MisParquesComponent } from './pages/mis-parques/mis-parques.component';
 import { authGuard, unAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'ranking', component: RankingComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'mis-credits', component: MisCreditsComponent, canActivate: [authGuard] },
-  { path: 'mis-atracciones', component: MisAtraccionesComponent, canActivate: [authGuard] }
+  { path: 'mis-atracciones', component: MisAtraccionesComponent, canActivate: [authGuard] },
+  { path: 'mis-parques', component: MisParquesComponent, canActivate: [authGuard] }
 ];
