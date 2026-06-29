@@ -1,99 +1,285 @@
-import { Component, OnInit, OnDestroy, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy,
+  signal, WritableSignal, ChangeDetectionStrategy,
+  inject, computed, ChangeDetectorRef
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TripsService, TripModel } from '../../core/services/trips.service';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { AirbnbCalendarComponent } from './airbnb-calendar.component';
 
 type Countdown = { days: number, hours: number, minutes: number, seconds: number };
-interface Trip {
-  id: number;
-  country: string;
-  parkName: string;
-  subtitle: string;
-  description: string;
-  image: string;
-  targetDate: Date;
-  companions: { name: string; avatar: string }[];
+
+interface UITrip extends TripModel {
+  isPast?: boolean;
   time: WritableSignal<Countdown>;
 }
 
 @Component({
   selector: 'app-viajes',
   standalone: true,
+  imports: [CommonModule, FormsModule, AirbnbCalendarComponent],
   templateUrl: './viajes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViajesComponent implements OnInit, OnDestroy {
+  private tripsService = inject(TripsService);
+  private cdr = inject(ChangeDetectorRef);
   private timer: any;
 
-  trips = signal<Trip[]>([
-    {
-      id: 1,
-      country: 'Japón',
-      parkName: 'Fuji-Q Highland',
-      subtitle: 'Hogar de las montañas rusas más extremas.',
-      description: 'Considerado uno de los parques temáticos más emocionantes de todo el mundo, sus montañas rusas baten récords a la sombra del mismísimo Monte Fuji. Prepárate para experimentar caídas imposibles y aceleraciones de infarto.',
-      image: 'https://images.unsplash.com/photo-1596701548816-641505c24e65?q=80&w=2074&auto=format&fit=crop',
-      targetDate: new Date(new Date().getTime() + 45 * 24 * 60 * 60 * 1000), // 45 days
-      companions: [
-        { name: 'Laura', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop' },
-        { name: 'Marcos', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150&auto=format&fit=crop' }
-      ],
-      time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-    },
-    {
-      id: 2,
-      country: 'España',
-      parkName: 'Parque Warner',
-      subtitle: 'Movie World Studios & Superhéroes.',
-      description: 'Sumérgete en el universo cinematográfico y del cómic. Montañas rusas espectaculares como la de Superman o Batman te esperan en uno de los parques más completos del país.',
-      image: 'https://images.unsplash.com/photo-1606767051141-8316e6f43702?q=80&w=2074&auto=format&fit=crop',
-      targetDate: new Date(new Date().getTime() + 120 * 24 * 60 * 60 * 1000), // 120 days
-      companions: [
-        { name: 'Sofía', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop' }
-      ],
-      time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-    },
-    {
-      id: 3,
-      country: 'España',
-      parkName: 'PortAventura World',
-      subtitle: 'Seis mundos apasionantes.',
-      description: 'Descubre increíbles atracciones como Shambhala y Dragon Khan. Un viaje épico que combina adrenalina pura con espectáculos de primer nivel en la Costa Dorada.',
-      image: 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop',
-      targetDate: new Date(new Date().getTime() + 210 * 24 * 60 * 60 * 1000), // 210 days
-      companions: [
-        { name: 'Carlos', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop' },
-        { name: 'Elena', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop' },
-        { name: 'Pablo', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop' }
-      ],
-      time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-    }
-  ]);
+  // ── Main data ──────────────────────────────────
+  trips = signal<UITrip[]>([]);
+  isLoading = signal(true);
+  upcomingTrips = computed(() => this.trips().filter(t => !t.isPast));
+  pastTrips = computed(() => this.trips().filter(t => t.isPast));
 
-  ngOnInit() {
-    this.calculateAllTimes();
-    this.timer = setInterval(() => {
-      this.calculateAllTimes();
-    }, 1000);
-  }
+  // ── Wizard ─────────────────────────────────────
+  isWizardOpen = signal(false);
+  wizardStep = signal(1);
+  isSubmitting = signal(false);
 
-  ngOnDestroy() {
-    if (this.timer) clearInterval(this.timer);
-  }
+  // Step 1
+  allParks = signal<any[]>([]);
+  searchParkQuery = signal('');
+  selectedParkForTrip = signal<any>(null);
+  filteredParks = computed(() => {
+    const q = this.searchParkQuery().toLowerCase();
+    if (!q || this.selectedParkForTrip()) return [];
+    return this.allParks().filter(p => p.name.toLowerCase().includes(q)).slice(0, 7);
+  });
 
-  private calculateAllTimes() {
-    const now = new Date().getTime();
-    this.trips().forEach(trip => {
-      const difference = trip.targetDate.getTime() - now;
-      if (difference > 0) {
-        trip.time.set({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
-      }
+  // Step 2 – dates
+  tripStartDate = signal('');
+  tripEndDate = signal('');
+  tripDateLabel = signal(''); // human readable
+
+  // Step 2 – details
+  tripTitle = signal('');
+  tripDescription = signal('');
+
+  // Step 3
+  searchUserQuery = signal('');
+  selectedCompanions = signal<any[]>([]);
+  suggestedUsers = signal<any[]>([]);
+  private userSearch$ = new Subject<string>();
+
+  readonly MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  constructor() {
+    this.userSearch$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
+      if (q.length < 2) { this.suggestedUsers.set([]); return; }
+      this.tripsService.searchUsers(q).subscribe({
+        next: users => {
+          const ids = this.selectedCompanions().map(c => c.id);
+          this.suggestedUsers.set(users.filter(u => !ids.includes(u.id)));
+        },
+        error: () => this.suggestedUsers.set([])
+      });
     });
   }
 
-  formatNumber(num: number): string {
-    return num < 10 ? `0${num}` : `${num}`;
+  // ── Validation ─────────────────────────────────
+  get step1Valid() { return !!this.selectedParkForTrip(); }
+  get step2Valid() { return !!this.tripStartDate() && !!this.tripDescription().trim(); }
+
+  // ── Lifecycle ──────────────────────────────────
+  ngOnInit() {
+    this.loadTrips();
+    this.loadParks();
+    this.timer = setInterval(() => this.tickCountdowns(), 1000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timer);
+  }
+
+  // ── Data loading ───────────────────────────────
+  private loadTrips() {
+    this.isLoading.set(true);
+    this.tripsService.getTrips().subscribe({
+      next: data => {
+        const now = Date.now();
+        this.trips.set(data.map(t => ({
+          ...t,
+          isPast: new Date(t.targetDate).getTime() < now,
+          time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+        })));
+        this.tickCountdowns();
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  private loadParks() {
+    this.tripsService.getAllParks().subscribe({
+      next: parks => {
+        const sortedParks = [...parks].sort((a, b) => {
+          const aIsSpain = a.country === 'Spain' || a.country === 'España' || a.country === 'Spain ';
+          const bIsSpain = b.country === 'Spain' || b.country === 'España' || b.country === 'Spain ';
+          if (aIsSpain && !bIsSpain) return -1;
+          if (!aIsSpain && bIsSpain) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        this.allParks.set(sortedParks);
+      },
+      error: err => console.error('Error fetching parks', err)
+    });
+  }
+
+  private tickCountdowns() {
+    const now = Date.now();
+    this.trips().forEach(trip => {
+      if (trip.isPast) return;
+      const diff = new Date(trip.targetDate).getTime() - now;
+      if (diff > 0) {
+        trip.time.set({
+          days: Math.floor(diff / 86400000),
+          hours: Math.floor((diff % 86400000) / 3600000),
+          minutes: Math.floor((diff % 3600000) / 60000),
+          seconds: Math.floor((diff % 60000) / 1000)
+        });
+      } else { trip.isPast = true; }
+    });
+  }
+
+  fmt(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+
+  formatDateRange(startDate: string, endDate?: string | null): string {
+    const s = new Date(startDate);
+    const sStr = `${s.getDate()} ${this.MONTHS[s.getMonth()]}`;
+    if (!endDate) return `${sStr} ${s.getFullYear()}`;
+    const e = new Date(endDate);
+    if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+      return `${s.getDate()} – ${e.getDate()} de ${this.MONTHS[s.getMonth()]} ${s.getFullYear()}`;
+    }
+    return `${sStr} – ${e.getDate()} ${this.MONTHS[e.getMonth()]} ${e.getFullYear()}`;
+  }
+
+  // ── Calendar date handler ─────────────────────
+  onCalendarDateChange(range: { start: string; end: string }) {
+    this.tripStartDate.set(range.start);
+    this.tripEndDate.set(range.end);
+
+    if (range.start) {
+      const s = new Date(range.start);
+      const sStr = `${s.getDate()} ${this.MONTHS[s.getMonth()]}`;
+      if (range.end) {
+        const e = new Date(range.end);
+        if (s.getMonth() === e.getMonth()) {
+          this.tripDateLabel.set(`${s.getDate()} – ${e.getDate()} de ${this.MONTHS[s.getMonth()]} ${s.getFullYear()}`);
+        } else {
+          this.tripDateLabel.set(`${sStr} – ${e.getDate()} ${this.MONTHS[e.getMonth()]} ${e.getFullYear()}`);
+        }
+      } else {
+        this.tripDateLabel.set(`${sStr} ${s.getFullYear()}`);
+      }
+    } else {
+      this.tripDateLabel.set('');
+    }
+  }
+
+  // ── Delete Modal State ─────────────────────────
+  showDeleteModal = signal(false);
+  showDeleteSuccessModal = signal(false);
+  selectedTrip = signal<UITrip | null>(null);
+  countdown = signal(2);
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+  // ── Wizard controls ────────────────────────────
+  openWizard() {
+    this.isWizardOpen.set(true);
+    this.wizardStep.set(1);
+    this.searchParkQuery.set('');
+    this.selectedParkForTrip.set(null);
+    this.tripTitle.set('');
+    this.tripDescription.set('');
+    this.tripStartDate.set('');
+    this.tripEndDate.set('');
+    this.tripDateLabel.set('');
+    this.searchUserQuery.set('');
+    this.suggestedUsers.set([]);
+    this.selectedCompanions.set([]);
+    this.isSubmitting.set(false);
+  }
+
+  closeWizard() { this.isWizardOpen.set(false); }
+
+  nextStep() {
+    this.wizardStep.update(s => s + 1);
+  }
+
+  prevStep() {
+    this.wizardStep.update(s => s - 1);
+  }
+
+  selectPark(park: any) { this.selectedParkForTrip.set(park); this.searchParkQuery.set(park.name); }
+
+  onUserSearchChange(q: string) { this.searchUserQuery.set(q); this.userSearch$.next(q); }
+  addCompanion(user: any) {
+    this.selectedCompanions.update(l => [...l, user]);
+    this.searchUserQuery.set(''); this.suggestedUsers.set([]);
+  }
+  removeCompanion(id: number) { this.selectedCompanions.update(l => l.filter(c => c.id !== id)); }
+
+  finishTripCreation() {
+    if (this.isSubmitting() || !this.step2Valid) return;
+    this.isSubmitting.set(true);
+    this.tripsService.createTrip({
+      parkId: this.selectedParkForTrip().id,
+      title: this.tripTitle() || undefined,
+      description: this.tripDescription(),
+      targetDate: this.tripStartDate(),
+      endDate: this.tripEndDate() || undefined,
+      companions: this.selectedCompanions().map(c => c.id)
+    }).subscribe({
+      next: newTrip => {
+        const ui: UITrip = { ...newTrip, isPast: false, time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 }) };
+        this.trips.update(l => [ui, ...l]);
+        this.tickCountdowns();
+        this.closeWizard();
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  // ── Delete ─────────────────────────────────────
+  openDeleteModal(trip: UITrip) {
+    this.selectedTrip.set(trip);
+    this.showDeleteModal.set(true);
+  }
+
+  confirmDelete() {
+    const trip = this.selectedTrip();
+    if (!trip) return;
+    this.isSubmitting.set(true);
+
+    this.tripsService.deleteTrip(trip.id).subscribe({
+      next: () => {
+        this.trips.update(list => list.filter(t => t.id !== trip.id));
+        this.showDeleteModal.set(false);
+        this.isSubmitting.set(false);
+        this.openDeleteSuccessModal();
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  openDeleteSuccessModal() {
+    this.countdown.set(2);
+    this.showDeleteSuccessModal.set(true);
+    this.countdownInterval = setInterval(() => {
+      const c = this.countdown() - 1;
+      this.countdown.set(c);
+      if (c <= 0) this.closeDeleteSuccess();
+    }, 1000);
+  }
+
+  closeDeleteSuccess() {
+    if (this.countdownInterval) { clearInterval(this.countdownInterval); this.countdownInterval = null; }
+    this.showDeleteSuccessModal.set(false);
+    this.selectedTrip.set(null);
   }
 }

@@ -92,7 +92,7 @@
             <a routerLink="/profile" class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-100 transition-colors cursor-pointer ring-1 ring-inset ring-blue-700/10">
               Mi Cuenta
             </a>
-            <button (click)="authService.logout()" class="text-slate-400 hover:text-red-500 transition-colors ml-2 cursor-pointer" title="Cerrar sesión">
+            <button (click)="doLogout()" class="text-slate-400 hover:text-red-500 transition-colors ml-2 cursor-pointer" title="Cerrar sesión">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             </button>
           </div>
@@ -149,7 +149,7 @@
               <div class="flex flex-col gap-4">
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser()?.username }}</span></span>
-                  <button (click)="authService.logout(); closeMenu()" class="text-sm font-bold text-red-600">Cerrar sesión</button>
+                  <button (click)="doLogout()" class="text-sm font-bold text-red-600">Cerrar sesión</button>
                 </div>
                 <a 
                   routerLink="/profile" 
@@ -261,4 +261,22 @@
       </div>
     </div>
   </footer>
+  <!-- Logout Success Modal -->
+  @if (showLogoutModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+      <div class="bg-white rounded-2xl shadow-xl w-[90%] sm:max-w-sm overflow-hidden flex flex-col relative animate-scale-up" style="animation-duration: 0.3s;">
+        <div class="p-6 text-center space-y-4">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto text-blue-500 shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </div>
+          <h3 class="text-xl font-black text-slate-800">¡Hasta pronto!</h3>
+          <p class="text-slate-500 text-sm font-medium">Has cerrado sesión correctamente.</p>
+        </div>
+        <!-- Progress bar -->
+        <div class="h-1.5 w-full bg-slate-100 mt-2">
+          <div class="h-full bg-blue-500 transition-all duration-75 ease-linear" [style.width.%]="logoutCountdown()"></div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

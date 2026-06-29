@@ -219,6 +219,14 @@ export class ParksComponent implements OnInit {
           crowds: 'Normal' as const,
         }));
 
+        mappedParks.sort((a, b) => {
+          const aIsSpain = a.country === 'Spain' || a.country === 'España' || a.country === 'Spain ';
+          const bIsSpain = b.country === 'Spain' || b.country === 'España' || b.country === 'Spain ';
+          if (aIsSpain && !bIsSpain) return -1;
+          if (!aIsSpain && bIsSpain) return 1;
+          return 0; // The rest of the sorting will be handled by the filteredParks computed signal
+        });
+
         this.parks.set(mappedParks);
 
         // 2. Lanzamos en paralelo: estados Y imágenes de Wikipedia
@@ -504,11 +512,17 @@ export class ParksComponent implements OnInit {
         return true;
       })
       .sort((a, b) => {
-        // 1. Estado: Abierto (primero) > Cerrado (después)
+        // 1. Prioridad: Parques de España
+        const aIsSpain = a.country === 'Spain' || a.country === 'España' || a.country === 'Spain ';
+        const bIsSpain = b.country === 'Spain' || b.country === 'España' || b.country === 'Spain ';
+        if (aIsSpain && !bIsSpain) return -1;
+        if (!aIsSpain && bIsSpain) return 1;
+
+        // 2. Estado: Abierto (primero) > Cerrado (después)
         if (a.status === 'Abierto' && b.status === 'Cerrado') return -1;
         if (a.status === 'Cerrado' && b.status === 'Abierto') return 1;
 
-        // 2. Alfabético (secundario)
+        // 3. Alfabético (terciario)
         return a.name.localeCompare(b.name);
       })
       .slice(0, this.visibleParksLimit());
