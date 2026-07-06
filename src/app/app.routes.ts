@@ -14,7 +14,7 @@ import { MisParquesComponent } from './pages/mis-parques/mis-parques.component';
 import { authGuard, unAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, canActivate: [unAuthGuard] },
   { path: 'viajes', component: ViajesComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent, canActivate: [unAuthGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [unAuthGuard] },

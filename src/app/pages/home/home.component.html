@@ -100,17 +100,17 @@
     <div class="mx-auto max-w-6xl space-y-24">
       
       <!-- Feature 1: Mis Credits -->
-      <div class="relative flex flex-col gap-10 lg:flex-row lg:items-center animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: both;">
+      <a routerLink="/credits" class="relative flex flex-col gap-10 lg:flex-row lg:items-center animate-fade-in-up group cursor-pointer" style="animation-delay: 0.2s; animation-fill-mode: both;">
         <div class="lg:w-1/2 lg:pr-10">
-          <div class="inline-flex w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 items-center justify-center mb-6 border border-blue-200/50 shadow-sm relative overflow-hidden">
+          <div class="inline-flex w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 items-center justify-center mb-6 border border-blue-200/50 shadow-sm relative overflow-hidden group-hover:scale-110 transition-transform">
             <span class="text-2xl">🏆</span>
           </div>
-          <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight">Mis Credits</h3>
+          <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">Mis Credits</h3>
           <p class="mt-4 text-lg text-slate-600 leading-relaxed font-medium">Lleva un registro estricto de cada <strong>credit</strong>. Márcalos como conseguidos, puntúalos del 1 al 10 y guarda para siempre tus reseñas y estadísticas en tu propio diario digital.</p>
         </div>
-        <div class="lg:w-1/2 relative group">
+        <div class="lg:w-1/2 relative group-hover:scale-[1.02] transition-transform duration-500">
           <div class="absolute -inset-1 rounded-3xl bg-blue-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-          <div class="relative rounded-3xl bg-slate-100 border border-slate-200/60 p-2 shadow-xl shadow-slate-200/50 overflow-hidden transform transition-transform duration-700 hover:scale-[1.02]">
+          <div class="relative rounded-3xl bg-slate-100 border border-slate-200/60 p-2 shadow-xl shadow-slate-200/50 overflow-hidden">
             <div class="w-full h-80 rounded-2xl bg-slate-50 flex flex-col gap-3 justify-center p-5 relative overflow-hidden">
               <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
               
@@ -148,7 +148,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </a>
 
       <!-- Feature 2: Atracciones -->
       <div class="relative flex flex-col gap-10 lg:flex-row-reverse lg:items-center animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: both;">
@@ -333,6 +333,44 @@
         </div>
       </div>
       
+      <!-- Feature 6: ParksIA -->
+      <a href="http://localhost:3000" target="_blank" class="relative flex flex-col gap-10 lg:flex-row-reverse lg:items-center animate-fade-in-up group cursor-pointer" style="animation-delay: 0.7s; animation-fill-mode: both;">
+        <div class="lg:w-1/2 lg:pl-10">
+          <div class="inline-flex w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 items-center justify-center mb-6 border border-indigo-200/50 shadow-sm relative overflow-hidden group-hover:scale-110 transition-transform">
+            <span class="text-2xl">🤖</span>
+          </div>
+          <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight group-hover:text-indigo-600 transition-colors">ParksIA <span class="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest align-middle ml-2">Nuevo</span></h3>
+          <p class="mt-4 text-lg text-slate-600 leading-relaxed font-medium">Tu asistente personal inteligente. Hazle cualquier pregunta sobre montañas rusas, pide que te planifique una ruta óptima por un parque, o pregúntale por los tiempos de espera actuales. ParksIA tiene las respuestas.</p>
+        </div>
+        <div class="lg:w-1/2 relative group-hover:scale-[1.02] transition-transform duration-500">
+          <div class="absolute -inset-1 rounded-3xl bg-indigo-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+          <div class="relative rounded-3xl bg-slate-900 border border-slate-700/60 p-2 shadow-2xl shadow-indigo-900/50 overflow-hidden">
+            <div class="w-full h-80 rounded-2xl bg-slate-800 flex flex-col p-5 relative justify-between border border-slate-700">
+              <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
+              
+              <!-- Chat Bubble User -->
+              <div class="self-end bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-2 text-sm shadow-sm z-10 max-w-[80%]">
+                ¿Cuál es la montaña rusa más rápida de Europa y dónde está?
+              </div>
+              
+              <!-- Chat Bubble AI -->
+              <div class="self-start bg-slate-700 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 text-sm shadow-sm z-10 max-w-[90%] mt-4 border border-slate-600 flex gap-3 shadow-indigo-900/20">
+                <div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0 text-xs">🤖</div>
+                <div>
+                  La montaña rusa más rápida de Europa es <strong class="text-white">Red Force</strong>, situada en <strong class="text-white">Ferrari Land</strong> (PortAventura World), en España. Alcanza una velocidad de <strong class="text-white">180 km/h</strong> en tan solo 5 segundos.
+                </div>
+              </div>
+
+              <!-- Input mock -->
+              <div class="mt-auto bg-slate-900 rounded-xl p-3 border border-slate-700 flex items-center justify-between text-slate-500 text-sm z-10">
+                <span>Pregúntale a ParksIA...</span>
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">↑</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+
     </div>
   </div>
 </section>
