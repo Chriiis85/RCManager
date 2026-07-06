@@ -197,7 +197,7 @@ export class ParksComponent implements OnInit {
     const parksToLoad = visibleParks.filter(p => !this.loadedDataParkIds.has(p.id));
     
     if (parksToLoad.length === 0) {
-      if (!this.isLoadingData && this.isInitialLoading()) {
+      if (!this.isLoadingData && this.isInitialLoading() && this.parks().length > 0) {
         this.isInitialLoading.set(false);
       }
       return;
