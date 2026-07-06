@@ -115,13 +115,17 @@ export class AttractionsComponent implements OnInit {
   }
 
   private mapStatus(status: string): string {
+    if (!status) return 'Desconocido';
+    const s = status.toUpperCase();
     const statuses: Record<string, string> = {
       'OPERATING': 'Operativa',
       'SBNO': 'Cerrada Temporalmente',
       'REMOVED': 'Eliminada',
-      'CONSTRUCTION': 'En Construcción'
+      'CONSTRUCTION': 'En Construcción',
+      'UNDER CONSTRUCTION': 'En Construcción',
+      'DEFUNCT': 'Eliminada'
     };
-    return statuses[status] || status;
+    return statuses[s] || status;
   }
 
   filteredAttractions = computed(() => {
@@ -133,7 +137,7 @@ export class AttractionsComponent implements OnInit {
     const hide = this.hideRemoved();
 
     return this.attractions().filter(a => {
-      if (hide && (a.status === 'Eliminada' || a.status === 'REMOVED')) return false;
+      if (hide && a.status === 'Eliminada') return false;
 
       const matchesSearch = a.name.toLowerCase().includes(query) || 
                           a.park.toLowerCase().includes(query) ||

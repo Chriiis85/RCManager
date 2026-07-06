@@ -20,6 +20,7 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
   attractions = signal<AttractionRecord[]>([]);
   isLoading = signal(true);
   searchQuery = signal('');
+  hideRemoved = signal(true);
 
   // Modal states
   showDeleteModal = signal(false);
@@ -33,11 +34,16 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
 
   filteredAttractions = computed(() => {
     const q = this.searchQuery().toLowerCase();
-    if (!q) return this.attractions();
-    return this.attractions().filter(a =>
-      (a.attraction?.name || '').toLowerCase().includes(q) ||
-      (a.attraction?.park?.name || '').toLowerCase().includes(q)
-    );
+    const hide = this.hideRemoved();
+    
+    return this.attractions().filter(a => {
+      const status = (a.attraction?.status || '').toUpperCase();
+      if (hide && (status === 'REMOVED' || status === 'ELIMINADA' || status === 'DEFUNCT')) return false;
+
+      if (!q) return true;
+      return (a.attraction?.name || '').toLowerCase().includes(q) ||
+             (a.attraction?.park?.name || '').toLowerCase().includes(q);
+    });
   });
 
   ngOnInit() {
