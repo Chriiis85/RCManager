@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
+import { SupabaseService } from './supabase.service';
 
 export interface User {
   id: number;
@@ -38,6 +39,7 @@ const USER_KEY = 'rcm_user';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private supabaseService = inject(SupabaseService);
 
   // Signals de estado
   private _token = signal<string | null>(this.getStoredToken());
@@ -62,6 +64,21 @@ export class AuthService {
       tap(res => this.handleAuthSuccess(res)),
       catchError(err => throwError(() => err))
     );
+  }
+
+  // ── Supabase Google Login ─────────────────────────────────────────────────
+  async signInWithGoogle(): Promise<void> {
+    const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/perfil'
+      }
+    });
+    
+    if (error) {
+      console.error('Error iniciando sesión con Google:', error.message);
+      throw error;
+    }
   }
 
   // ── Logout ────────────────────────────────────────────────────────────────

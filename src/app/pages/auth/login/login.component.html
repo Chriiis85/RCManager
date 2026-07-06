@@ -140,9 +140,19 @@
 
           <!-- Google - Large full width -->
           <button type="button"
-            class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
-            Continuar con Google
+            (click)="onGoogleLogin()"
+            [disabled]="isLoading()"
+            class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            @if (isLoading()) {
+              <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Conectando...
+            } @else {
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
+              Continuar con Google
+            }
           </button>
 
           <!-- Apple - Large full width -->

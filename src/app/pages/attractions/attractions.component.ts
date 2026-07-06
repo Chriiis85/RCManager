@@ -34,6 +34,7 @@ export class AttractionsComponent implements OnInit {
   
   isLoading = signal(true);
   showFilters = signal(false);
+  mobileGridMode = signal<'large' | 'compact'>('large');
 
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);

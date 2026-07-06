@@ -28,6 +28,7 @@ interface Coaster {
 export class CreditsComponent implements OnInit {
   searchQuery = signal('');
   showFilters = signal(false);
+  mobileGridMode = signal<'large' | 'compact'>('large');
   
   selectedCountries = signal<string[]>([]);
   selectedParks = signal<string[]>([]);

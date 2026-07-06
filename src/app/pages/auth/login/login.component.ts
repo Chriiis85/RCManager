@@ -54,4 +54,16 @@ export class LoginComponent {
       }
     });
   }
+
+  async onGoogleLogin() {
+    this.errorMessage.set(null);
+    this.isLoading.set(true);
+    try {
+      await this.authService.signInWithGoogle();
+      // Notamos que Supabase redireccionará toda la página al proveedor OAuth.
+    } catch (err: any) {
+      this.isLoading.set(false);
+      this.errorMessage.set(err.message || 'Error al conectar con Google.');
+    }
+  }
 }

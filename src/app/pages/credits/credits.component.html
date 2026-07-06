@@ -76,6 +76,31 @@
               </span>
             }
           </button>
+
+          <!-- Mobile Grid Toggle -->
+          <div class="flex sm:hidden items-center bg-slate-100/80 rounded-[1.25rem] p-1 border border-slate-200 shrink-0">
+            <button 
+              (click)="mobileGridMode.set('large')"
+              [ngClass]="mobileGridMode() === 'large' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-600'"
+              class="cursor-pointer p-2 rounded-xl transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="3" stroke-width="2.5"/>
+              </svg>
+            </button>
+            <button 
+              (click)="mobileGridMode.set('compact')"
+              [ngClass]="mobileGridMode() === 'compact' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-600'"
+              class="cursor-pointer p-2 rounded-xl transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <rect x="3" y="3" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="14" y="3" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="14" y="14" width="7" height="7" rx="2" stroke-width="2.5"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -206,70 +231,77 @@
     <!-- Coaster Grid Area -->
     <div class="max-w-7xl mx-auto min-h-[50vh]">
       @if (filteredCoasters().length > 0) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-8"
+             [ngClass]="mobileGridMode() === 'compact' ? 'grid-cols-2 gap-3' : 'grid-cols-1 gap-8'">
           @for (coaster of visibleCoasters(); track coaster.id) {
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col">
+            <div class="group bg-white overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
+                 [ngClass]="mobileGridMode() === 'compact' ? 'rounded-2xl' : 'rounded-3xl'">
               <!-- Image Container -->
-              <div class="relative aspect-[4/3] overflow-hidden">
+              <div class="relative overflow-hidden" [ngClass]="mobileGridMode() === 'compact' ? 'aspect-square sm:aspect-[4/3]' : 'aspect-[4/3]'">
                 <img 
                   [src]="coaster.image" 
                   [alt]="coaster.name"
                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 >
-                <div class="absolute top-4 right-4">
-                  <span class="inline-flex items-center rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-blue-700 shadow-sm ring-1 ring-inset ring-blue-700/10">
+                <div class="absolute right-2 top-2 sm:top-4 sm:right-4">
+                  <span class="inline-flex items-center rounded-full bg-white/90 backdrop-blur-md font-bold text-blue-700 shadow-sm ring-1 ring-inset ring-blue-700/10"
+                        [ngClass]="mobileGridMode() === 'compact' ? 'px-1.5 py-0.5 text-[8px] sm:px-3 sm:py-1 sm:text-xs' : 'px-3 py-1 text-xs'">
                     {{ coaster.type }}
                   </span>
                 </div>
               </div>
 
               <!-- Content -->
-              <div class="p-6 flex-1 flex flex-col">
-                <div class="mb-4">
-                  <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">{{ coaster.name }}</h3>
-                  <p class="text-sm text-slate-500 flex items-center gap-1">
-                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex-1 flex flex-col" [ngClass]="mobileGridMode() === 'compact' ? 'p-3 sm:p-6' : 'p-6'">
+                <div class="mb-2 sm:mb-4">
+                  <h3 class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1"
+                      [ngClass]="mobileGridMode() === 'compact' ? 'text-sm sm:text-lg' : 'text-lg'">{{ coaster.name }}</h3>
+                  <p class="text-slate-500 flex items-center gap-1"
+                     [ngClass]="mobileGridMode() === 'compact' ? 'text-[9px] sm:text-sm' : 'text-sm'">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    {{ coaster.park }}, {{ coaster.country }}
+                    <span class="truncate">{{ coaster.park }}, {{ coaster.country }}</span>
                   </p>
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-3 gap-2 py-4 border-y border-slate-50 mb-auto">
+                <div class="grid grid-cols-3 border-y border-slate-50 mb-auto"
+                     [ngClass]="mobileGridMode() === 'compact' ? 'gap-1 py-2 sm:gap-2 sm:py-4 hidden sm:grid' : 'gap-2 py-4'">
                   <div class="text-center">
-                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Alt</p>
-                    <p class="text-sm font-extrabold text-slate-800">{{ coaster.height }}</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Alt</p>
+                    <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.height }}</p>
                   </div>
                   <div class="text-center border-x border-slate-50">
-                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Vel</p>
-                    <p class="text-sm font-extrabold text-slate-800">{{ coaster.speed }}</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Vel</p>
+                    <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.speed }}</p>
                   </div>
                   <div class="text-center">
-                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Long</p>
-                    <p class="text-sm font-extrabold text-slate-800">{{ coaster.length }}</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Long</p>
+                    <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.length }}</p>
                   </div>
                 </div>
 
                 <!-- Action -->
-                <div class="mt-6 flex items-center justify-between">
-                  <span class="text-xs font-medium text-slate-400">{{ coaster.manufacturer }}</span>
+                <div class="flex items-center justify-between"
+                     [ngClass]="mobileGridMode() === 'compact' ? 'mt-2 sm:mt-6' : 'mt-6'">
+                  <span class="font-medium text-slate-400 truncate pr-2"
+                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[9px] sm:text-xs' : 'text-xs'">{{ coaster.manufacturer }}</span>
                   <button 
                     (click)="handleAction(coaster)" 
-                    [ngClass]="userCredits().has(coaster.id) ? 'bg-emerald-500 text-white hover:bg-red-500 hover:text-white' : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'"
-                    class="cursor-pointer rounded-xl p-2 transition-all shadow-sm flex items-center justify-center group/btn"
+                    class="cursor-pointer rounded-xl transition-all shadow-sm flex items-center justify-center shrink-0 group/btn {{ userCredits().has(coaster.id) ? 'bg-emerald-500 text-white hover:bg-red-500 hover:text-white' : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white' }} {{ mobileGridMode() === 'compact' ? 'p-1.5 sm:p-2' : 'p-2' }}"
                     [title]="userCredits().has(coaster.id) ? 'Eliminar credit' : 'Añadir credit'"
                   >
                     @if (userCredits().has(coaster.id)) {
-                      <svg class="h-5 w-5 group-hover/btn:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg class="group-hover/btn:hidden shrink-0" [ngClass]="mobileGridMode() === 'compact' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-5 w-5'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                       </svg>
-                      <svg class="h-5 w-5 hidden group-hover/btn:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg class="hidden group-hover/btn:block shrink-0" [ngClass]="mobileGridMode() === 'compact' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-5 w-5'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     } @else {
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg class="shrink-0" [ngClass]="mobileGridMode() === 'compact' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-5 w-5'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                       </svg>
                     }

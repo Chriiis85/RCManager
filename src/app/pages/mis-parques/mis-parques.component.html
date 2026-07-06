@@ -67,7 +67,7 @@
           {{ parks().length === 0 ? '¡Empieza a registrar parques que hayas visitado!' : 'Prueba con otra búsqueda.' }}
         </p>
         @if (parks().length === 0) {
-          <button (click)="router.navigate(['/parques'])" class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/25 active:scale-95">
+          <button routerLink="/atracciones"class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/25 active:scale-95">
             Explorar Parques
           </button>
         }
