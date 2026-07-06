@@ -171,14 +171,17 @@ export class ParksComponent implements OnInit {
   private async fetchWikipediaImage(parkName: string): Promise<string | null> {
     try {
       const encoded = encodeURIComponent(parkName);
-      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encoded}&gsrlimit=1&prop=pageimages&format=json&pithumbsize=800&origin=*`;
+      // Buscamos directamente fotos en Wikimedia Commons (namespace 6)
+      const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encoded}&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`;
       const res = await fetch(url);
       if (!res.ok) return null;
       const data = await res.json();
       const pages = data?.query?.pages;
       if (!pages) return null;
       const page = Object.values(pages)[0] as any;
-      return page?.thumbnail?.source ?? null;
+      
+      // Intentamos usar la miniatura a 800px para no cargar fotos de 10MB, si no existe usamos la original
+      return page?.imageinfo?.[0]?.thumburl ?? page?.imageinfo?.[0]?.url ?? null;
     } catch {
       return null;
     }
