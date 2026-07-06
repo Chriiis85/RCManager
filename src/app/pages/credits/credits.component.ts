@@ -201,6 +201,11 @@ export class CreditsComponent implements OnInit {
     });
   }
 
+  closeAddConfirm() {
+    this.showAddConfirmModal.set(false);
+    this.selectedCoaster.set(null);
+  }
+
   confirmAdd() {
     const item = this.selectedCoaster();
     if (!item) return;
