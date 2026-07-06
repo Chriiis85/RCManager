@@ -455,9 +455,14 @@
           ¿Quieres añadir <span class="font-bold text-slate-700">{{ selectedAttraction()?.name }}</span> a tus atracciones visitadas?
         </p>
         <div class="flex gap-3">
-          <button (click)="closeAddConfirm()" class="cursor-pointer flex-1 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-100 transition-all">Cancelar</button>
-          <button (click)="confirmAdd()" class="cursor-pointer flex-1 py-3 rounded-2xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/25 active:scale-95">
-            Añadir
+          <button (click)="closeAddConfirm()" [disabled]="isSubmitting()" class="cursor-pointer flex-1 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Cancelar</button>
+          <button (click)="confirmAdd()" [disabled]="isSubmitting()" class="relative cursor-pointer flex-1 py-3 rounded-2xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95 disabled:opacity-70 disabled:active:scale-100 disabled:cursor-not-allowed flex items-center justify-center">
+            <span [ngClass]="{'opacity-0': isSubmitting()}">Añadir</span>
+            @if (isSubmitting()) {
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
+            }
           </button>
         </div>
       </div>

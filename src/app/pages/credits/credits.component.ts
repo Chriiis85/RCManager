@@ -42,6 +42,7 @@ export class CreditsComponent implements OnInit {
   showLoginPromptModal = signal(false);
   showDeleteConfirmModal = signal(false);
   showAddConfirmModal = signal(false);
+  isSubmitting = signal(false);
   selectedCoaster = signal<Coaster | null>(null);
   countdown = signal(2);
   isLoading = signal(true);
@@ -204,6 +205,7 @@ export class CreditsComponent implements OnInit {
       return;
     }
 
+    this.isSubmitting.set(true);
     this.recordsService.addCredit(item.id, undefined, undefined, undefined, {
       name: item.name,
       park: item.park,
@@ -217,6 +219,7 @@ export class CreditsComponent implements OnInit {
           return newSet;
         });
         this.showAddConfirmModal.set(false);
+        this.isSubmitting.set(false);
         this.showSuccessModal.set(true);
         this.countdown.set(2);
         if (this.successTimer) clearTimeout(this.successTimer);
@@ -256,6 +259,7 @@ export class CreditsComponent implements OnInit {
           this.showAddConfirmModal.set(false);
           this.selectedCoaster.set(null);
         }
+        this.isSubmitting.set(false);
       }
     });
   }

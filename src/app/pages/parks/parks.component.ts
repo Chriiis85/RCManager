@@ -53,6 +53,7 @@ export class ParksComponent implements OnInit {
   showAddConfirmModal = signal(false);
   showDeleteConfirmModal = signal(false);
   showLoginPromptModal = signal(false);
+  isSubmitting = signal(false);
   selectedParkAction = signal<ThemePark | null>(null);
   countdown = signal(2);
   successTimer: any;
@@ -439,6 +440,7 @@ export class ParksComponent implements OnInit {
       return;
     }
 
+    this.isSubmitting.set(true);
     this.recordsService.addPark(item.id, undefined, { name: item.name, country: item.country }).subscribe({
       next: () => {
         this.userParks.update(set => {
@@ -447,6 +449,7 @@ export class ParksComponent implements OnInit {
           return newSet;
         });
         this.showAddConfirmModal.set(false);
+        this.isSubmitting.set(false);
         this.showSuccessModal.set(true);
         this.countdown.set(2);
         if (this.successTimer) clearTimeout(this.successTimer);
@@ -485,6 +488,7 @@ export class ParksComponent implements OnInit {
           this.showAddConfirmModal.set(false);
           this.selectedParkAction.set(null);
         }
+        this.isSubmitting.set(false);
       }
     });
   }

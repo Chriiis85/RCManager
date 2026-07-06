@@ -206,6 +206,7 @@ export class AttractionsComponent implements OnInit {
   showDeleteSuccessModal = signal(false);
   showDeleteConfirmModal = signal(false);
   showAddConfirmModal = signal(false);
+  isSubmitting = signal(false);
   selectedAttraction = signal<Attraction | null>(null);
 
   countdown = signal(2);
@@ -271,6 +272,7 @@ export class AttractionsComponent implements OnInit {
       return;
     }
 
+    this.isSubmitting.set(true);
     this.recordsService.addAttraction(item.id, undefined, undefined, {
       name: item.name,
       park: item.park,
@@ -284,6 +286,7 @@ export class AttractionsComponent implements OnInit {
           return newSet;
         });
         this.showAddConfirmModal.set(false);
+        this.isSubmitting.set(false);
         this.showSuccessModal.set(true);
         this.countdown.set(2);
         if (this.successTimer) clearTimeout(this.successTimer);
@@ -322,6 +325,7 @@ export class AttractionsComponent implements OnInit {
           this.showAddConfirmModal.set(false);
           this.selectedAttraction.set(null);
         }
+        this.isSubmitting.set(false);
       }
     });
   }
