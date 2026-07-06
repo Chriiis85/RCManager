@@ -119,6 +119,9 @@ export class AuthService {
     this._token.set(null);
     this._user.set(null);
     this.router.navigate(['/']);
+
+    // Limpiar también la sesión de Supabase para evitar que nos vuelva a loguear al refrescar
+    this.supabaseService.supabase.auth.signOut().catch(console.error);
   }
 
   // ── Get auth headers (para peticiones protegidas) ─────────────────────────
