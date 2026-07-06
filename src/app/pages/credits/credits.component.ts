@@ -102,15 +102,16 @@ export class CreditsComponent implements OnInit {
   }
 
   private mapStatus(status: string): string {
-    const statuses: Record<string, string> = {
-      'Operating': 'Operativa',
-      'SBNO': 'Cerrada Temporalmente',
-      'Removed': 'Eliminada',
-      'Under Construction': 'En Construcción',
-      'Defunct': 'Eliminada'
-    };
     if (!status) return 'Desconocido';
-    return statuses[status] || status;
+    const s = status.toUpperCase();
+    const statuses: Record<string, string> = {
+      'OPERATING': 'Operativa',
+      'SBNO': 'Cerrada Temporalmente',
+      'REMOVED': 'Eliminada',
+      'UNDER CONSTRUCTION': 'En Construcción',
+      'DEFUNCT': 'Eliminada'
+    };
+    return statuses[s] || status;
   }
 
   async fetchCoasters() {
@@ -253,7 +254,7 @@ export class CreditsComponent implements OnInit {
     const hide = this.hideRemoved();
 
     return this.coasters().filter(c => {
-      if (hide && (c.status === 'Eliminada' || c.status === 'Removed' || c.status === 'Defunct')) return false;
+      if (hide && c.status === 'Eliminada') return false;
 
       // 1. Search Query
       const matchesSearch = c.name.toLowerCase().includes(query) ||

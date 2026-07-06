@@ -37,8 +37,8 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
     const hide = this.hideRemoved();
     
     return this.credits().filter(c => {
-      const status = c.coaster?.status;
-      if (hide && (status === 'REMOVED' || status === 'Eliminada')) return false;
+      const status = (c.coaster?.status || '').toUpperCase();
+      if (hide && (status === 'REMOVED' || status === 'ELIMINADA' || status === 'DEFUNCT')) return false;
 
       if (!q) return true;
       return (c.coaster?.name || '').toLowerCase().includes(q) ||
