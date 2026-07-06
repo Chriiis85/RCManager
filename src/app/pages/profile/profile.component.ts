@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, inject, OnInit, OnDestroy }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { RecordsService, CoasterCredit, AttractionRecord, ParkVisit } from '../../core/services/records.service';
 
@@ -48,6 +49,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   });
 
   stats = signal({ credits: 0, parks: 0, attractions: 0 });
+  isLoading = signal(true);
 
   // Listas completas de registros reales
   creditsList = signal<CoasterCredit[]>([]);
@@ -128,17 +130,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   loadStats() {
-    this.recordsService.getCredits().subscribe(credits => {
-      this.creditsList.set(credits);
-      this.stats.update(s => ({ ...s, credits: credits.length }));
-    });
-    this.recordsService.getAttractions().subscribe(attractions => {
-      this.attractionsList.set(attractions);
-      this.stats.update(s => ({ ...s, attractions: attractions.length }));
-    });
-    this.recordsService.getParks().subscribe(parks => {
-      this.parksList.set(parks);
-      this.stats.update(s => ({ ...s, parks: parks.length }));
+    this.isLoading.set(true);
+    forkJoin({
+      credits: this.recordsService.getCredits(),
+      attractions: this.recordsService.getAttractions(),
+      parks: this.recordsService.getParks()
+    }).subscribe({
+      next: ({ credits, attractions, parks }) => {
+        this.creditsList.set(credits);
+        this.attractionsList.set(attractions);
+        this.parksList.set(parks);
+        this.stats.set({
+          credits: credits.length,
+          attractions: attractions.length,
+          parks: parks.length
+        });
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
     });
   }
 

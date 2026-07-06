@@ -9,6 +9,61 @@
       </div>
     </div>
 
+    @if (isLoading()) {
+      <!-- Skeleton Loader -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-pulse">
+        <!-- Left column skeleton -->
+        <div class="space-y-6">
+          <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center gap-4">
+            <div class="w-32 h-32 rounded-full bg-slate-200"></div>
+            <div class="h-5 w-36 bg-slate-200 rounded-xl"></div>
+            <div class="h-4 w-24 bg-slate-100 rounded-xl"></div>
+            <div class="w-full h-10 bg-slate-100 rounded-2xl"></div>
+          </div>
+          <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+            <div class="h-5 w-32 bg-slate-200 rounded-xl"></div>
+            <div class="h-10 w-full bg-slate-100 rounded-2xl"></div>
+            <div class="h-10 w-full bg-slate-100 rounded-2xl"></div>
+          </div>
+        </div>
+
+        <!-- Right column skeleton -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Stats skeleton -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-slate-200 h-32 rounded-3xl"></div>
+            <div class="bg-slate-100 h-32 rounded-3xl"></div>
+            <div class="bg-slate-100 h-32 rounded-3xl"></div>
+          </div>
+          <!-- List skeletons -->
+          <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+            <div class="h-5 w-28 bg-slate-200 rounded-xl"></div>
+            @for (i of [1,2,3]; track i) {
+              <div class="flex items-center gap-4 p-3 rounded-2xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-slate-200 flex-shrink-0"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-4 w-3/4 bg-slate-200 rounded-lg"></div>
+                  <div class="h-3 w-1/2 bg-slate-100 rounded-lg"></div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+            <div class="h-5 w-40 bg-slate-200 rounded-xl"></div>
+            @for (i of [1,2,3]; track i) {
+              <div class="flex items-center gap-4 p-3 rounded-2xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-slate-200 flex-shrink-0"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-4 w-3/4 bg-slate-200 rounded-lg"></div>
+                  <div class="h-3 w-1/2 bg-slate-100 rounded-lg"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Left Column: User Info & Security -->
@@ -238,6 +293,7 @@
 
       </div>
     </div>
+    }
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
