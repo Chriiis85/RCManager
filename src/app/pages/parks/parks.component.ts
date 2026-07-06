@@ -165,7 +165,7 @@ export class ParksComponent implements OnInit {
   private async fetchWikipediaImage(parkName: string): Promise<string | null> {
     try {
       const encoded = encodeURIComponent(parkName);
-      const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encoded}&prop=pageimages&format=json&pithumbsize=800&origin=*`;
+      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encoded}&gsrlimit=1&prop=pageimages&format=json&pithumbsize=800&origin=*`;
       const res = await fetch(url);
       if (!res.ok) return null;
       const data = await res.json();
@@ -185,19 +185,18 @@ export class ParksComponent implements OnInit {
   }
 
   private async loadParkImagesBatch(parks: ThemePark[]) {
-    const BATCH_SIZE = 8;
-    for (let i = 0; i < parks.length; i += BATCH_SIZE) {
-      const batch = parks.slice(i, i + BATCH_SIZE);
-      await Promise.all(
-        batch.map(async (park) => {
-          const img = await this.fetchWikipediaImage(park.name);
-          if (img) {
-            this.parks.update(list =>
-              list.map(p => p.id === park.id ? { ...p, image: img } : p)
-            );
-          }
-        })
-      );
+    // Para evitar errores 429 (Too Many Requests) de Wikipedia y cargar imágenes más reales,
+    // procesamos secuencialmente con un pequeño retraso.
+    for (const park of parks) {
+      // Retraso de 300ms entre cada petición
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const img = await this.fetchWikipediaImage(park.name);
+      if (img) {
+        this.parks.update(list =>
+          list.map(p => p.id === park.id ? { ...p, image: img } : p)
+        );
+      }
     }
   }
 
