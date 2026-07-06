@@ -528,7 +528,7 @@ export class ParksComponent implements OnInit {
 
   parks = signal<ThemePark[]>([]);
 
-  filteredParks = computed(() => {
+  allFilteredParks = computed(() => {
     const query = this.searchQuery().toLowerCase();
     const selCountries = this.selectedCountries();
     const selStatuses = this.selectedStatuses();
@@ -572,38 +572,34 @@ export class ParksComponent implements OnInit {
 
         // 3. Alfabético (terciario)
         return a.name.localeCompare(b.name);
-      })
-      .slice(0, this.visibleParksLimit());
+      });
+  });
+
+  filteredParks = computed(() => {
+    return this.allFilteredParks().slice(0, this.visibleParksLimit());
   });
 
   hasMoreParks = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    const selCountries = this.selectedCountries();
-    const selStatuses = this.selectedStatuses();
-    const selCrowds = this.selectedCrowds();
-
-    const totalFilteredCount = this.parks().filter((p) => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(query) ||
-        p.location.toLowerCase().includes(query) ||
-        p.country.toLowerCase().includes(query);
-      if (!matchesSearch) return false;
-      if (selCountries.length > 0 && !selCountries.includes(p.country)) return false;
-      if (selStatuses.length > 0) {
-        const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
-        if (!selStatuses.includes(pStatus)) return false;
-      } else {
-        // Mostramos todos
-      }
-      if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
-      return true;
-    }).length;
-
-    return totalFilteredCount > this.visibleParksLimit();
+    return this.allFilteredParks().length > this.visibleParksLimit();
   });
 
-  loadMore() {
+  isLoadingMore = signal(false);
+
+  async loadMore() {
+    this.isLoadingMore.set(true);
+    
+    const currentLimit = this.visibleParksLimit();
+    const nextLimit = currentLimit + 12;
+    
+    // Obtenemos los siguientes parques que se van a mostrar
+    const nextBatch = this.allFilteredParks().slice(currentLimit, nextLimit);
+    
+    // Esperamos a que terminen de cargar sus datos de Wikipedia y colas ANTES de mostrarlos
+    await this.loadDataForVisibleParks(nextBatch);
+    
+    // Ahora sí, aumentamos el límite para que aparezcan en pantalla ya cargados
     this.visibleParksLimit.update((limit) => limit + 12);
+    this.isLoadingMore.set(false);
   }
 
   countries = computed(() => {

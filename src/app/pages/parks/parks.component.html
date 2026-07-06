@@ -318,11 +318,16 @@
         <!-- Load More Section -->
         @if (hasMoreParks()) {
           <div class="mt-12 text-center animate-fade-in-up pb-10">
-            <button (click)="loadMore()" class="inline-flex cursor-pointer items-center gap-2 px-8 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-black text-[11px] uppercase tracking-widest hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm active:scale-95 group">
-              <svg class="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-              </svg>
-              Cargar más
+            <button (click)="loadMore()" [disabled]="isLoadingMore()" class="inline-flex cursor-pointer items-center gap-2 px-8 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-black text-[11px] uppercase tracking-widest hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm active:scale-95 group disabled:opacity-70 disabled:active:scale-100 disabled:cursor-not-allowed">
+              @if (isLoadingMore()) {
+                <div class="h-4 w-4 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>
+                Cargando...
+              } @else {
+                <svg class="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+                Cargar más
+              }
             </button>
           </div>
         }
