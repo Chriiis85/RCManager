@@ -61,6 +61,13 @@
             >Viajes</a
           >
         }
+        <a
+          href="http://localhost:3000"
+          target="_blank"
+          class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer flex items-center gap-1"
+          >
+          <span>🤖</span> ParksIA
+        </a>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -143,6 +150,12 @@
               class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
             >Viajes</a>
           }
+          <a
+            href="http://localhost:3000"
+            target="_blank"
+            (click)="closeMenu()"
+            class="block rounded-lg px-3 py-2.5 text-base font-bold leading-7 text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-2"
+          >🤖 ParksIA</a>
           
           <div class="py-4 mt-2 border-t border-slate-100 italic">
             @if (authService.isAuthenticated()) {
