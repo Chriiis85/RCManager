@@ -114,13 +114,24 @@ export class AuthService {
 
   // ── Logout ────────────────────────────────────────────────────────────────
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      
+      // Borrar forzosamente cualquier clave de Supabase por si el signOut falla
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('sb-')) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
+
     this._token.set(null);
     this._user.set(null);
     this.router.navigate(['/']);
 
-    // Limpiar también la sesión de Supabase para evitar que nos vuelva a loguear al refrescar
+    // Limpiar también la sesión de Supabase en el servidor para evitar que nos vuelva a loguear al refrescar
     this.supabaseService.supabase.auth.signOut().catch(console.error);
   }
 
