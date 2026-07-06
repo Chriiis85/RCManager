@@ -67,6 +67,17 @@ export class AuthService {
         localStorage.setItem(USER_KEY, JSON.stringify(supaUser));
         this._token.set(session.access_token);
         this._user.set(supaUser);
+        
+        // Si el evento es SIGNED_IN (acabamos de volver de Google), forzamos la redirección
+        // porque el AuthGuard de Angular suele ejecutarse antes de que Supabase procese el token.
+        if (event === 'SIGNED_IN') {
+          this.router.navigate(['/profile']);
+        }
+      } else {
+        // Si Supabase se desloguea (ej. caduca la sesión), limpiamos Angular
+        if (event === 'SIGNED_OUT') {
+          this.logout();
+        }
       }
     });
   }
@@ -92,7 +103,9 @@ export class AuthService {
     const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/profile'
+        // Redirigimos a /login (ruta desprotegida) para que Angular no destruya 
+        // el #access_token de la URL antes de que Supabase lo lea.
+        redirectTo: window.location.origin + '/login'
       }
     });
     
