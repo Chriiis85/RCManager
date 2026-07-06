@@ -32,6 +32,8 @@ export interface RegisterPayload {
 const API_BASE = 'https://rc-manager-api.vercel.app/api/auth';
 const TOKEN_KEY = 'rcm_token';
 const USER_KEY = 'rcm_user';
+// Clave en sessionStorage para bloquear re-login durante logout incluso tras F5
+const LOGOUT_FLAG_KEY = 'rcm_logging_out';
 
 @Injectable({
   providedIn: 'root'
@@ -41,51 +43,48 @@ export class AuthService {
   private router = inject(Router);
   private supabaseService = inject(SupabaseService);
 
-  // Flag para evitar que Supabase re-autentique durante un logout activo
-  private _isLoggingOut = false;
-
-  // Signals de estado
   private _token = signal<string | null>(this.getStoredToken());
   private _user = signal<User | null>(this.getStoredUser());
 
-  // Expuestos como readonly
   readonly currentUser = this._user.asReadonly();
   readonly token = this._token.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token() && !!this._user());
 
   constructor() {
-    this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
-      // Si estamos en proceso de logout, ignoramos cualquier evento de Supabase
-      if (this._isLoggingOut) return;
+    // Si venimos de un logout (incluso tras F5), borramos cualquier sesion de Supabase que quede
+    if (this.isLoggingOut()) {
+      this.wipeSupabaseKeys();
+      this.clearLogoutFlag();
+    }
 
-      if (session) {
-        if (event === 'SIGNED_IN') {
-          // Pedimos a nuestro backend que valide el token de Supabase y nos devuelva un JWT oficial.
-          this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: session.access_token }).subscribe({
-            next: (res) => {
-              this.handleAuthSuccess(res);
-              const currentUrl = this.router.url;
-              if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
-                this.router.navigate(['/profile']);
-              }
-            },
-            error: (err) => {
-              console.error('Error al intercambiar el token de Supabase con el backend:', err);
-              this.logout();
+    this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
+      // Ignorar eventos de Supabase si estamos en proceso de logout
+      if (this.isLoggingOut()) return;
+
+      if (session && event === 'SIGNED_IN') {
+        this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: session.access_token }).subscribe({
+          next: (res) => {
+            this.handleAuthSuccess(res);
+            const currentUrl = this.router.url;
+            if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
+              this.router.navigate(['/profile']);
             }
-          });
-        }
-      } else {
-        if (event === 'SIGNED_OUT') {
-          // Solo limpiar senales de Angular, no llamar a logout() de nuevo
-          this._token.set(null);
-          this._user.set(null);
-        }
+          },
+          error: (err) => {
+            console.error('Error al intercambiar el token de Supabase con el backend:', err);
+            this.logout();
+          }
+        });
+      }
+
+      if (!session && event === 'SIGNED_OUT') {
+        this._token.set(null);
+        this._user.set(null);
       }
     });
   }
 
-  // Register
+  // ── Register ───────────────────────────────────────────────────────────────
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/register`, payload).pipe(
       tap(res => this.handleAuthSuccess(res)),
@@ -93,7 +92,7 @@ export class AuthService {
     );
   }
 
-  // Login
+  // ── Login ──────────────────────────────────────────────────────────────────
   login(payload: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/login`, payload).pipe(
       tap(res => this.handleAuthSuccess(res)),
@@ -101,8 +100,11 @@ export class AuthService {
     );
   }
 
-  // Supabase Google Login
+  // ── Supabase Google Login ──────────────────────────────────────────────────
   async signInWithGoogle(): Promise<void> {
+    // Asegurarse de limpiar el flag de logout antes de iniciar sesion
+    this.clearLogoutFlag();
+
     const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -116,44 +118,63 @@ export class AuthService {
     }
   }
 
-  // Logout
+  // ── Logout ─────────────────────────────────────────────────────────────────
   logout(): void {
-    // Activar el flag para bloquear eventos de Supabase durante el logout
-    this._isLoggingOut = true;
+    // 1. Marcar en sessionStorage que estamos haciendo logout
+    //    (persiste aunque el usuario haga F5 durante los proximos 5 segundos)
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(LOGOUT_FLAG_KEY, '1');
+    }
 
-    // 1. Limpiar senales de Angular inmediatamente
+    // 2. Limpiar senales de Angular
     this._token.set(null);
     this._user.set(null);
 
-    // 2. Limpiar localStorage de forma sincrona y agresiva
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
+    // 3. Borrar localStorage de forma sincrona
+    this.wipeAllKeys();
 
-      // Borrar TODAS las claves de Supabase del localStorage
-      const keysToRemove: string[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('sb-')) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach(k => localStorage.removeItem(k));
-    }
-
-    // 3. Navegar al inicio
+    // 4. Navegar al inicio
     this.router.navigate(['/']);
 
-    // 4. Cerrar sesion en Supabase de forma async
+    // 5. Cerrar sesion en Supabase de forma async
     this.supabaseService.supabase.auth.signOut().finally(() => {
-      // Resetear el flag despues de un momento para permitir futuros logins
-      setTimeout(() => { this._isLoggingOut = false; }, 2000);
+      // Limpiar el flag tras completar el signOut (tipicamente menos de 1s)
+      setTimeout(() => this.clearLogoutFlag(), 3000);
     });
   }
 
-  // Get auth headers
+  // ── Get auth headers ───────────────────────────────────────────────────────
   getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this._token()}` });
+  }
+
+  // ── Helpers privados ───────────────────────────────────────────────────────
+  private isLoggingOut(): boolean {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem(LOGOUT_FLAG_KEY) === '1';
+  }
+
+  private clearLogoutFlag(): void {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(LOGOUT_FLAG_KEY);
+    }
+  }
+
+  private wipeSupabaseKeys(): void {
+    if (typeof window === 'undefined') return;
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sb-')) keysToRemove.push(key);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  }
+
+  private wipeAllKeys(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this.wipeSupabaseKeys();
   }
 
   private handleAuthSuccess(res: AuthResponse): void {
@@ -164,11 +185,15 @@ export class AuthService {
   }
 
   private getStoredToken(): string | null {
-    return typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+    if (typeof window === 'undefined') return null;
+    // Si estamos en proceso de logout, no devolver el token aunque exista
+    if (sessionStorage.getItem(LOGOUT_FLAG_KEY) === '1') return null;
+    return localStorage.getItem(TOKEN_KEY);
   }
 
   private getStoredUser(): User | null {
     if (typeof window === 'undefined') return null;
+    if (sessionStorage.getItem(LOGOUT_FLAG_KEY) === '1') return null;
     const raw = localStorage.getItem(USER_KEY);
     try {
       return raw ? JSON.parse(raw) : null;
