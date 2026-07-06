@@ -191,16 +191,19 @@ export class ParksComponent implements OnInit {
   }
 
   private loadedDataParkIds = new Set<number>();
+  private isLoadingData = false;
 
   private async loadDataForVisibleParks(visibleParks: ThemePark[]) {
     const parksToLoad = visibleParks.filter(p => !this.loadedDataParkIds.has(p.id));
     
     if (parksToLoad.length === 0) {
-      if (this.isInitialLoading()) {
+      if (!this.isLoadingData && this.isInitialLoading()) {
         this.isInitialLoading.set(false);
       }
       return;
     }
+
+    this.isLoadingData = true;
 
     // Marcar como cargando para que no se vuelvan a procesar
     parksToLoad.forEach(p => this.loadedDataParkIds.add(p.id));
@@ -219,6 +222,8 @@ export class ParksComponent implements OnInit {
         );
       }
     }
+
+    this.isLoadingData = false;
 
     // Si estamos en la carga inicial, la quitamos al terminar la primera tanda de visibles
     if (this.isInitialLoading()) {
