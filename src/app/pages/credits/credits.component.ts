@@ -108,6 +108,8 @@ export class CreditsComponent implements OnInit {
       'OPERATING': 'Operativa',
       'SBNO': 'Cerrada Temporalmente',
       'REMOVED': 'Eliminada',
+      'CLOSED': 'Cerrada',
+      'CONSTRUCTION': 'En Construcción',
       'UNDER CONSTRUCTION': 'En Construcción',
       'DEFUNCT': 'Eliminada'
     };
@@ -254,7 +256,7 @@ export class CreditsComponent implements OnInit {
     const hide = this.hideRemoved();
 
     return this.coasters().filter(c => {
-      if (hide && c.status === 'Eliminada') return false;
+      if (hide && (c.status === 'Eliminada' || c.status === 'Cerrada')) return false;
 
       // 1. Search Query
       const matchesSearch = c.name.toLowerCase().includes(query) ||

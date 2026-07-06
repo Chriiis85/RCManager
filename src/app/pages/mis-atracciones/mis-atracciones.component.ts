@@ -38,7 +38,7 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
     
     return this.attractions().filter(a => {
       const status = (a.attraction?.status || '').toUpperCase();
-      if (hide && (status === 'REMOVED' || status === 'ELIMINADA' || status === 'DEFUNCT')) return false;
+      if (hide && (status === 'REMOVED' || status === 'ELIMINADA' || status === 'DEFUNCT' || status === 'CLOSED' || status === 'CERRADA')) return false;
 
       if (!q) return true;
       return (a.attraction?.name || '').toLowerCase().includes(q) ||

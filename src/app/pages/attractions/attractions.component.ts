@@ -121,6 +121,7 @@ export class AttractionsComponent implements OnInit {
       'OPERATING': 'Operativa',
       'SBNO': 'Cerrada Temporalmente',
       'REMOVED': 'Eliminada',
+      'CLOSED': 'Cerrada',
       'CONSTRUCTION': 'En Construcción',
       'UNDER CONSTRUCTION': 'En Construcción',
       'DEFUNCT': 'Eliminada'
@@ -137,7 +138,7 @@ export class AttractionsComponent implements OnInit {
     const hide = this.hideRemoved();
 
     return this.attractions().filter(a => {
-      if (hide && a.status === 'Eliminada') return false;
+      if (hide && (a.status === 'Eliminada' || a.status === 'Cerrada')) return false;
 
       const matchesSearch = a.name.toLowerCase().includes(query) || 
                           a.park.toLowerCase().includes(query) ||
