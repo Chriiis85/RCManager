@@ -223,7 +223,6 @@ export class ParksComponent implements OnInit {
       .then((res) => res.json())
       .then((groups) => {
         const allParks = groups.flatMap((group: any) => group.parks);
-        console.log('[Queue-Times API] Grupos:', groups.length);
 
         const mappedParks: ThemePark[] = allParks.map((p: any) => ({
           id: p.id,
