@@ -304,11 +304,24 @@ export class AttractionsComponent implements OnInit {
             newSet.add(item.id);
             return newSet;
           });
+          this.showAddConfirmModal.set(false);
+          this.showSuccessModal.set(true);
+          this.countdown.set(2);
+          if (this.successTimer) clearTimeout(this.successTimer);
+          if (this.successInterval) clearInterval(this.successInterval);
+
+          this.successInterval = setInterval(() => {
+            this.countdown.update(c => Math.max(0, c - 1));
+          }, 1000);
+
+          this.successTimer = setTimeout(() => {
+            this.closeAddSuccess();
+          }, 2000);
         } else {
           console.error('Error al añadir atracción', err);
+          this.showAddConfirmModal.set(false);
+          this.selectedAttraction.set(null);
         }
-        this.showAddConfirmModal.set(false);
-        this.selectedAttraction.set(null);
       }
     });
   }
