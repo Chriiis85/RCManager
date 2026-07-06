@@ -30,6 +30,7 @@ export interface ParkVisit {
   userId: number;
   parkId: number;
   visitDate: string | null;
+  rating: number | null;
   park?: any;
 }
 
@@ -119,6 +120,12 @@ export class RecordsService {
 
   removePark(parkId: number): Observable<any> {
     return this.http.delete(`${API_BASE}/parks/${parkId}`, this.opts()).pipe(
+      catchError(err => this.handleError(err))
+    );
+  }
+
+  updateParkCount(parkId: number, count: number): Observable<ParkVisit> {
+    return this.http.patch<ParkVisit>(`${API_BASE}/parks/${parkId}`, { rating: count }, this.opts()).pipe(
       catchError(err => this.handleError(err))
     );
   }

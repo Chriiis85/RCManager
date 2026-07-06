@@ -153,6 +153,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateParkCount(parkId: number, currentCount: number | null, change: number) {
+    const newCount = Math.max(1, (currentCount || 1) + change);
+    this.recordsService.updateParkCount(parkId, newCount).subscribe({
+      next: (updated) => {
+        this.parksList.update(list => list.map(p => p.id === updated.id ? updated : p));
+      },
+      error: (err) => console.error('Error updating park count:', err)
+    });
+  }
+
   friends = signal<Friend[]>([
     { id: 1, username: 'RollerFan99',  avatar: 'https://ui-avatars.com/api/?name=Roller+Fan&background=0D1B3E&color=fff' },
     { id: 2, username: 'CoasterKing',  avatar: 'https://ui-avatars.com/api/?name=Coaster+King&background=1D4ED8&color=fff' },

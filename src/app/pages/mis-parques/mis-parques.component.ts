@@ -75,6 +75,38 @@ export class MisParquesComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Count Modal logic
+  showCountModal = signal(false);
+  editingPark = signal<ParkVisit | null>(null);
+  newCount = signal<number>(1);
+
+  openCountModal(park: ParkVisit) {
+    this.editingPark.set(park);
+    this.newCount.set(park.rating || 1);
+    this.showCountModal.set(true);
+  }
+
+  closeCountModal() {
+    this.showCountModal.set(false);
+    this.editingPark.set(null);
+  }
+
+  updateCount() {
+    const park = this.editingPark();
+    if (!park || this.newCount() < 1) return;
+    this.isSubmitting.set(true);
+
+    const idToUpdate = park.park?.apiId || park.parkId;
+    this.recordsService.updateParkCount(idToUpdate, this.newCount()).subscribe({
+      next: (updated) => {
+        this.parks.update(list => list.map(p => p.id === park.id ? { ...p, rating: updated.rating } : p));
+        this.closeCountModal();
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
   openDeleteSuccessModal() {
     this.countdown.set(2);
     this.showDeleteSuccessModal.set(true);
