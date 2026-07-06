@@ -69,9 +69,13 @@ export class AuthService {
         this._user.set(supaUser);
         
         // Si el evento es SIGNED_IN (acabamos de volver de Google), forzamos la redirección
-        // porque el AuthGuard de Angular suele ejecutarse antes de que Supabase procese el token.
+        // solo si estamos en la página de login o registro, para evitar 
+        // redirecciones indeseadas cuando Supabase refresca el token al cambiar de pestaña/app.
         if (event === 'SIGNED_IN') {
-          this.router.navigate(['/profile']);
+          const currentUrl = this.router.url;
+          if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
+            this.router.navigate(['/profile']);
+          }
         }
       } else {
         // Si Supabase se desloguea (ej. caduca la sesión), limpiamos Angular
