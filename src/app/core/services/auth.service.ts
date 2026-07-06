@@ -51,31 +51,24 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this._token() && !!this._user());
 
   constructor() {
-    // Escuchar cambios en la sesión de Supabase (Login con Google)
     this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        // Mapear el usuario de Supabase al formato que espera RCManager
-        const supaUser: User = {
-          id: 0, // Supabase usa UUIDs de texto, pero ponemos 0 temporalmente
-          username: session.user.user_metadata['full_name'] || 'Usuario Google',
-          email: session.user.email || '',
-          role: 'user',
-          createdAt: session.user.created_at
-        };
-        
-        localStorage.setItem(TOKEN_KEY, session.access_token);
-        localStorage.setItem(USER_KEY, JSON.stringify(supaUser));
-        this._token.set(session.access_token);
-        this._user.set(supaUser);
-        
-        // Si el evento es SIGNED_IN (acabamos de volver de Google), forzamos la redirección
-        // solo si estamos en la página de login o registro, para evitar 
-        // redirecciones indeseadas cuando Supabase refresca el token al cambiar de pestaña/app.
         if (event === 'SIGNED_IN') {
-          const currentUrl = this.router.url;
-          if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
-            this.router.navigate(['/profile']);
-          }
+          // En lugar de usar el token de Supabase directamente, 
+          // pedimos a nuestro backend que lo valide y nos devuelva un JWT oficial.
+          this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: session.access_token }).subscribe({
+            next: (res) => {
+              this.handleAuthSuccess(res);
+              const currentUrl = this.router.url;
+              if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
+                this.router.navigate(['/profile']);
+              }
+            },
+            error: (err) => {
+              console.error('Error al intercambiar el token de Supabase con el backend:', err);
+              this.logout();
+            }
+          });
         }
       } else {
         // Si Supabase se desloguea (ej. caduca la sesión), limpiamos Angular
