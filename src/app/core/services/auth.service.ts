@@ -50,6 +50,27 @@ export class AuthService {
   readonly token = this._token.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token() && !!this._user());
 
+  constructor() {
+    // Escuchar cambios en la sesión de Supabase (Login con Google)
+    this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        // Mapear el usuario de Supabase al formato que espera RCManager
+        const supaUser: User = {
+          id: 0, // Supabase usa UUIDs de texto, pero ponemos 0 temporalmente
+          username: session.user.user_metadata['full_name'] || 'Usuario Google',
+          email: session.user.email || '',
+          role: 'user',
+          createdAt: session.user.created_at
+        };
+        
+        localStorage.setItem(TOKEN_KEY, session.access_token);
+        localStorage.setItem(USER_KEY, JSON.stringify(supaUser));
+        this._token.set(session.access_token);
+        this._user.set(supaUser);
+      }
+    });
+  }
+
   // ── Register ──────────────────────────────────────────────────────────────
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/register`, payload).pipe(
@@ -71,7 +92,7 @@ export class AuthService {
     const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/perfil'
+        redirectTo: window.location.origin + '/profile'
       }
     });
     
