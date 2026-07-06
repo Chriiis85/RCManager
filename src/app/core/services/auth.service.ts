@@ -41,6 +41,9 @@ export class AuthService {
   private router = inject(Router);
   private supabaseService = inject(SupabaseService);
 
+  // Flag para evitar que Supabase re-autentique durante un logout activo
+  private _isLoggingOut = false;
+
   // Signals de estado
   private _token = signal<string | null>(this.getStoredToken());
   private _user = signal<User | null>(this.getStoredUser());
@@ -52,10 +55,12 @@ export class AuthService {
 
   constructor() {
     this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
+      // Si estamos en proceso de logout, ignoramos cualquier evento de Supabase
+      if (this._isLoggingOut) return;
+
       if (session) {
         if (event === 'SIGNED_IN') {
-          // En lugar de usar el token de Supabase directamente, 
-          // pedimos a nuestro backend que lo valide y nos devuelva un JWT oficial.
+          // Pedimos a nuestro backend que valide el token de Supabase y nos devuelva un JWT oficial.
           this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: session.access_token }).subscribe({
             next: (res) => {
               this.handleAuthSuccess(res);
@@ -71,15 +76,16 @@ export class AuthService {
           });
         }
       } else {
-        // Si Supabase se desloguea (ej. caduca la sesión), limpiamos Angular
         if (event === 'SIGNED_OUT') {
-          this.logout();
+          // Solo limpiar senales de Angular, no llamar a logout() de nuevo
+          this._token.set(null);
+          this._user.set(null);
         }
       }
     });
   }
 
-  // ── Register ──────────────────────────────────────────────────────────────
+  // Register
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/register`, payload).pipe(
       tap(res => this.handleAuthSuccess(res)),
@@ -87,7 +93,7 @@ export class AuthService {
     );
   }
 
-  // ── Login ─────────────────────────────────────────────────────────────────
+  // Login
   login(payload: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/login`, payload).pipe(
       tap(res => this.handleAuthSuccess(res)),
@@ -95,52 +101,61 @@ export class AuthService {
     );
   }
 
-  // ── Supabase Google Login ─────────────────────────────────────────────────
+  // Supabase Google Login
   async signInWithGoogle(): Promise<void> {
     const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Redirigimos a /login (ruta desprotegida) para que Angular no destruya 
-        // el #access_token de la URL antes de que Supabase lo lea.
         redirectTo: window.location.origin + '/login'
       }
     });
-    
+
     if (error) {
-      console.error('Error iniciando sesión con Google:', error.message);
+      console.error('Error iniciando sesion con Google:', error.message);
       throw error;
     }
   }
 
-  // ── Logout ────────────────────────────────────────────────────────────────
+  // Logout
   logout(): void {
+    // Activar el flag para bloquear eventos de Supabase durante el logout
+    this._isLoggingOut = true;
+
+    // 1. Limpiar senales de Angular inmediatamente
+    this._token.set(null);
+    this._user.set(null);
+
+    // 2. Limpiar localStorage de forma sincrona y agresiva
     if (typeof window !== 'undefined') {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
-      
-      // Borrar forzosamente cualquier clave de Supabase por si el signOut falla
-      for (let i = localStorage.length - 1; i >= 0; i--) {
+
+      // Borrar TODAS las claves de Supabase del localStorage
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('sb-')) {
-          localStorage.removeItem(key);
+          keysToRemove.push(key);
         }
       }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
     }
 
-    this._token.set(null);
-    this._user.set(null);
+    // 3. Navegar al inicio
     this.router.navigate(['/']);
 
-    // Limpiar también la sesión de Supabase en el servidor para evitar que nos vuelva a loguear al refrescar
-    this.supabaseService.supabase.auth.signOut().catch(console.error);
+    // 4. Cerrar sesion en Supabase de forma async
+    this.supabaseService.supabase.auth.signOut().finally(() => {
+      // Resetear el flag despues de un momento para permitir futuros logins
+      setTimeout(() => { this._isLoggingOut = false; }, 2000);
+    });
   }
 
-  // ── Get auth headers (para peticiones protegidas) ─────────────────────────
+  // Get auth headers
   getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this._token()}` });
   }
 
-  // ── Helpers privados ──────────────────────────────────────────────────────
   private handleAuthSuccess(res: AuthResponse): void {
     localStorage.setItem(TOKEN_KEY, res.token);
     localStorage.setItem(USER_KEY, JSON.stringify(res.user));
