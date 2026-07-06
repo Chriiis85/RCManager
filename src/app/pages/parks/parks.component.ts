@@ -73,6 +73,12 @@ export class ParksComponent implements OnInit {
         this.userParks.set(new Set());
       }
     });
+
+    effect(() => {
+      // Lazy load de imágenes: Solo cargamos de Wikipedia los parques actualmente visibles
+      const visible = this.filteredParks();
+      this.loadImagesForVisibleParks(visible);
+    }, { allowSignalWrites: true });
   }
 
   closeAddSuccess() {
@@ -184,11 +190,17 @@ export class ParksComponent implements OnInit {
     return `${base}&park_id=${id}`;
   }
 
-  private async loadParkImagesBatch(parks: ThemePark[]) {
-    // Para evitar errores 429 (Too Many Requests) de Wikipedia y cargar imágenes más reales,
-    // procesamos secuencialmente con un pequeño retraso.
-    for (const park of parks) {
-      // Retraso de 300ms entre cada petición
+  private loadedImageParkIds = new Set<number>();
+
+  private async loadImagesForVisibleParks(visibleParks: ThemePark[]) {
+    const parksToLoad = visibleParks.filter(p => !this.loadedImageParkIds.has(p.id));
+    if (parksToLoad.length === 0) return;
+
+    // Marcar como cargando para que no se vuelvan a procesar
+    parksToLoad.forEach(p => this.loadedImageParkIds.add(p.id));
+
+    // Procesamos secuencialmente con un retraso para evitar límite 429
+    for (const park of parksToLoad) {
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const img = await this.fetchWikipediaImage(park.name);
@@ -237,11 +249,10 @@ export class ParksComponent implements OnInit {
 
         this.parks.set(mappedParks);
 
-        // 2. Lanzamos en paralelo: estados Y imágenes de Wikipedia
+        // 2. Lanzamos los estados de los parques
         const statusPromise = this.updateAllParkStatuses(mappedParks);
-        const imagePromise = this.loadParkImagesBatch(mappedParks);
 
-        Promise.all([statusPromise, imagePromise]).finally(() => {
+        Promise.all([statusPromise]).finally(() => {
           this.isInitialLoading.set(false);
         });
       })
