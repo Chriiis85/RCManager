@@ -16,6 +16,7 @@ interface Coaster {
   length: string;
   image: string;
   manufacturer: string;
+  status: string;
 }
 
 @Component({
@@ -29,6 +30,7 @@ export class CreditsComponent implements OnInit {
   searchQuery = signal('');
   showFilters = signal(false);
   mobileGridMode = signal<'large' | 'compact'>('large');
+  hideRemoved = signal(true);
   
   selectedCountries = signal<string[]>([]);
   selectedParks = signal<string[]>([]);
@@ -99,6 +101,18 @@ export class CreditsComponent implements OnInit {
     });
   }
 
+  private mapStatus(status: string): string {
+    const statuses: Record<string, string> = {
+      'Operating': 'Operativa',
+      'SBNO': 'Cerrada Temporalmente',
+      'Removed': 'Eliminada',
+      'Under Construction': 'En Construcción',
+      'Defunct': 'Eliminada'
+    };
+    if (!status) return 'Desconocido';
+    return statuses[status] || status;
+  }
+
   async fetchCoasters() {
     this.isLoading.set(true);
     try {
@@ -114,6 +128,7 @@ export class CreditsComponent implements OnInit {
         height: c.height ? `${c.height}m` : 'N/A',
         speed: c.speed ? `${c.speed} km/h` : 'N/A',
         length: c.length ? `${c.length}m` : 'N/A',
+        status: this.mapStatus(c.status),
         image: c.imageUrl || `https://images.unsplash.com/photo-1513413173474-29c9161a04d3?auto=format&fit=crop&q=80&w=800&q=80&id=${c.id}`,
         manufacturer: c.manufacturer || 'Desconocido'
       }));
@@ -235,8 +250,11 @@ export class CreditsComponent implements OnInit {
     const selParks = this.selectedParks();
     const selTypes = this.selectedTypes();
     const selManufacturers = this.selectedManufacturers();
+    const hide = this.hideRemoved();
 
     return this.coasters().filter(c => {
+      if (hide && (c.status === 'Eliminada' || c.status === 'Removed' || c.status === 'Defunct')) return false;
+
       // 1. Search Query
       const matchesSearch = c.name.toLowerCase().includes(query) ||
         c.park.toLowerCase().includes(query) ||
@@ -312,6 +330,7 @@ export class CreditsComponent implements OnInit {
     this.selectedParks.set([]);
     this.selectedTypes.set([]);
     this.selectedManufacturers.set([]);
+    this.hideRemoved.set(true);
     this.searchQuery.set('');
     this.visibleCount.set(20);
   }
