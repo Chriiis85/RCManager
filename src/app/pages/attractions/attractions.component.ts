@@ -31,6 +31,7 @@ export class AttractionsComponent implements OnInit {
   selectedTypes = signal<string[]>([]);
   selectedManufacturers = signal<string[]>([]);
   selectedParks = signal<string[]>([]);
+  hideRemoved = signal(true);
   
   isLoading = signal(true);
   showFilters = signal(false);
@@ -129,8 +130,11 @@ export class AttractionsComponent implements OnInit {
     const selTypes = this.selectedTypes();
     const selManufacturers = this.selectedManufacturers();
     const selParks = this.selectedParks();
+    const hide = this.hideRemoved();
 
     return this.attractions().filter(a => {
+      if (hide && (a.status === 'Eliminada' || a.status === 'REMOVED')) return false;
+
       const matchesSearch = a.name.toLowerCase().includes(query) || 
                           a.park.toLowerCase().includes(query) ||
                           a.country.toLowerCase().includes(query);
@@ -189,6 +193,7 @@ export class AttractionsComponent implements OnInit {
     this.selectedTypes.set([]);
     this.selectedManufacturers.set([]);
     this.selectedParks.set([]);
+    this.hideRemoved.set(true);
     this.searchQuery.set('');
     this.visibleCount.set(20);
   }

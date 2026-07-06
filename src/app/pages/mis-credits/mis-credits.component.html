@@ -17,19 +17,30 @@
         <p class="text-slate-500 text-sm">Todas las montañas rusas que has montado.</p>
       </div>
 
-      <div class="w-full sm:w-72 relative group">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
+      <div class="w-full sm:w-72 flex flex-col gap-3">
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o parque..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            class="w-full rounded-2xl border-0 py-3 pl-11 pr-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 bg-slate-50 text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none transition-all"
+          >
         </div>
-        <input
-          type="text"
-          placeholder="Buscar por nombre o parque..."
-          [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)"
-          class="w-full rounded-2xl border-0 py-3 pl-11 pr-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 bg-slate-50 text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none transition-all"
-        >
+        <label class="flex items-center gap-2 cursor-pointer group self-end pr-2">
+          <div class="relative flex items-center">
+            <input type="checkbox" [checked]="hideRemoved()" (change)="hideRemoved.set(!hideRemoved())" class="peer appearance-none h-4.5 w-4.5 rounded-md border border-slate-200 checked:bg-slate-800 checked:border-slate-800 transition-all cursor-pointer shadow-sm">
+            <svg class="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 left-0.5 pointer-events-none transition-p-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-slate-500 group-hover:text-slate-900 transition-colors uppercase tracking-wider">Ocultar Eliminadas</span>
+        </label>
       </div>
     </div>
 

@@ -20,6 +20,7 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
   credits = signal<CoasterCredit[]>([]);
   isLoading = signal(true);
   searchQuery = signal('');
+  hideRemoved = signal(true);
 
   // Modal states
   showDeleteModal = signal(false);
@@ -33,11 +34,16 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
 
   filteredCredits = computed(() => {
     const q = this.searchQuery().toLowerCase();
-    if (!q) return this.credits();
-    return this.credits().filter(c =>
-      (c.coaster?.name || '').toLowerCase().includes(q) ||
-      (c.coaster?.park?.name || '').toLowerCase().includes(q)
-    );
+    const hide = this.hideRemoved();
+    
+    return this.credits().filter(c => {
+      const status = c.coaster?.status;
+      if (hide && (status === 'REMOVED' || status === 'Eliminada')) return false;
+
+      if (!q) return true;
+      return (c.coaster?.name || '').toLowerCase().includes(q) ||
+             (c.coaster?.park?.name || '').toLowerCase().includes(q);
+    });
   });
 
   ngOnInit() {
