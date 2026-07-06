@@ -75,9 +75,9 @@ export class ParksComponent implements OnInit {
     });
 
     effect(() => {
-      // Lazy load de imágenes: Solo cargamos de Wikipedia los parques actualmente visibles
+      // Lazy load de imágenes y estados: Solo cargamos datos de los parques actualmente visibles
       const visible = this.filteredParks();
-      this.loadImagesForVisibleParks(visible);
+      this.loadDataForVisibleParks(visible);
     }, { allowSignalWrites: true });
   }
 
@@ -190,20 +190,23 @@ export class ParksComponent implements OnInit {
     return `${base}&park_id=${id}`;
   }
 
-  private loadedImageParkIds = new Set<number>();
+  private loadedDataParkIds = new Set<number>();
 
-  private async loadImagesForVisibleParks(visibleParks: ThemePark[]) {
-    const parksToLoad = visibleParks.filter(p => !this.loadedImageParkIds.has(p.id));
+  private async loadDataForVisibleParks(visibleParks: ThemePark[]) {
+    const parksToLoad = visibleParks.filter(p => !this.loadedDataParkIds.has(p.id));
     if (parksToLoad.length === 0) return;
 
     // Marcar como cargando para que no se vuelvan a procesar
-    parksToLoad.forEach(p => this.loadedImageParkIds.add(p.id));
+    parksToLoad.forEach(p => this.loadedDataParkIds.add(p.id));
 
     // Procesamos secuencialmente con un retraso para evitar límite 429
     for (const park of parksToLoad) {
       await new Promise(resolve => setTimeout(resolve, 300));
       
+      // Lanzamos la actualización de estado y la imagen a la vez para este parque
+      this.checkAndUpdateStatus(park);
       const img = await this.fetchWikipediaImage(park.name);
+      
       if (img) {
         this.parks.update(list =>
           list.map(p => p.id === park.id ? { ...p, image: img } : p)
@@ -249,12 +252,9 @@ export class ParksComponent implements OnInit {
 
         this.parks.set(mappedParks);
 
-        // 2. Lanzamos los estados de los parques
-        const statusPromise = this.updateAllParkStatuses(mappedParks);
-
-        Promise.all([statusPromise]).finally(() => {
-          this.isInitialLoading.set(false);
-        });
+        // 2. Quitamos el bloqueo de la pantalla de carga. 
+        // El lazy loading de images/statuses lo hará la UI
+        this.isInitialLoading.set(false);
       })
       .catch((err) => {
         console.error(err);
@@ -542,9 +542,7 @@ export class ParksComponent implements OnInit {
           const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
           if (!selStatuses.includes(pStatus)) return false;
         } else {
-          // Si no hay filtro de estado, por defecto mostramos solo los que tienen hoy data (comportamiento actual)
-          // unless the user adds "Sin Datos"
-          if (!p.hasTodayData && selStatuses.length === 0) return false;
+          // Si no hay filtro de estado, mostramos todos los parques (tengan o no datos aún)
         }
 
         // 4. Filtro de Afluencia
@@ -586,7 +584,7 @@ export class ParksComponent implements OnInit {
         const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
         if (!selStatuses.includes(pStatus)) return false;
       } else {
-        if (!p.hasTodayData) return false;
+        // Mostramos todos
       }
       if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
       return true;
