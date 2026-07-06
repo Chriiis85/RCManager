@@ -8,6 +8,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -63,6 +64,16 @@ export class ParksComponent implements OnInit {
   recordsService = inject(RecordsService);
   router = inject(Router);
   userParks = signal<Set<number>>(new Set());
+
+  constructor() {
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.fetchUserParks();
+      } else {
+        this.userParks.set(new Set());
+      }
+    });
+  }
 
   closeAddSuccess() {
     this.showSuccessModal.set(false);
@@ -191,9 +202,6 @@ export class ParksComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.authService.isAuthenticated()) {
-      this.fetchUserParks();
-    }
     // 1. Petición para conseguir todos los parques
     fetch('/queue-times-api/parks.json', {
       method: 'GET',

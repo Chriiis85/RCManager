@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -70,6 +70,16 @@ export class CreditsComponent implements OnInit {
   coasters = signal<Coaster[]>([]);
   userCredits = signal<Set<number>>(new Set());
 
+  constructor() {
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.fetchUserCredits();
+      } else {
+        this.userCredits.set(new Set());
+      }
+    });
+  }
+
   visibleCount = signal(20);
 
   visibleCoasters = computed(() => {
@@ -82,9 +92,6 @@ export class CreditsComponent implements OnInit {
 
   ngOnInit() {
     this.fetchCoasters();
-    if (this.authService.isAuthenticated()) {
-      this.fetchUserCredits();
-    }
   }
 
   async fetchUserCredits() {
