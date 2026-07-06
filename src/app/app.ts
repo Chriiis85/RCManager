@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +13,18 @@ import { AuthService } from './core/services/auth.service';
     class: 'block w-full h-full',
   },
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('RCManager');
   authService = inject(AuthService);
+  router = inject(Router);
+  
+  ngOnInit() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    });
+  }
   
   isMenuOpen = signal(false);
   
