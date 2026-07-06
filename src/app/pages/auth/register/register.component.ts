@@ -106,4 +106,15 @@ export class RegisterComponent {
       }
     });
   }
+
+  async onGoogleLogin() {
+    this.errorMessage.set(null);
+    this.isLoading.set(true);
+    try {
+      await this.authService.signInWithGoogle();
+    } catch (err: any) {
+      this.isLoading.set(false);
+      this.errorMessage.set(err.message || 'Error al conectar con Google.');
+    }
+  }
 }
