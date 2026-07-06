@@ -194,7 +194,13 @@ export class ParksComponent implements OnInit {
 
   private async loadDataForVisibleParks(visibleParks: ThemePark[]) {
     const parksToLoad = visibleParks.filter(p => !this.loadedDataParkIds.has(p.id));
-    if (parksToLoad.length === 0) return;
+    
+    if (parksToLoad.length === 0) {
+      if (this.isInitialLoading()) {
+        this.isInitialLoading.set(false);
+      }
+      return;
+    }
 
     // Marcar como cargando para que no se vuelvan a procesar
     parksToLoad.forEach(p => this.loadedDataParkIds.add(p.id));
@@ -212,6 +218,11 @@ export class ParksComponent implements OnInit {
           list.map(p => p.id === park.id ? { ...p, image: img } : p)
         );
       }
+    }
+
+    // Si estamos en la carga inicial, la quitamos al terminar la primera tanda de visibles
+    if (this.isInitialLoading()) {
+      this.isInitialLoading.set(false);
     }
   }
 
@@ -251,9 +262,8 @@ export class ParksComponent implements OnInit {
 
         this.parks.set(mappedParks);
 
-        // 2. Quitamos el bloqueo de la pantalla de carga. 
-        // El lazy loading de images/statuses lo hará la UI
-        this.isInitialLoading.set(false);
+        // 2. Quitamos el bloqueo de la pantalla de carga de aquí. 
+        // Lo quitará loadDataForVisibleParks al terminar la primera tanda.
       })
       .catch((err) => {
         console.error(err);
