@@ -382,6 +382,7 @@ export class ParksComponent implements OnInit {
   fetchUserParks() {
     this.recordsService.getParks().subscribe({
       next: (visits) => {
+        console.log('[DEBUG] Park visits from API:', JSON.stringify(visits.map(v => ({ parkId: v.parkId, apiId: v.park?.apiId, name: v.park?.name }))));
         // park.apiId es el ID externo de Queue-Times que coincide con park.id del frontend
         // v.parkId es el ID interno de la BD y NO coincide
         const ids = new Set(
@@ -389,6 +390,7 @@ export class ParksComponent implements OnInit {
             .map(v => v.park?.apiId)
             .filter((id): id is number => id != null)
         );
+        console.log('[DEBUG] userParks IDs set:', [...ids]);
         this.userParks.set(ids);
       },
       error: (err) => console.error('Error fetching user parks:', err)
