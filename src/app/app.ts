@@ -42,17 +42,7 @@ export class App implements OnInit {
 
   doLogout() {
     this.closeMenu();
-    this.showLogoutModal.set(true);
-    this.logoutCountdown.set(100);
-    
-    this.logoutInterval = setInterval(() => {
-      this.logoutCountdown.update(c => c - 1);
-      if (this.logoutCountdown() <= 0) {
-        clearInterval(this.logoutInterval);
-        this.showLogoutModal.set(false);
-        this.authService.logout();
-      }
-    }, 20);
+    this.authService.logout();
   }
 
   legalModalTitle = signal('');
