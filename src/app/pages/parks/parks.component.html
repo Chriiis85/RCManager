@@ -77,6 +77,31 @@
               </span>
             }
           </button>
+
+          <!-- Mobile Grid Toggle -->
+          <div class="flex sm:hidden items-center bg-slate-100/80 rounded-[1.25rem] p-1 border border-slate-200 shrink-0">
+            <button 
+              (click)="mobileGridMode.set('large')"
+              [ngClass]="mobileGridMode() === 'large' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-600'"
+              class="cursor-pointer p-2 rounded-xl transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="3" stroke-width="2.5"/>
+              </svg>
+            </button>
+            <button 
+              (click)="mobileGridMode.set('compact')"
+              [ngClass]="mobileGridMode() === 'compact' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-600'"
+              class="cursor-pointer p-2 rounded-xl transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <rect x="3" y="3" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="14" y="3" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="2" stroke-width="2.5"/>
+                <rect x="14" y="14" width="7" height="7" rx="2" stroke-width="2.5"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -206,11 +231,13 @@
     <!-- Park Grid -->
     <div class="max-w-7xl mx-auto min-h-[50vh]">
       @if (filteredParks().length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-10"
+             [ngClass]="mobileGridMode() === 'compact' ? 'grid-cols-2 gap-3' : 'grid-cols-1 gap-10'">
           @for (park of filteredParks(); track park.id) {
-            <div class="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col">
+            <div class="group bg-white overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
+                 [ngClass]="mobileGridMode() === 'compact' ? 'rounded-[1.5rem]' : 'rounded-[2.5rem]'">
               <!-- Image Section -->
-              <div class="relative h-64 overflow-hidden bg-slate-100">
+              <div class="relative overflow-hidden bg-slate-100" [ngClass]="mobileGridMode() === 'compact' ? 'h-32 sm:h-64' : 'h-64'">
                 <!-- Shimmer skeleton mientras carga Wikipedia -->
                 <div class="absolute inset-0 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse"></div>
                 <img
@@ -223,28 +250,32 @@
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/10 to-transparent pointer-events-none"></div>
 
-                <div class="absolute top-6 right-6">
-                  <button (click)="$event.stopPropagation(); showParkDetails(park)" class="cursor-pointer h-10 w-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl flex items-center justify-center hover:bg-white/30 transition-all active:scale-95 group/info" title="Ver información y tiempos">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="absolute right-2 top-2 sm:top-6 sm:right-6">
+                  <button (click)="$event.stopPropagation(); showParkDetails(park)" 
+                          class="cursor-pointer rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl flex items-center justify-center hover:bg-white/30 transition-all active:scale-95 group/info" 
+                          [ngClass]="mobileGridMode() === 'compact' ? 'h-7 w-7 sm:h-10 sm:w-10' : 'h-10 w-10'"
+                          title="Ver información y tiempos">
+                    <svg [ngClass]="mobileGridMode() === 'compact' ? 'h-4 w-4 sm:h-6 sm:w-6' : 'h-6 w-6'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
                 </div>
 
-                <div class="absolute bottom-6 left-6 text-white pr-6">
-                  <p class="text-[11px] font-bold opacity-80 uppercase tracking-tighter">{{ park.location }}</p>
-                  <h3 class="text-lg font-bold line-clamp-1 truncate" [title]="park.name">{{ park.name }}</h3>
+                <div class="absolute bottom-2 left-3 sm:bottom-6 sm:left-6 text-white pr-2 sm:pr-6">
+                  <p class="font-bold opacity-80 uppercase tracking-tighter" [ngClass]="mobileGridMode() === 'compact' ? 'text-[8px] sm:text-[11px]' : 'text-[11px]'">{{ park.location }}</p>
+                  <h3 class="font-bold line-clamp-1 truncate" [ngClass]="mobileGridMode() === 'compact' ? 'text-sm sm:text-lg' : 'text-lg'" [title]="park.name">{{ park.name }}</h3>
                 </div>
               </div>
 
               <!-- Content -->
-              <div class="p-8 flex-1 flex flex-col">
-                <p class="text-[13px] text-slate-600 leading-relaxed mb-8 flex-1 line-clamp-3">
+              <div class="flex-1 flex flex-col" [ngClass]="mobileGridMode() === 'compact' ? 'p-3 sm:p-8' : 'p-8'">
+                <p class="text-slate-600 leading-relaxed flex-1"
+                   [ngClass]="mobileGridMode() === 'compact' ? 'text-[10px] sm:text-[13px] mb-3 sm:mb-8 line-clamp-2 sm:line-clamp-3' : 'text-[13px] mb-8 line-clamp-3'">
                   {{ park.description }}
                 </p>
 
                 <!-- Status info -->
-                <div class="flex flex-col gap-1.5 mb-6">
+                <div class="flex flex-col gap-1.5" [ngClass]="mobileGridMode() === 'compact' ? 'mb-3 sm:mb-6' : 'mb-6'">
                   <div class="flex items-center gap-2">
                     <span class="relative flex h-2.5 w-2.5 items-center justify-center">
                       @if (park.hasTodayData) {
@@ -288,10 +319,11 @@
                 <div class="mt-auto">
                   <button 
                     (click)="handleAction(park)"
-                    [ngClass]="userParks().has(park.id) 
-                      ? 'bg-emerald-500 hover:bg-red-500 text-white' 
-                      : 'bg-slate-900 hover:bg-slate-800 text-white'"
-                    class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all shadow-md active:scale-95 group/btn"
+                    [ngClass]="[
+                      userParks().has(park.id) ? 'bg-emerald-500 hover:bg-red-500 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white',
+                      mobileGridMode() === 'compact' ? 'py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-sm' : 'py-2.5 rounded-xl text-sm'
+                    ]"
+                    class="cursor-pointer w-full flex items-center justify-center gap-1.5 sm:gap-2 font-bold transition-all shadow-md active:scale-95 group/btn"
                   >
                     @if (userParks().has(park.id)) {
                       <svg class="h-4 w-4 group-hover/btn:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
