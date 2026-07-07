@@ -11,4 +11,11 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class HomeComponent {
   authService = inject(AuthService);
+
+  scrollToDescubre() {
+    const el = document.getElementById('descubre');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 }
