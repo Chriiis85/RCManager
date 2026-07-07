@@ -171,11 +171,11 @@
 
         <!-- ── MIS CREDITS ──────────────────────────────────────────── -->
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <div routerLink="/mis-credits" class="flex items-center justify-between mb-6 cursor-pointer group">
+            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2 group-hover:text-blue-600 transition-colors">
               <span class="text-2xl">🎢</span> Mis Credits
             </h3>
-            <a routerLink="/mis-credits" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">Ver todos ({{ creditsList().length }})</a>
+            <span class="text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">Ver todos ({{ creditsList().length }})</span>
           </div>
           @if (creditsList().length === 0) {
             <div class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
@@ -210,11 +210,11 @@
 
         <!-- ── ATRACCIONES VISITADAS ────────────────────────────────── -->
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <div routerLink="/mis-atracciones" class="flex items-center justify-between mb-6 cursor-pointer group">
+            <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2 group-hover:text-purple-600 transition-colors">
               <span class="text-2xl">🎡</span> Atracciones Visitadas
             </h3>
-            <a routerLink="/mis-atracciones" class="text-sm font-bold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer">Ver todas ({{ attractionsList().length }})</a>
+            <span class="text-sm font-bold text-purple-600 group-hover:text-purple-700 transition-colors">Ver todas ({{ attractionsList().length }})</span>
           </div>
           @if (attractionsList().length === 0) {
             <div class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
@@ -251,11 +251,11 @@
         <div class="bg-[#0d1b3e] p-8 rounded-3xl shadow-lg border border-blue-900/40 relative overflow-hidden">
           <div class="absolute inset-0 opacity-5" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M54.627 0l1.373 1.373v57.254l-1.373 1.373H5.373L4 58.627V1.373L5.373 0h49.254z\' fill=\'%23ffffff\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
           <div class="relative z-10">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <div routerLink="/mis-parques" class="flex items-center justify-between mb-6 cursor-pointer group">
+              <h3 class="text-xl font-bold text-white flex items-center gap-2 group-hover:text-blue-300 transition-colors">
                 <span class="text-2xl">🏞️</span> Parques Visitados
               </h3>
-              <a routerLink="/mis-parques" class="text-sm font-bold text-blue-300 hover:text-white transition-colors cursor-pointer">Ver todos ({{ parksList().length }})</a>
+              <span class="text-sm font-bold text-blue-300 group-hover:text-white transition-colors">Ver todos ({{ parksList().length }})</span>
             </div>
             @if (parksList().length === 0) {
               <div class="text-center py-10 bg-white/5 rounded-2xl border border-dashed border-white/20">
@@ -268,7 +268,10 @@
                   <div class="flex items-center justify-between gap-3 p-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/20 transition-all group">
                     <div class="flex items-center gap-3 min-w-0">
                       <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/20 overflow-hidden relative shadow-sm">
-                        <img [src]="item.park?.imageUrl || item.park?.image || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" class="w-full h-full object-cover">
+                        <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
+                             (error)="parkImg.src='https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200'"
+                             #parkImg
+                             class="w-full h-full object-cover">
                       </div>
                       <div class="flex-1 min-w-0 text-left">
                         <p class="font-bold text-white text-sm truncate">{{ item.park?.name || 'Parque #' + item.parkId }}</p>
