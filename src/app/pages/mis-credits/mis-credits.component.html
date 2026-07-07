@@ -87,67 +87,73 @@
       <div class="space-y-3">
         @for (credit of filteredCredits(); track credit.id) {
           <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 overflow-hidden">
-            <div class="flex items-center gap-5 p-5">
-              <!-- Icon -->
-              <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl shadow-inner">
-                🎢
-              </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-5 p-4 sm:p-5">
+              
+              <div class="flex items-center gap-4 sm:gap-5 min-w-0">
+                <!-- Icon/Image -->
+                <div class="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-100 overflow-hidden relative shadow-sm">
+                  <img [src]="credit.coaster?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + credit.coasterId" class="w-full h-full object-cover">
+                </div>
 
-              <!-- Info -->
-              <div class="flex-1 min-w-0">
-                <h3 class="font-extrabold text-slate-900 text-base leading-tight mb-0.5 truncate">
-                  {{ credit.coaster?.name || 'Montaña Rusa #' + credit.coasterId }}
-                </h3>
-                <p class="text-sm text-slate-500 font-medium flex items-center gap-1 truncate">
-                  <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  </svg>
-                  {{ credit.coaster?.park?.name || 'Parque desconocido' }}
-                  @if (credit.coaster?.park?.country) {
-                    <span class="text-slate-300">·</span>
-                    <span>{{ credit.coaster?.park?.country }}</span>
-                  }
-                </p>
-                @if (credit.rideDate) {
-                  <p class="text-xs text-slate-400 mt-0.5">
-                    Primera vez: {{ credit.rideDate | date:'dd/MM/yyyy' }}
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-extrabold text-slate-900 text-base leading-tight mb-0.5 truncate">
+                    {{ credit.coaster?.name || 'Montaña Rusa #' + credit.coasterId }}
+                  </h3>
+                  <p class="text-sm text-slate-500 font-medium flex items-center gap-1 truncate">
+                    <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    </svg>
+                    {{ credit.coaster?.park?.name || 'Parque desconocido' }}
+                    @if (credit.coaster?.park?.country) {
+                      <span class="text-slate-300">·</span>
+                      <span>{{ credit.coaster?.park?.country }}</span>
+                    }
                   </p>
-                }
+                  @if (credit.rideDate) {
+                    <p class="text-xs text-slate-400 mt-0.5">
+                      Primera vez: {{ credit.rideDate | date:'dd/MM/yyyy' }}
+                    </p>
+                  }
+                </div>
               </div>
 
-              <!-- Ride Count Badge -->
-              <div class="flex-shrink-0 flex flex-col items-center">
-                <button
-                  (click)="openCountModal(credit)"
-                  class="cursor-pointer flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-100 transition-all group/count"
-                  title="Editar número de veces montado"
-                >
-                  <span class="text-2xl font-black text-blue-600 leading-none">{{ credit.rating || 1 }}</span>
-                  <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">veces</span>
-                </button>
+              <div class="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-0 border-slate-100 mt-2 sm:mt-0">
+                <!-- Ride Count Badge -->
+                <div class="flex-shrink-0 flex flex-col items-center">
+                  <button
+                    (click)="openCountModal(credit)"
+                    class="cursor-pointer flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-100 transition-all group/count"
+                    title="Editar número de veces montado"
+                  >
+                    <span class="text-2xl font-black text-blue-600 leading-none">{{ credit.rating || 1 }}</span>
+                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">veces</span>
+                  </button>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                  <button
+                    (click)="openCountModal(credit)"
+                    class="cursor-pointer w-9 h-9 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 flex items-center justify-center text-slate-400 hover:text-blue-600 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                    title="Editar número de veces"
+                  >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                  </button>
+                  <button
+                    (click)="openDeleteModal(credit)"
+                    class="cursor-pointer w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-400 hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                    title="Eliminar de mis credits"
+                  >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              <!-- Actions -->
-              <div class="flex-shrink-0 flex items-center gap-2">
-                <button
-                  (click)="openCountModal(credit)"
-                  class="cursor-pointer w-9 h-9 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all"
-                  title="Editar número de veces"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                  </svg>
-                </button>
-                <button
-                  (click)="openDeleteModal(credit)"
-                  class="cursor-pointer w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all"
-                  title="Eliminar de mis credits"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         }
