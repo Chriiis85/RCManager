@@ -349,16 +349,32 @@ export class ViajesComponent implements OnInit, OnDestroy {
     const trip = this.selectedTrip();
     if (!trip) return;
     this.isSubmitting.set(true);
-
-    this.tripsService.deleteTrip(trip.id).subscribe({
-      next: () => {
-        this.trips.update(list => list.filter(t => t.id !== trip.id));
-        this.showDeleteModal.set(false);
-        this.isSubmitting.set(false);
-        this.openDeleteSuccessModal();
-      },
-      error: () => this.isSubmitting.set(false)
-    });
+    
+    const currentUserId = this.authService.currentUser()?.id;
+    
+    if (trip.userId !== currentUserId && currentUserId) {
+      // It's not my trip, so "deleting" it means leaving it
+      this.tripsService.removeCompanionFromTrip(trip.id, currentUserId).subscribe({
+        next: () => {
+          this.trips.update(list => list.filter(t => t.id !== trip.id));
+          this.showDeleteModal.set(false);
+          this.isSubmitting.set(false);
+          this.openDeleteSuccessModal();
+        },
+        error: () => this.isSubmitting.set(false)
+      });
+    } else {
+      // It's my trip, delete it completely
+      this.tripsService.deleteTrip(trip.id).subscribe({
+        next: () => {
+          this.trips.update(list => list.filter(t => t.id !== trip.id));
+          this.showDeleteModal.set(false);
+          this.isSubmitting.set(false);
+          this.openDeleteSuccessModal();
+        },
+        error: () => this.isSubmitting.set(false)
+      });
+    }
   }
 
   openDeleteSuccessModal() {
