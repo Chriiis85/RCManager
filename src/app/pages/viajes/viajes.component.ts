@@ -6,6 +6,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TripsService, TripModel } from '../../core/services/trips.service';
+import { AuthService } from '../../core/services/auth.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AirbnbCalendarComponent } from './airbnb-calendar.component';
 
@@ -26,6 +27,7 @@ interface UITrip extends TripModel {
 export class ViajesComponent implements OnInit, OnDestroy {
   private tripsService = inject(TripsService);
   private cdr = inject(ChangeDetectorRef);
+  authService = inject(AuthService);
   private timer: any;
 
   // ── Main data ──────────────────────────────────
@@ -71,8 +73,10 @@ export class ViajesComponent implements OnInit, OnDestroy {
       if (q.length < 2) { this.suggestedUsers.set([]); return; }
       this.tripsService.searchUsers(q).subscribe({
         next: users => {
-          const ids = this.selectedCompanions().map(c => c.id);
-          this.suggestedUsers.set(users.filter(u => !ids.includes(u.id)));
+          const selectedIds = this.selectedCompanions().map(c => c.id);
+          const tripIds = this.tripToAddCompanion() ? this.tripToAddCompanion()!.companions.map(c => c.userId) : [];
+          const currentUserId = this.authService.currentUser()?.id;
+          this.suggestedUsers.set(users.filter(u => !selectedIds.includes(u.id) && !tripIds.includes(u.id) && u.id !== currentUserId));
         },
         error: () => this.suggestedUsers.set([])
       });
@@ -239,6 +243,40 @@ export class ViajesComponent implements OnInit, OnDestroy {
         this.trips.update(l => [ui, ...l]);
         this.tickCountdowns();
         this.closeWizard();
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  // ── Add Companion Modal ────────────────────────
+  showAddCompanionModal = signal(false);
+  tripToAddCompanion = signal<UITrip | null>(null);
+
+  openAddCompanionModal(trip: UITrip) {
+    this.tripToAddCompanion.set(trip);
+    this.searchUserQuery.set('');
+    this.suggestedUsers.set([]);
+    this.selectedCompanions.set([]);
+    this.showAddCompanionModal.set(true);
+  }
+
+  closeAddCompanionModal() {
+    this.showAddCompanionModal.set(false);
+    this.tripToAddCompanion.set(null);
+  }
+
+  confirmAddCompanions() {
+    const trip = this.tripToAddCompanion();
+    if (!trip || this.selectedCompanions().length === 0) return;
+    this.isSubmitting.set(true);
+    const companionIds = this.selectedCompanions().map(c => c.id);
+    
+    this.tripsService.addCompanions(trip.id, companionIds).subscribe({
+      next: (updatedTrip) => {
+        const uiTrip: UITrip = { ...updatedTrip, isPast: trip.isPast, time: trip.time };
+        this.trips.update(list => list.map(t => t.id === trip.id ? uiTrip : t));
+        this.closeAddCompanionModal();
         this.isSubmitting.set(false);
       },
       error: () => this.isSubmitting.set(false)
