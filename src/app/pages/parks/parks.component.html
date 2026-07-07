@@ -79,7 +79,7 @@
           </button>
 
           <!-- Mobile Grid Toggle -->
-          <div class="flex items-center bg-slate-100/80 rounded-[1.25rem] p-1 border border-slate-200 shrink-0">
+          <div class="flex sm:hidden items-center bg-slate-100/80 rounded-[1.25rem] p-1 border border-slate-200 shrink-0">
             <button 
               (click)="gridMode.set('large')"
               [ngClass]="gridMode() === 'large' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-600'"
@@ -231,8 +231,8 @@
     <!-- Park Grid -->
     <div class="max-w-7xl mx-auto min-h-[50vh]">
       @if (filteredParks().length > 0) {
-        <div class="grid"
-             [ngClass]="gridMode() === 'compact' ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10'">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:gap-10"
+             [ngClass]="gridMode() === 'compact' ? 'grid-cols-2 gap-3' : 'grid-cols-1 gap-10'">
           @for (park of filteredParks(); track park.id) {
             <div class="group bg-white overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
                  [ngClass]="gridMode() === 'compact' ? 'rounded-[1.5rem]' : 'rounded-[2.5rem]'">
