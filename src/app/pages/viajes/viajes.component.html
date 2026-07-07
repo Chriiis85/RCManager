@@ -82,13 +82,13 @@
                         </div>
                       }
                     }
-                    @if (trip.user?.profileImage) {
+                    @if (trip.user.profileImage) {
                       <div class="relative w-9 h-9 sm:w-10 sm:h-10">
-                        <img [src]="trip.user?.profileImage" [title]="trip.user?.username" class="w-full h-full rounded-full border-2 border-slate-900 shadow-md object-cover">
+                        <img [src]="trip.user.profileImage" [title]="trip.user.username" class="w-full h-full rounded-full border-2 border-slate-900 shadow-md object-cover">
                         <div class="absolute -bottom-1 -right-1 text-[10px] bg-emerald-600 rounded-full px-1 border border-slate-900 text-white shadow-sm">👑</div>
                       </div>
                     } @else {
-                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 bg-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-md" [title]="trip.user?.username">👑</div>
+                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 bg-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-md" [title]="trip.user.username">👑</div>
                     }
                     @if (trip.userId === authService.currentUser()?.id) {
                       <button (click)="openAddCompanionModal(trip)" class="cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all shadow-md z-10" title="Añadir acompañante">
@@ -164,13 +164,13 @@
                       </div>
                     }
                   }
-                  @if (trip.user?.profileImage) {
+                  @if (trip.user.profileImage) {
                     <div class="relative w-7 h-7">
-                      <img [src]="trip.user?.profileImage" [title]="trip.user?.username" class="w-full h-full rounded-full border-2 border-white shadow-sm object-cover">
+                      <img [src]="trip.user.profileImage" [title]="trip.user.username" class="w-full h-full rounded-full border-2 border-white shadow-sm object-cover">
                       <div class="absolute -bottom-1 -right-1 text-[8px] bg-emerald-600 rounded-full px-0.5 border border-white text-white">👑</div>
                     </div>
                   } @else {
-                    <div class="w-7 h-7 rounded-full border-2 border-white bg-emerald-600 flex items-center justify-center text-white font-bold text-[10px]" [title]="trip.user?.username">👑</div>
+                    <div class="w-7 h-7 rounded-full border-2 border-white bg-emerald-600 flex items-center justify-center text-white font-bold text-[10px]" [title]="trip.user.username">👑</div>
                   }
                 </div>
               </div>
