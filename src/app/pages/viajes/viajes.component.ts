@@ -273,7 +273,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
     const companionIds = this.selectedCompanions().map(c => c.id);
     
     this.tripsService.addCompanions(trip.id, companionIds).subscribe({
-      next: (updatedTrip) => {
+      next: (updatedTrip: TripModel) => {
         const uiTrip: UITrip = { ...updatedTrip, isPast: trip.isPast, time: trip.time };
         this.trips.update(list => list.map(t => t.id === trip.id ? uiTrip : t));
         this.closeAddCompanionModal();

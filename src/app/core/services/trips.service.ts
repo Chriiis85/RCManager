@@ -62,6 +62,10 @@ export class TripsService {
     return this.http.post<TripModel>(`${this.apiUrl}/trips`, tripData, { headers: this.authService.getAuthHeaders() });
   }
 
+  addCompanions(tripId: number, companions: number[]): Observable<TripModel> {
+    return this.http.post<TripModel>(`${this.apiUrl}/trips/${tripId}/companions`, { companions }, { headers: this.authService.getAuthHeaders() });
+  }
+
   deleteTrip(tripId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/trips/${tripId}`, { headers: this.authService.getAuthHeaders() });
   }
