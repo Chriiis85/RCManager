@@ -74,7 +74,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
       this.tripsService.searchUsers(q).subscribe({
         next: users => {
           const selectedIds = this.selectedCompanions().map(c => c.id);
-          const tripIds = this.tripToAddCompanion() ? this.tripToAddCompanion()!.companions.map(c => c.userId) : [];
+          const tripIds = this.tripToAddCompanion() ? this.tripToAddCompanion()!.companions.map(c => c.user?.id || c.userId) : [];
           const currentUserId = this.authService.currentUser()?.id;
           this.suggestedUsers.set(users.filter(u => !selectedIds.includes(u.id) && !tripIds.includes(u.id) && u.id !== currentUserId));
         },
@@ -277,6 +277,21 @@ export class ViajesComponent implements OnInit, OnDestroy {
         const uiTrip: UITrip = { ...updatedTrip, isPast: trip.isPast, time: trip.time };
         this.trips.update(list => list.map(t => t.id === trip.id ? uiTrip : t));
         this.closeAddCompanionModal();
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  removeExistingCompanion(userId: number) {
+    const trip = this.tripToAddCompanion();
+    if (!trip) return;
+    this.isSubmitting.set(true);
+    this.tripsService.removeCompanionFromTrip(trip.id, userId).subscribe({
+      next: (updatedTrip: TripModel) => {
+        const uiTrip: UITrip = { ...updatedTrip, isPast: trip.isPast, time: trip.time };
+        this.trips.update(list => list.map(t => t.id === trip.id ? uiTrip : t));
+        this.tripToAddCompanion.set(uiTrip);
         this.isSubmitting.set(false);
       },
       error: () => this.isSubmitting.set(false)
