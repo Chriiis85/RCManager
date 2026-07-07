@@ -33,8 +33,36 @@ export class ViajesComponent implements OnInit, OnDestroy {
   // ── Main data ──────────────────────────────────
   trips = signal<UITrip[]>([]);
   isLoading = signal(true);
-  upcomingTrips = computed(() => this.trips().filter(t => !t.isPast));
-  pastTrips = computed(() => this.trips().filter(t => t.isPast));
+  
+  isPendingForCurrentUser = (t: UITrip): boolean => {
+    const currentUserId = this.authService.currentUser()?.id;
+    if (t.userId === currentUserId) return false;
+    const me = t.companions.find(c => c.user?.id === currentUserId);
+    return me?.status === 'PENDING';
+  };
+
+  pendingTrips = computed(() => this.trips().filter(t => this.isPendingForCurrentUser(t)));
+  upcomingTrips = computed(() => this.trips().filter(t => !t.isPast && !this.isPendingForCurrentUser(t)));
+  pastTrips = computed(() => this.trips().filter(t => t.isPast && !this.isPendingForCurrentUser(t)));
+
+  acceptInvitation(tripId: number) {
+    this.tripsService.acceptTripInvitation(tripId).subscribe({
+      next: (updatedTrip) => {
+        const uiTrip: UITrip = { ...updatedTrip, isPast: false, time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 }) };
+        this.trips.update(list => list.map(t => t.id === tripId ? uiTrip : t));
+        this.tickCountdowns();
+      }
+    });
+  }
+
+  rejectInvitation(tripId: number) {
+    this.tripsService.rejectTripInvitation(tripId).subscribe({
+      next: (updatedTrip) => {
+        const uiTrip: UITrip = { ...updatedTrip, isPast: false, time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 }) };
+        this.trips.update(list => list.map(t => t.id === tripId ? uiTrip : t));
+      }
+    });
+  }
 
   // ── Wizard ─────────────────────────────────────
   isWizardOpen = signal(false);
@@ -295,6 +323,19 @@ export class ViajesComponent implements OnInit, OnDestroy {
         this.isSubmitting.set(false);
       },
       error: () => this.isSubmitting.set(false)
+    });
+  }
+
+  dismissRejection(tripId: number, userId: number) {
+    this.tripsService.removeCompanionFromTrip(tripId, userId).subscribe({
+      next: (updatedTrip: TripModel) => {
+        this.trips.update(list => list.map(t => {
+          if (t.id === tripId) {
+            return { ...updatedTrip, isPast: t.isPast, time: t.time };
+          }
+          return t;
+        }));
+      }
     });
   }
 
