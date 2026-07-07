@@ -48,7 +48,7 @@ export class ParksComponent implements OnInit {
   selectedCrowds = signal<string[]>([]);
   visibleParksLimit = signal(15);
   showFilters = signal(false);
-  mobileGridMode = signal<'large' | 'compact'>('large');
+  gridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
 
   showSuccessModal = signal(false);
   showDeleteSuccessModal = signal(false);
