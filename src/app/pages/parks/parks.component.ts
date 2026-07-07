@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   OnInit,
+  OnDestroy,
   ViewChild,
   ElementRef,
   HostListener,
@@ -40,7 +41,7 @@ interface ThemePark {
   templateUrl: './parks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ParksComponent implements OnInit {
+export class ParksComponent implements OnInit, OnDestroy {
   @ViewChild('rideListContainer') rideListContainer!: ElementRef;
   searchQuery = signal('');
   selectedCountries = signal<string[]>([]);
@@ -280,6 +281,12 @@ export class ParksComponent implements OnInit {
       });
   }
 
+  ngOnDestroy() {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+    }
+  }
+
   private async updateAllParkStatuses(mappedParks: ThemePark[]) {
     // Procesamos en lotes de 15 para velocidad sin bloquear peticiones
     const batchSize = 15;
@@ -347,6 +354,9 @@ export class ParksComponent implements OnInit {
   }
 
   showParkDetails(park: ThemePark) {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
     this.selectedPark.set(park);
     this.isLoadingQueue.set(true);
     this.parkQueueTimes.set(null);
@@ -389,6 +399,9 @@ export class ParksComponent implements OnInit {
     this.parkQueueTimes.set(null);
     this.rideSearchQuery.set('');
     this.rideSortOrder.set('desc');
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+    }
   }
 
   updateRideSearch(query: string) {
