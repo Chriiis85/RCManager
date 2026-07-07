@@ -11,6 +11,7 @@ export interface TripCompanion {
     id: number;
     username: string;
     email?: string;
+    profileImage?: string;
   };
 }
 
@@ -32,6 +33,7 @@ export interface TripModel {
   user: {
     id: number;
     username: string;
+    profileImage?: string;
   };
 }
 

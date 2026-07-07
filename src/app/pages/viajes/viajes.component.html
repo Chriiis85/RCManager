@@ -74,11 +74,22 @@
                   </div>
                   <div class="flex -space-x-3 flex-shrink-0">
                     @for (comp of trip.companions.slice(0,3); track comp.user.username) {
-                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 shadow-md bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-xs" [title]="comp.user.username">
-                        {{ comp.user.username.substring(0, 2).toUpperCase() }}
-                      </div>
+                      @if (comp.user.profileImage) {
+                        <img [src]="comp.user.profileImage" [title]="comp.user.username" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 shadow-md object-cover">
+                      } @else {
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 shadow-md bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-xs" [title]="comp.user.username">
+                          {{ comp.user.username.substring(0, 2).toUpperCase() }}
+                        </div>
+                      }
                     }
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 bg-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-md" [title]="trip.user?.username">👑</div>
+                    @if (trip.user?.profileImage) {
+                      <div class="relative w-9 h-9 sm:w-10 sm:h-10">
+                        <img [src]="trip.user?.profileImage" [title]="trip.user?.username" class="w-full h-full rounded-full border-2 border-slate-900 shadow-md object-cover">
+                        <div class="absolute -bottom-1 -right-1 text-[10px] bg-emerald-600 rounded-full px-1 border border-slate-900 text-white shadow-sm">👑</div>
+                      </div>
+                    } @else {
+                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-slate-900 bg-emerald-600 flex items-center justify-center text-white text-xs font-bold shadow-md" [title]="trip.user?.username">👑</div>
+                    }
                   </div>
                 </div>
 
@@ -140,11 +151,22 @@
                 <p class="text-xs text-slate-500 font-medium mb-3">{{ formatDateRange(trip.targetDate, trip.endDate) }}</p>
                 <div class="flex -space-x-2 mb-4">
                   @for (comp of trip.companions; track comp.user.username) {
-                    <div class="w-7 h-7 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-[10px]" [title]="comp.user.username">
-                      {{ comp.user.username.substring(0, 2).toUpperCase() }}
-                    </div>
+                    @if (comp.user.profileImage) {
+                      <img [src]="comp.user.profileImage" [title]="comp.user.username" class="w-7 h-7 rounded-full border-2 border-white shadow-sm object-cover">
+                    } @else {
+                      <div class="w-7 h-7 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-blue-800 font-bold text-[10px]" [title]="comp.user.username">
+                        {{ comp.user.username.substring(0, 2).toUpperCase() }}
+                      </div>
+                    }
                   }
-                  <div class="w-7 h-7 rounded-full border-2 border-white bg-emerald-600 flex items-center justify-center text-white font-bold text-[10px]" [title]="trip.user?.username">👑</div>
+                  @if (trip.user?.profileImage) {
+                    <div class="relative w-7 h-7">
+                      <img [src]="trip.user?.profileImage" [title]="trip.user?.username" class="w-full h-full rounded-full border-2 border-white shadow-sm object-cover">
+                      <div class="absolute -bottom-1 -right-1 text-[8px] bg-emerald-600 rounded-full px-0.5 border border-white text-white">👑</div>
+                    </div>
+                  } @else {
+                    <div class="w-7 h-7 rounded-full border-2 border-white bg-emerald-600 flex items-center justify-center text-white font-bold text-[10px]" [title]="trip.user?.username">👑</div>
+                  }
                 </div>
               </div>
               <button class="cursor-pointer w-full rounded-xl bg-slate-100 text-slate-600 font-bold py-2 text-sm hover:bg-blue-600 hover:text-white transition-colors">
