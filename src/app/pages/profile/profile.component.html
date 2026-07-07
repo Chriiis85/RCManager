@@ -264,7 +264,7 @@
               </div>
             } @else {
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-1">
-                @for (item of parksList(); track item.id) {
+                @for (item of parksList().slice(0, 3); track item.id) {
                   <div class="group relative flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-3 hover:bg-white/20 transition-all">
                     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-emerald-500/20 overflow-hidden relative shadow-md mb-2">
                       <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" class="w-full h-full object-cover">
