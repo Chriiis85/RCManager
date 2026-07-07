@@ -16,10 +16,10 @@
     <div class="mx-auto max-w-2xl text-center animate-fade-in-up">
       <!-- Badge tag -->
       <div class="mb-6 flex justify-center">
-        <span class="relative rounded-full px-5 py-1.5 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-blue-600/50 transition-all font-semibold shadow-sm flex items-center gap-2 cursor-pointer group bg-white/70 backdrop-blur-sm">
+        <span (click)="scrollToDescubre()" class="relative rounded-full px-5 py-1.5 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-blue-600/50 transition-all font-semibold shadow-sm flex items-center gap-2 cursor-pointer group bg-white/70 backdrop-blur-sm">
           <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75 left-3"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500 mr-1"></span>
-          Control total de tus viajes <a href="#descubre" class="font-bold text-blue-600"><span class="absolute inset-0" aria-hidden="true"></span>Saber más <span aria-hidden="true" class="group-hover:translate-x-1 inline-block transition-transform">&rarr;</span></a>
+          Control total de tus viajes <a class="font-bold text-blue-600"><span class="absolute inset-0" aria-hidden="true"></span>Saber más <span aria-hidden="true" class="group-hover:translate-x-1 inline-block transition-transform">&rarr;</span></a>
         </span>
       </div>
 
@@ -35,13 +35,13 @@
 
       <!-- CTA Buttons -->
       <div class="mt-10 flex items-center justify-center gap-x-6">
-        <button (click)="scrollToDescubre()" class="group relative rounded-full bg-blue-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:shadow-blue-500/50 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 overflow-hidden cursor-pointer">
+        <!--<a routerLink="/viajes" class="group relative rounded-full bg-blue-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:shadow-blue-500/50 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 overflow-hidden">
           <span class="relative z-10 flex items-center gap-2">
-            Descubrir
-            <svg class="w-4 h-4 group-hover:translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            Ver próximos viajes
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </span>
           <div class="absolute inset-0 rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all pointer-events-none"></div>
-        </button>
+        </a>-->
         <a routerLink="/register" class="text-sm font-bold leading-6 text-slate-900 hover:text-blue-600 transition-colors group flex items-center gap-1 cursor-pointer">
           Empezar registro 
           <span class="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">
