@@ -81,7 +81,10 @@
               <div class="flex items-center gap-4 sm:gap-5 min-w-0">
                 <!-- Icon/Image -->
                 <div class="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-100 overflow-hidden relative shadow-sm">
-                  <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" class="w-full h-full object-cover">
+                  <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
+                       (error)="parkImg.src='https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200'"
+                       #parkImg
+                       class="w-full h-full object-cover">
                 </div>
 
                 <!-- Info -->

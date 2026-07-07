@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { RecordsService, CoasterCredit, AttractionRecord, ParkVisit } from '../../core/services/records.service';
+import { SupabaseService } from '../../core/services/supabase.service';
 
 interface UserInfo {
   username: string;
@@ -37,15 +38,16 @@ interface TripSummary {
 export class ProfileComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
+  supabaseService = inject(SupabaseService);
   
   private get _user() { return this.authService.currentUser(); }
 
   userInfo = signal<UserInfo>({
     username: this._user?.username || 'UsuarioAventurero',
-    firstName: '',
-    lastName: '',
+    firstName: this._user?.firstName || '',
+    lastName: this._user?.lastName || '',
     email: this._user?.email || '',
-    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this._user?.username || 'User')}&background=1D4ED8&color=fff&size=200`
+    avatar: this._user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(this._user?.username || 'User')}&background=1D4ED8&color=fff&size=200`
   });
 
   stats = signal({ credits: 0, parks: 0, attractions: 0 });
@@ -188,7 +190,54 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.showFeedbackModal.set(true);
   }
 
-  changeAvatar() { this.showFeedback('Fotografía', 'Simulación: Apertura de explorador de archivos para subir nueva foto.', 'info'); }
+  changeAvatar() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      this.isLoading.set(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${this.userInfo().username}_${Date.now()}.${fileExt}`;
+        
+        const { data, error } = await this.supabaseService.supabase
+          .storage
+          .from('ProfileImages')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = this.supabaseService.supabase
+          .storage
+          .from('ProfileImages')
+          .getPublicUrl(fileName);
+
+        this.authService.updateProfile({ profileImage: publicUrl }).subscribe({
+          next: (updatedUser) => {
+            this.userInfo.set({
+              ...this.userInfo(),
+              avatar: updatedUser.profileImage || this.userInfo().avatar
+            });
+            this.isLoading.set(false);
+            this.showFeedback('Foto Actualizada', 'Tu foto de perfil se ha guardado correctamente.', 'success');
+          },
+          error: (err) => {
+            console.error(err);
+            this.isLoading.set(false);
+            this.showFeedback('Error', 'No se pudo guardar la foto en tu perfil.', 'info');
+          }
+        });
+      } catch (error: any) {
+        console.error(error);
+        this.isLoading.set(false);
+        this.showFeedback('Error de Subida', error.message || 'No se pudo subir la imagen.', 'info');
+      }
+    };
+    input.click();
+  }
 
   changePassword() {
     this.showPasswordModal.set(false);
@@ -204,8 +253,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
   openEditProfile() { this.editForm.set({ ...this.userInfo() }); this.showEditProfileModal.set(true); }
 
   saveProfile() {
-    this.userInfo.set({ ...this.editForm() });
-    this.showEditProfileModal.set(false);
-    this.showFeedback('Datos Guardados', 'Los datos de tu perfil se actualizaron correctamente (Simulación).', 'success');
+    const dataToSave = {
+      firstName: this.editForm().firstName,
+      lastName: this.editForm().lastName
+    };
+    
+    this.authService.updateProfile(dataToSave).subscribe({
+      next: (updatedUser) => {
+        this.userInfo.set({
+          ...this.userInfo(),
+          firstName: updatedUser.firstName || '',
+          lastName: updatedUser.lastName || ''
+        });
+        this.showEditProfileModal.set(false);
+        this.showFeedback('Datos Guardados', 'Los datos de tu perfil se actualizaron correctamente.', 'success');
+      },
+      error: (err) => {
+        console.error(err);
+        this.showFeedback('Error', 'Hubo un problema guardando tu perfil.', 'info');
+      }
+    });
   }
 }

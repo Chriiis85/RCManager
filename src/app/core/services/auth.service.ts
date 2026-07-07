@@ -9,6 +9,9 @@ export interface User {
   username: string;
   email: string;
   role: string;
+  firstName?: string;
+  lastName?: string;
+  profileImage?: string;
   createdAt: string;
 }
 
@@ -116,6 +119,20 @@ export class AuthService {
       console.error('Error iniciando sesion con Google:', error.message);
       throw error;
     }
+  }
+
+  // ── Update Profile ─────────────────────────────────────────────────────────
+  updateProfile(data: Partial<User>): Observable<User> {
+    return this.http.put<User>('https://rc-manager-api.vercel.app/api/users/profile', data, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      tap((updatedUser) => {
+        // Actualizar la caché local
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+        this._user.set(updatedUser);
+      }),
+      catchError(err => throwError(() => err))
+    );
   }
 
   // ── Logout ─────────────────────────────────────────────────────────────────

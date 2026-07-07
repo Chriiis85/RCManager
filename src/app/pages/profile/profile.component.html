@@ -424,16 +424,16 @@
           </div>
           <div>
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE DE USUARIO</label>
-            <div class="relative">
+            <div class="relative opacity-70">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-slate-400 font-bold">&#64;</span>
               </div>
-              <input type="text" [ngModel]="editForm().username" (ngModelChange)="editForm.set({...editForm(), username: $event})" name="username" class="cursor-pointer pl-8 text-slate-900 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+              <input type="text" [ngModel]="editForm().username" disabled name="username" class="cursor-not-allowed pl-8 text-slate-500 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 bg-slate-100 sm:text-sm">
             </div>
           </div>
-          <div>
+          <div class="opacity-70">
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">CORREO ELECTRÓNICO</label>
-            <input type="email" [ngModel]="editForm().email" (ngModelChange)="editForm.set({...editForm(), email: $event})" name="email" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow mb-4">
+            <input type="email" [ngModel]="editForm().email" disabled name="email" class="cursor-not-allowed text-slate-500 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 bg-slate-100 sm:text-sm mb-4">
           </div>
           <button type="submit" class="cursor-pointer w-full rounded-2xl bg-blue-600 py-3 text-sm font-bold text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 active:scale-95 transition-all focus:outline-none mt-2">
             Guardar Cambios
