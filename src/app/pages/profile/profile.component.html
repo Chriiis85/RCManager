@@ -185,7 +185,7 @@
           } @else {
             <div class="space-y-3">
               @for (item of creditsList().slice(0, 3); track item.id) {
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
+                <div class="flex items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
                   <div class="flex items-center gap-3 min-w-0">
                     <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 overflow-hidden relative shadow-sm">
                       <img [src]="item.coaster?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.coasterId" 
@@ -197,11 +197,11 @@
                     </div>
                   </div>
                   
-                  <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
-                    @if (item.rating) {
+                  @if (item.rating) {
+                    <div class="flex-shrink-0">
                       <span class="text-xs font-black text-blue-600 px-2 py-1 bg-blue-50 rounded-lg">{{ item.rating }} <span class="text-[10px] text-blue-400 uppercase">veces</span></span>
-                    }
-                  </div>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -224,7 +224,7 @@
           } @else {
             <div class="space-y-3">
               @for (item of attractionsList().slice(0, 3); track item.id) {
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
+                <div class="flex items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
                   <div class="flex items-center gap-3 min-w-0">
                     <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 overflow-hidden relative shadow-sm">
                       <img [src]="item.attraction?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.attractionId" 
@@ -236,11 +236,11 @@
                     </div>
                   </div>
                   
-                  <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-0 border-slate-100">
-                    @if (item.rating) {
+                  @if (item.rating) {
+                    <div class="flex-shrink-0">
                       <span class="text-xs font-black text-purple-600 px-2 py-1 bg-purple-50 rounded-lg">{{ item.rating }} <span class="text-[10px] text-purple-400 uppercase">veces</span></span>
-                    }
-                  </div>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -263,9 +263,9 @@
                 <a routerLink="/parques" class="inline-block mt-3 text-sm font-bold text-blue-400 hover:underline">Explorar Parques</a>
               </div>
             } @else {
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-1">
+              <div class="flex flex-wrap justify-center sm:grid sm:grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-1">
                 @for (item of parksList().slice(0, 3); track item.id) {
-                  <div class="group relative flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-3 hover:bg-white/20 transition-all">
+                  <div class="group relative flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-3 hover:bg-white/20 transition-all w-[45%] sm:w-auto">
                     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-emerald-500/20 overflow-hidden relative shadow-md mb-2">
                       <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" class="w-full h-full object-cover">
                     </div>
