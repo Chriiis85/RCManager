@@ -113,7 +113,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
 
   // ── Validation ─────────────────────────────────
   get step1Valid() { return !!this.selectedParkForTrip(); }
-  get step2Valid() { return !!this.tripStartDate() && !!this.tripDescription().trim(); }
+  get step2Valid() { return !!this.tripStartDate(); }
 
   // ── Lifecycle ──────────────────────────────────
   ngOnInit() {

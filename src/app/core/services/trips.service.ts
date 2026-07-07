@@ -66,6 +66,14 @@ export class TripsService {
     return this.http.post<TripModel>(`${this.apiUrl}/trips/${tripId}/companions`, { companions }, { headers: this.authService.getAuthHeaders() });
   }
 
+  acceptTripInvitation(tripId: number): Observable<TripModel> {
+    return this.http.put<TripModel>(`${this.apiUrl}/trips/${tripId}/companions/accept`, {}, { headers: this.authService.getAuthHeaders() });
+  }
+
+  rejectTripInvitation(tripId: number): Observable<TripModel> {
+    return this.http.put<TripModel>(`${this.apiUrl}/trips/${tripId}/companions/reject`, {}, { headers: this.authService.getAuthHeaders() });
+  }
+
   removeCompanionFromTrip(tripId: number, userId: number): Observable<TripModel> {
     return this.http.delete<TripModel>(`${this.apiUrl}/trips/${tripId}/companions/${userId}`, { headers: this.authService.getAuthHeaders() });
   }

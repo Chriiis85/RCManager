@@ -525,7 +525,7 @@
         <!-- ── STEP 2: FECHAS ─────────── -->
         @if (wizardStep() === 2) {
           <div class="animate-fade-in space-y-4">
-            <p class="text-slate-500 text-sm">Selecciona las fechas del viaje y añade una descripción. <span class="text-red-500 font-semibold">Fecha y descripción son obligatorias</span></p>
+            <p class="text-slate-500 text-sm">Selecciona las fechas del viaje y añade una descripción. <span class="text-red-500 font-semibold">Las fechas son obligatorias</span></p>
 
             <!-- Airbnb Calendar -->
             <app-airbnb-calendar
@@ -542,10 +542,10 @@
                 class="w-full rounded-xl border-0 py-2.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50">
             </div>
 
-            <!-- Description (required) -->
+            <!-- Description (optional) -->
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                📝 Descripción <span class="text-red-500">*</span>
+                📝 Descripción <span class="font-normal text-slate-400">(opcional)</span>
               </label>
               <textarea id="trip-desc-input" rows="3"
                 placeholder="Ej: Queremos hacer todas las montañas rusas top del parque..."
