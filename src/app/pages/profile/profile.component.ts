@@ -184,6 +184,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   showFeedbackModal = signal(false);
   feedbackContent   = signal({ title: '', message: '', type: 'success' });
+  
+  usernameSuggestions = signal<string[]>([]);
 
   showFeedback(title: string, message: string, type: 'success' | 'info' = 'success') {
     this.feedbackContent.set({ title, message, type });
@@ -253,9 +255,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   openEditProfile() { this.editForm.set({ ...this.userInfo() }); this.showEditProfileModal.set(true); }
 
   saveProfile() {
+    this.usernameSuggestions.set([]); // Limpiar sugerencias previas
     const dataToSave = {
       firstName: this.editForm().firstName,
-      lastName: this.editForm().lastName
+      lastName: this.editForm().lastName,
+      username: this.editForm().username !== this.userInfo().username ? this.editForm().username : undefined
     };
     
     this.authService.updateProfile(dataToSave).subscribe({
@@ -263,15 +267,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.userInfo.set({
           ...this.userInfo(),
           firstName: updatedUser.firstName || '',
-          lastName: updatedUser.lastName || ''
+          lastName: updatedUser.lastName || '',
+          username: updatedUser.username || this.userInfo().username
         });
         this.showEditProfileModal.set(false);
         this.showFeedback('Datos Guardados', 'Los datos de tu perfil se actualizaron correctamente.', 'success');
       },
       error: (err) => {
         console.error(err);
-        this.showFeedback('Error', 'Hubo un problema guardando tu perfil.', 'info');
+        if (err.status === 409 && err.error?.suggestions) {
+          this.usernameSuggestions.set(err.error.suggestions);
+          // No cerramos el modal para que pueda elegir una sugerencia
+        } else {
+          this.showFeedback('Error', 'Hubo un problema guardando tu perfil.', 'info');
+        }
       }
     });
+  }
+
+  selectSuggestion(suggestion: string) {
+    this.editForm.set({ ...this.editForm(), username: suggestion });
+    this.usernameSuggestions.set([]);
   }
 }

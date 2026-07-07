@@ -424,12 +424,24 @@
           </div>
           <div>
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE DE USUARIO</label>
-            <div class="relative opacity-70">
+            <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-slate-400 font-bold">&#64;</span>
               </div>
-              <input type="text" [ngModel]="editForm().username" disabled name="username" class="cursor-not-allowed pl-8 text-slate-500 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 bg-slate-100 sm:text-sm">
+              <input type="text" [ngModel]="editForm().username" (ngModelChange)="editForm.set({...editForm(), username: $event})" name="username" class="cursor-pointer pl-8 text-slate-900 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
             </div>
+            @if (usernameSuggestions().length > 0) {
+              <div class="mt-2 p-3 bg-red-50 border border-red-100 rounded-xl">
+                <p class="text-xs text-red-600 font-medium mb-2">Este nombre de usuario ya está en uso. Prueba con uno de estos:</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (suggestion of usernameSuggestions(); track suggestion) {
+                    <button type="button" (click)="selectSuggestion(suggestion)" class="text-xs bg-white border border-red-200 text-red-700 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors">
+                      {{ suggestion }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
           </div>
           <div class="opacity-70">
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">CORREO ELECTRÓNICO</label>
