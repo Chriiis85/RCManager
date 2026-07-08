@@ -102,6 +102,12 @@ export class AttractionsComponent implements OnInit {
           image: a.imageUrl || `https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800&id=${a.id}`,
           description: `Disfruta de la emocionante atracción ${a.name} en ${a.park?.name}.`
         }));
+        // Barajar (shuffle) las atracciones para que salgan en orden aleatorio
+        for (let i = mappedData.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [mappedData[i], mappedData[j]] = [mappedData[j], mappedData[i]];
+        }
+
         this.attractions.set(mappedData);
         this.isLoading.set(false);
       })

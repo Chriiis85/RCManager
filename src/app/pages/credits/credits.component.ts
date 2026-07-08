@@ -145,6 +145,12 @@ export class CreditsComponent implements OnInit {
         manufacturer: c.manufacturer || 'Desconocido'
       }));
 
+      // Barajar (shuffle) los coasters para que salgan en orden aleatorio
+      for (let i = mappedCoasters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [mappedCoasters[i], mappedCoasters[j]] = [mappedCoasters[j], mappedCoasters[i]];
+      }
+
       this.coasters.set(mappedCoasters);
     } catch (error) {
       console.error('Error fetching coasters:', error);
