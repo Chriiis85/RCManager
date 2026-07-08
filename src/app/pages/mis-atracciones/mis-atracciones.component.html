@@ -165,7 +165,7 @@
 
 <!-- Delete Modal -->
 @if (showDeleteModal()) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
     <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
       <div class="absolute top-0 inset-x-0 h-1.5 bg-red-500 rounded-t-[2.5rem]"></div>
       <button (click)="showDeleteModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors">
@@ -192,7 +192,7 @@
 
 <!-- Delete Success Modal -->
 @if (showDeleteSuccessModal()) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
     <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative overflow-hidden">
       <button (click)="closeDeleteSuccess()" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -218,7 +218,7 @@
 
 <!-- Count Modal -->
 @if (showCountModal()) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
     <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
       <div class="absolute top-0 inset-x-0 h-1.5 bg-purple-600 rounded-t-[2.5rem]"></div>
       <button (click)="showCountModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors">

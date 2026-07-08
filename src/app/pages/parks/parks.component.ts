@@ -1,3 +1,4 @@
+import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -37,7 +38,7 @@ interface ThemePark {
 @Component({
   selector: 'app-parks',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BlockScrollDirective],
   templateUrl: './parks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

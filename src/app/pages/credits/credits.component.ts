@@ -1,3 +1,4 @@
+import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +23,7 @@ interface Coaster {
 @Component({
   selector: 'app-credits',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BlockScrollDirective],
   templateUrl: './credits.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

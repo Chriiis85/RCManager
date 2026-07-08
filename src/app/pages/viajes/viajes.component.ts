@@ -9,6 +9,7 @@ import { TripsService, TripModel } from '../../core/services/trips.service';
 import { AuthService } from '../../core/services/auth.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AirbnbCalendarComponent } from './airbnb-calendar.component';
+import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 
 type Countdown = { days: number, hours: number, minutes: number, seconds: number };
 
@@ -20,7 +21,7 @@ interface UITrip extends TripModel {
 @Component({
   selector: 'app-viajes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AirbnbCalendarComponent],
+  imports: [CommonModule, FormsModule, AirbnbCalendarComponent, BlockScrollDirective],
   templateUrl: './viajes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -177,6 +178,19 @@ export class ViajesComponent implements OnInit, OnDestroy {
   }
 
   fmt(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+
+  getParkImage(park: any): string {
+    if (!park) return 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop';
+    if (park.imageUrl) return park.imageUrl;
+    if (park.image_url) return park.image_url;
+    
+    // Fallback to searching in allParks in case the API didn't include the image in the nested park object
+    const found = this.allParks().find(p => p.id === park.id);
+    if (found && found.imageUrl) return found.imageUrl;
+    if (found && found.image_url) return found.image_url;
+
+    return 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop';
+  }
 
   formatDateRange(startDate: string, endDate?: string | null): string {
     const s = new Date(startDate);

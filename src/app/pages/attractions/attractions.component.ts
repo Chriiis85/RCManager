@@ -1,3 +1,4 @@
+import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +22,7 @@ interface Attraction {
 @Component({
   selector: 'app-attractions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BlockScrollDirective],
   templateUrl: './attractions.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

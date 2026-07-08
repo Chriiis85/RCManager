@@ -300,7 +300,7 @@
   <!-- MODAL: Confirmar eliminación                                       -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showDeleteConfirmModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
       <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
         <button (click)="showDeleteConfirmModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -334,7 +334,7 @@
   <!-- MODAL: Eliminado con éxito (cierre automático 2s)                 -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showDeleteSuccessModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
       <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative overflow-hidden">
         <button (click)="closeDeleteSuccess()" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -364,7 +364,7 @@
   <!-- MODAL: Cambiar Contraseña                                          -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showPasswordModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
       <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-slide-up border border-slate-100">
         <button (click)="showPasswordModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -403,7 +403,7 @@
   <!-- MODAL: Editar Datos Personales                                     -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showEditProfileModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
       <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100">
         <button (click)="showEditProfileModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -459,7 +459,7 @@
   <!-- MODAL: Feedback general                                            -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showFeedbackModal()) {
-    <div class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+    <div appBlockScroll class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
       <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-auto text-center border border-slate-100 animate-slide-up relative">
         <button (click)="showFeedbackModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

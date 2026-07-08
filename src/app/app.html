@@ -277,7 +277,7 @@
   </footer>
   <!-- Logout Success Modal -->
   @if (showLogoutModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
       <div class="bg-white rounded-2xl shadow-xl w-[90%] sm:max-w-sm overflow-hidden flex flex-col relative animate-scale-up" style="animation-duration: 0.3s;">
         <div class="p-6 text-center space-y-4">
           <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto text-blue-500 shadow-inner">
@@ -296,7 +296,7 @@
 
   <!-- Generic Info Modal (Legal/Support) -->
   @if (showLegalModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col relative animate-scale-up" style="animation-duration: 0.3s;">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
