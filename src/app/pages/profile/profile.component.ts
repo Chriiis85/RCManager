@@ -7,6 +7,10 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { RecordsService, CoasterCredit, AttractionRecord, ParkVisit } from '../../core/services/records.service';
 import { SupabaseService } from '../../core/services/supabase.service';
+import { FriendsService, FriendRequest } from '../../core/services/friends.service';
+import { TripsService } from '../../core/services/trips.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface UserInfo {
   username: string;
@@ -40,6 +44,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
   supabaseService = inject(SupabaseService);
+  friendsService = inject(FriendsService);
+  tripsService = inject(TripsService);
   
   private get _user() { return this.authService.currentUser(); }
 
@@ -126,7 +132,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // ────────────────────────────────────────────────────────────────────────
 
-  ngOnInit() { this.loadStats(); }
+  ngOnInit() { 
+    this.loadStats(); 
+    this.loadFriends();
+  }
 
   ngOnDestroy() {
     if (this.countdownInterval) clearInterval(this.countdownInterval);
@@ -166,12 +175,98 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  friends = signal<Friend[]>([
-    { id: 1, username: 'RollerFan99',  avatar: 'https://ui-avatars.com/api/?name=Roller+Fan&background=0D1B3E&color=fff' },
-    { id: 2, username: 'CoasterKing',  avatar: 'https://ui-avatars.com/api/?name=Coaster+King&background=1D4ED8&color=fff' },
-    { id: 3, username: 'ThrillSeeker', avatar: 'https://ui-avatars.com/api/?name=Thrill+Seeker&background=F59E0B&color=fff' },
-    { id: 4, username: 'ParkHopper',   avatar: 'https://ui-avatars.com/api/?name=Park+Hopper&background=10B981&color=fff' },
-  ]);
+  // ── Friends & Requests ──────────────────────────────────────────────────
+  friendRequests = signal<FriendRequest[]>([]);
+  showAddFriendModal = signal(false);
+  searchUserQuery = signal('');
+  suggestedUsers = signal<{id: number, username: string}[]>([]);
+  private userSearch$ = new Subject<string>();
+
+  constructor() {
+    this.userSearch$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
+      if (q.length < 2) { this.suggestedUsers.set([]); return; }
+      this.tripsService.searchUsers(q).subscribe({
+        next: users => {
+          const currentUserId = this._user?.id;
+          // Filter out existing friends, sent requests, and oneself
+          const existingIds = this.friendRequests().flatMap(r => [r.user_id, r.friend_id]);
+          this.suggestedUsers.set(users.filter(u => u.id !== currentUserId && !existingIds.includes(u.id)));
+        }
+      });
+    });
+  }
+
+  get myFriends(): FriendRequest[] {
+    return this.friendRequests().filter(r => r.status === 'ACCEPTED');
+  }
+
+  get pendingIncoming(): FriendRequest[] {
+    const currentUserId = this._user?.id;
+    return this.friendRequests().filter(r => r.status === 'PENDING' && r.friend_id === currentUserId);
+  }
+
+  get pendingOutgoing(): FriendRequest[] {
+    const currentUserId = this._user?.id;
+    return this.friendRequests().filter(r => r.status === 'PENDING' && r.user_id === currentUserId);
+  }
+
+  getFriendUsername(req: FriendRequest): string {
+    const currentUserId = this._user?.id;
+    return req.user_id === currentUserId ? req.friend_username : req.user_username;
+  }
+
+  getFriendAvatar(req: FriendRequest): string {
+    const name = this.getFriendUsername(req);
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1D4ED8&color=fff`;
+  }
+
+  loadFriends() {
+    this.friendsService.getFriendships().subscribe({
+      next: (reqs) => this.friendRequests.set(reqs),
+      error: (err) => console.error('Error loading friends', err)
+    });
+  }
+
+  onFriendSearchChange(q: string) {
+    this.searchUserQuery.set(q);
+    this.userSearch$.next(q);
+  }
+
+  sendFriendRequest(user: {id: number, username: string}) {
+    this.friendsService.sendRequest(user.id, user.username).subscribe({
+      next: (req) => {
+        this.friendRequests.update(list => [req, ...list]);
+        this.suggestedUsers.update(list => list.filter(u => u.id !== user.id));
+        this.showFeedback('Solicitud Enviada', `Has enviado una solicitud de amistad a @${user.username}`, 'success');
+      },
+      error: () => this.showFeedback('Error', 'No se pudo enviar la solicitud.', 'info')
+    });
+  }
+
+  acceptFriend(req: FriendRequest) {
+    this.friendsService.respondRequest(req.id, 'ACCEPTED').subscribe({
+      next: (updated) => {
+        this.friendRequests.update(list => list.map(r => r.id === updated.id ? updated : r));
+        this.showFeedback('Solicitud Aceptada', `Ahora eres amigo de @${this.getFriendUsername(updated)}`, 'success');
+      }
+    });
+  }
+
+  rejectFriend(req: FriendRequest) {
+    this.friendsService.respondRequest(req.id, 'REJECTED').subscribe({
+      next: (updated) => {
+        this.friendRequests.update(list => list.map(r => r.id === updated.id ? updated : r));
+      }
+    });
+  }
+
+  removeFriend(req: FriendRequest) {
+    this.friendsService.removeFriend(req.id).subscribe({
+      next: () => {
+        this.friendRequests.update(list => list.filter(r => r.id !== req.id));
+      }
+    });
+  }
 
   upcomingTrips = signal<TripSummary[]>([
     { id: 1, parkName: 'Phantasialand', date: '15 Sep 2026', image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=400' },
