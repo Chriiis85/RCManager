@@ -58,9 +58,9 @@ export class ViajesComponent implements OnInit, OnDestroy {
 
   rejectInvitation(tripId: number) {
     this.tripsService.rejectTripInvitation(tripId).subscribe({
-      next: (updatedTrip) => {
-        const uiTrip: UITrip = { ...updatedTrip, isPast: false, time: signal({ days: 0, hours: 0, minutes: 0, seconds: 0 }) };
-        this.trips.update(list => list.map(t => t.id === tripId ? uiTrip : t));
+      next: () => {
+        // Quitamos el viaje de la lista para que desaparezca inmediatamente de la interfaz del usuario
+        this.trips.update(list => list.filter(t => t.id !== tripId));
       }
     });
   }
@@ -368,7 +368,8 @@ export class ViajesComponent implements OnInit, OnDestroy {
     
     if (trip.userId !== currentUserId && currentUserId) {
       // It's not my trip, so "deleting" it means leaving it
-      this.tripsService.removeCompanionFromTrip(trip.id, currentUserId).subscribe({
+      // Usamos rejectTripInvitation en lugar de remove para que el estado pase a REJECTED y el creador vea el aviso
+      this.tripsService.rejectTripInvitation(trip.id).subscribe({
         next: () => {
           this.trips.update(list => list.filter(t => t.id !== trip.id));
           this.showDeleteModal.set(false);
