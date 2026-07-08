@@ -570,4 +570,55 @@
     </div>
   }
 
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: Añadir Amigo                                                -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  @if (showAddFriendModal()) {
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100 min-h-[400px] flex flex-col">
+        <button (click)="showAddFriendModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        
+        <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+          <span>🔍</span> Buscar Amigos
+        </h3>
+        
+        <div class="relative mb-6">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <input type="text" [ngModel]="searchUserQuery()" (ngModelChange)="onFriendSearchChange($event)" placeholder="Busca por nombre de usuario..." class="pl-11 text-slate-900 w-full rounded-2xl border-0 py-3.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+        </div>
+
+        <div class="flex-1 overflow-y-auto pr-2 space-y-3">
+          @if (searchUserQuery().length > 1 && suggestedUsers().length === 0) {
+            <div class="text-center mt-10">
+              <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 mb-3">
+                <svg class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <p class="text-slate-500 font-medium text-sm">No se encontraron usuarios.</p>
+            </div>
+          } @else if (searchUserQuery().length <= 1) {
+            <p class="text-center text-slate-400 font-medium text-sm mt-10">Escribe al menos 2 letras para buscar.</p>
+          } @else {
+            @for (user of suggestedUsers(); track user.id) {
+              <div class="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black shadow-inner">
+                    {{ user.username.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="font-bold text-slate-900 text-sm">&#64;{{ user.username }}</span>
+                </div>
+                <button (click)="sendFriendRequest(user)" class="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-500 shadow-md shadow-blue-500/20 active:scale-95 transition-all">
+                  Añadir
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  }
+
 </main>
