@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TripsService, TripModel } from '../../core/services/trips.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AirbnbCalendarComponent } from './airbnb-calendar.component';
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
@@ -28,8 +29,27 @@ interface UITrip extends TripModel {
 export class ViajesComponent implements OnInit, OnDestroy {
   private tripsService = inject(TripsService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   authService = inject(AuthService);
   private timer: any;
+
+  goToRegisterCredits(trip: UITrip) {
+    const parkName = trip.park?.name;
+    if (parkName) {
+      this.router.navigate(['/credits'], { queryParams: { search: parkName } });
+    } else {
+      this.router.navigate(['/credits']);
+    }
+  }
+
+  goToRegisterAttractions(trip: UITrip) {
+    const parkName = trip.park?.name;
+    if (parkName) {
+      this.router.navigate(['/atracciones'], { queryParams: { search: parkName } });
+    } else {
+      this.router.navigate(['/atracciones']);
+    }
+  }
 
   // ── Main data ──────────────────────────────────
   trips = signal<UITrip[]>([]);

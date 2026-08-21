@@ -255,9 +255,14 @@
                   }
                 }
               </div>
-              <button class="cursor-pointer w-full rounded-xl bg-slate-100 text-slate-600 font-bold py-2 text-sm hover:bg-blue-600 hover:text-white transition-colors">
-                Registrar Credits
-              </button>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <button (click)="goToRegisterCredits(trip)" class="cursor-pointer w-full rounded-xl bg-slate-100 text-slate-700 font-bold py-2.5 px-2 text-xs hover:bg-blue-600 hover:text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95" title="Registrar montañas rusas de este viaje">
+                  <span>🎢</span> Credits
+                </button>
+                <button (click)="goToRegisterAttractions(trip)" class="cursor-pointer w-full rounded-xl bg-slate-100 text-slate-700 font-bold py-2.5 px-2 text-xs hover:bg-indigo-600 hover:text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95" title="Registrar atracciones de este viaje">
+                  <span>🎡</span> Atracciones
+                </button>
+              </div>
             </div>
           }
         </div>

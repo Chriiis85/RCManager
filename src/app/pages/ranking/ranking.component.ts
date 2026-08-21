@@ -1,8 +1,15 @@
 import { Component, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
-import { MAPPED_THEME_PARKS } from './theme-parks-data';
+import {
+  MAPPED_THEME_PARKS,
+  WATER_PARKS_DATA,
+  COASTERS_DATA,
+  ATTRACTIONS_DATA,
+  WATER_RIDES_DATA,
+  SHOWS_DATA,
+  FALLBACK_IMAGES
+} from './theme-parks-data';
 
 interface RankingItem {
   id: number | string;
@@ -33,6 +40,103 @@ interface RankingCategory {
 })
 export class RankingComponent {
   activeCategoryId = signal<string>('theme_parks');
+  isInitialLoading = signal<boolean>(true);
+  isLoadingMore = signal<boolean>(false);
+  displayLimit = signal<number>(10);
+
+  private loadedImageIds = new Set<string | number>();
+
+  constructor() {
+    this.loadInitialData();
+  }
+
+  private async loadInitialData() {
+    this.isInitialLoading.set(true);
+    const visible = this.displayedItems();
+    await this.loadImagesForItems(visible);
+    this.isInitialLoading.set(false);
+  }
+
+  async selectCategory(id: string) {
+    if (this.activeCategoryId() === id) return;
+    this.activeCategoryId.set(id);
+    this.displayLimit.set(10);
+    
+    const visible = this.displayedItems();
+    const needsLoading = visible.some(item => !this.loadedImageIds.has(item.id));
+    if (needsLoading) {
+      this.isInitialLoading.set(true);
+      await this.loadImagesForItems(visible);
+      this.isInitialLoading.set(false);
+    }
+  }
+
+  async loadMore() {
+    if (this.isLoadingMore()) return;
+    this.isLoadingMore.set(true);
+    
+    const currentLimit = this.displayLimit();
+    const nextLimit = currentLimit + 10;
+    const nextBatch = this.activeCategory().items.slice(currentLimit, nextLimit);
+
+    // Cargamos las imágenes del siguiente lote ANTES de mostrarlas en pantalla
+    await this.loadImagesForItems(nextBatch);
+
+    this.displayLimit.set(nextLimit);
+    this.isLoadingMore.set(false);
+  }
+
+  private async fetchWikipediaImage(searchQuery: string): Promise<string | null> {
+    try {
+      const encoded = encodeURIComponent(searchQuery);
+      const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encoded}&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const pages = data?.query?.pages;
+      if (!pages) return null;
+      const page = Object.values(pages)[0] as any;
+      
+      return page?.imageinfo?.[0]?.thumburl ?? page?.imageinfo?.[0]?.url ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private async loadImagesForItems(items: RankingItem[]) {
+    const itemsToLoad = items.filter(item => !this.loadedImageIds.has(item.id));
+    if (itemsToLoad.length === 0) return;
+
+    itemsToLoad.forEach(item => this.loadedImageIds.add(item.id));
+
+    // Procesamos en lotes de 4 peticiones concurrentes para máxima velocidad
+    const batchSize = 4;
+    for (let i = 0; i < itemsToLoad.length; i += batchSize) {
+      const batch = itemsToLoad.slice(i, i + batchSize);
+      await Promise.all(batch.map(async (item) => {
+        const query = item.park ? `${item.name} ${item.park}` : item.name;
+        const img = await this.fetchWikipediaImage(query);
+        if (img) {
+          this.categories.update(cats =>
+            cats.map(c => ({
+              ...c,
+              items: c.items.map(it => it.id === item.id ? { ...it, image: img } : it)
+            }))
+          );
+        }
+      }));
+    }
+  }
+
+  onImageError(item: RankingItem) {
+    const safeFallback = 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800';
+    this.categories.update(cats =>
+      cats.map(c => ({
+        ...c,
+        items: c.items.map(i => i.id === item.id ? { ...i, image: safeFallback } : i)
+      }))
+    );
+  }
 
   categories = signal<RankingCategory[]>([
     {
@@ -45,55 +149,33 @@ export class RankingComponent {
       id: 'water_parks',
       name: 'Mejor Parque Acuático',
       icon: '💦',
-      items: [
-        { id: 40, position: 1, name: 'Siam Park', subtitle: 'Tenerife, España', image: 'https://images.unsplash.com/photo-1582239634584-18e4c76b1585?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
-        { id: 41, position: 2, name: 'Volcano Bay', subtitle: 'Florida, USA', image: 'https://images.unsplash.com/photo-1588665798951-4091a9235cb3?auto=format&fit=crop&q=80&w=800', score: 9.6, trend: 'up' }
-      ]
+      items: WATER_PARKS_DATA
     },
     {
       id: 'coasters',
       name: 'Mejor Montaña Rusa',
       icon: '🎢',
-      items: [
-        { id: 10, position: 1, name: 'Steel Vengeance', park: 'Cedar Point', subtitle: 'RMC Hybrid', image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
-        { id: 11, position: 2, name: 'VelociCoaster', park: 'Islands of Adventure', subtitle: 'Intamin Launch', image: 'https://images.unsplash.com/photo-1506477331477-33d3184f4543?auto=format&fit=crop&q=80&w=800', score: 9.8, trend: 'up' },
-        { id: 12, position: 3, name: 'Fury 325', park: 'Carowinds', subtitle: 'B&M Giga', image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800', score: 9.7, trend: 'stable' },
-        { id: 13, position: 4, name: 'Taron', park: 'Phantasialand', subtitle: 'Intamin Multi-launch', image: 'https://images.unsplash.com/photo-1769713727279-ee0eeee2efcf?auto=format&fit=crop&q=80&w=800', score: 9.6, trend: 'up' },
-        { id: 14, position: 5, name: 'Hyperia', park: 'Thorpe Park', subtitle: 'Mack Hyper', image: 'https://images.unsplash.com/photo-1563293750-2d88697b919d?auto=format&fit=crop&q=80&w=800', score: 9.5, trend: 'up' }
-      ]
+      items: COASTERS_DATA
     },
     {
       id: 'attractions',
       name: 'Mejores Atracciones',
       icon: '🎠',
-      items: [
-        { id: 50, position: 1, name: 'Rise of the Resistance', park: 'Disney\'s Hollywood Studios', subtitle: 'Trackless Dark Ride', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' },
-        { id: 51, position: 2, name: 'Avatar Flight of Passage', park: 'Disney\'s Animal Kingdom', subtitle: 'Flying Theater', image: 'https://images.unsplash.com/photo-1620005001234-a123e98cc56a?auto=format&fit=crop&q=80&w=800', score: 9.7, trend: 'stable' }
-      ]
+      items: ATTRACTIONS_DATA
     },
     {
       id: 'water_rides',
       name: 'Mejores Atracciones Acuáticas',
       icon: '🌊',
-      items: [
-        { id: 20, position: 1, name: 'Chiapas', park: 'Phantasialand', subtitle: 'Log Flume', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800', score: 9.8, trend: 'stable' },
-        { id: 21, position: 2, name: 'Tutuki Splash', park: 'PortAventura', subtitle: 'Shoot-the-Chutes', image: 'https://images.unsplash.com/photo-1473216891040-2057398b1897?auto=format&fit=crop&q=80&w=800', score: 9.4, trend: 'stable' },
-        { id: 22, position: 3, name: 'Jurassic Park', park: 'Universal Studios', subtitle: 'Water Ride', image: 'https://images.unsplash.com/photo-1620005001234-a123e98cc56a?auto=format&fit=crop&q=80&w=800', score: 9.2, trend: 'down' }
-      ]
+      items: WATER_RIDES_DATA
     },
     {
       id: 'shows',
       name: 'Mejores Shows',
       icon: '🎭',
-      items: [
-        { id: 30, position: 1, name: 'Disney Dreams!', park: 'Disneyland Paris', subtitle: 'Firework / Mapping', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.8, trend: 'up' },
-        { id: 31, position: 2, name: 'Raveleijn', park: 'Efteling', subtitle: 'Stunt Show', image: 'https://images.unsplash.com/photo-1533230393124-7484ef92bb09?auto=format&fit=crop&q=80&w=800', score: 9.5, trend: 'stable' },
-        { id: 32, position: 3, name: 'FiestAventura', park: 'PortAventura', subtitle: 'Lake Show', image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800', score: 9.3, trend: 'stable' }
-      ]
+      items: SHOWS_DATA
     }
   ]);
-
-  displayLimit = signal<number>(20);
 
   activeCategory = computed(() => 
     this.categories().find(c => c.id === this.activeCategoryId()) || this.categories()[0]
@@ -106,15 +188,6 @@ export class RankingComponent {
   hasMoreItems = computed(() => 
     this.activeCategory().items.length > this.displayLimit()
   );
-
-  selectCategory(id: string) {
-    this.activeCategoryId.set(id);
-    this.displayLimit.set(20);
-  }
-
-  loadMore() {
-    this.displayLimit.update(limit => limit + 20);
-  }
 
   getScale(position: number): number {
     // Del 1 al 3

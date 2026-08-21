@@ -2,7 +2,7 @@ import { BlockScrollDirective } from '../../core/directives/block-scroll.directi
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { RecordsService } from '../../core/services/records.service';
 
@@ -67,6 +67,7 @@ export class CreditsComponent implements OnInit {
   authService = inject(AuthService);
   recordsService = inject(RecordsService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
 
   coasters = signal<Coaster[]>([]);
   userCredits = signal<Set<number>>(new Set());
@@ -92,6 +93,12 @@ export class CreditsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const search = params['search'] || params['park'];
+      if (search) {
+        this.searchQuery.set(search);
+      }
+    });
     this.fetchCoasters();
   }
 
