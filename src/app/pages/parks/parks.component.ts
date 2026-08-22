@@ -242,9 +242,17 @@ export class ParksComponent implements OnInit, OnDestroy {
     fetch('/queue-times-api/parks.json', {
       method: 'GET',
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Error en el servidor de parques (${res.status})`);
+        }
+        return res.json();
+      })
       .then((groups) => {
-        const allParks = groups.flatMap((group: any) => group.parks);
+        if (!Array.isArray(groups)) {
+          throw new Error('Respuesta inesperada al obtener parques');
+        }
+        const allParks = groups.flatMap((group: any) => group.parks || []);
 
         const mappedParks: ThemePark[] = allParks.map((p: any) => ({
           id: p.id,
@@ -272,12 +280,9 @@ export class ParksComponent implements OnInit, OnDestroy {
         });
 
         this.parks.set(mappedParks);
-
-        // 2. Quitamos el bloqueo de la pantalla de carga de aquí. 
-        // Lo quitará loadDataForVisibleParks al terminar la primera tanda.
       })
       .catch((err) => {
-        console.error(err);
+        console.error('Error al conectar con la API de parques (queue-times):', err);
         this.isInitialLoading.set(false);
       });
   }

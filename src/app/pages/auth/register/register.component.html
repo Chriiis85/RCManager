@@ -1,4 +1,5 @@
 <section class="relative isolate flex flex-col items-center justify-center min-h-[100dvh] pt-24 pb-16 px-6 lg:px-8 overflow-hidden bg-slate-50 animate-fade-in-up">
+  <!-- Glowing Background -->
   <div class="absolute inset-x-0 -top-40 -z-10 overflow-hidden blur-3xl pointer-events-none" aria-hidden="true">
     <div class="relative left-[calc(50%+11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[120deg] bg-gradient-to-tr from-sky-100 via-blue-200 to-blue-500 opacity-50 sm:left-[calc(50%+30rem)] sm:w-[72.1875rem]"></div>
   </div>
@@ -21,185 +22,70 @@
     </div>
 
     <!-- Register Card -->
-    <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-8 sm:p-10">
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
-        
-        <!-- Username -->
-        <div>
-          <label for="username" class="block text-sm font-semibold text-slate-700 mb-2">Nombre de usuario</label>
-          <div class="relative">
-            <input id="username" type="text" formControlName="username" placeholder="ej. coasterfan99"
-              class="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-white/50 transition-all sm:text-sm sm:leading-6 duration-300 hover:bg-white"
-              [class.ring-red-500]="isSubmitted() && username?.invalid"
-              [class.focus:ring-red-500]="isSubmitted() && username?.invalid">
-            @if (isSubmitted() && username?.invalid) {
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-red-500">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
-                </svg>
-              </div>
-            }
-          </div>
-          @if (isSubmitted() && username?.errors?.['required']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">El nombre de usuario es obligatorio</p>
-          }
-          @if (isSubmitted() && username?.errors?.['minlength']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">Debe tener al menos 3 caracteres</p>
-          }
+    <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-8 sm:p-10 space-y-6">
+      
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-blue-600 shadow-inner border border-blue-100">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
         </div>
+        <h2 class="text-lg font-bold text-slate-900">Registro rápido y seguro</h2>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Crea tu perfil en 1 clic utilizando tu cuenta de Google. Sin contraseñas complicadas que recordar.
+        </p>
+      </div>
 
-        <!-- Email -->
-        <div>
-          <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Correo electrónico</label>
-          <div class="relative">
-            <input id="email" type="email" formControlName="email" placeholder="tu@email.com"
-              class="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-white/50 transition-all sm:text-sm sm:leading-6 duration-300 hover:bg-white"
-              [class.ring-red-500]="isSubmitted() && email?.invalid"
-              [class.focus:ring-red-500]="isSubmitted() && email?.invalid">
-            @if (isSubmitted() && email?.invalid) {
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-red-500">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
-                </svg>
-              </div>
-            }
-          </div>
-          @if (isSubmitted() && email?.errors?.['required']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">El email es obligatorio</p>
-          }
-          @if (isSubmitted() && email?.errors?.['email']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">El formato de email no es válido</p>
-          }
+      <!-- API Error Message -->
+      @if (errorMessage()) {
+        <div class="rounded-2xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in-up" style="animation-duration: 0.3s;">
+          <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
         </div>
+      }
 
-        <!-- Password -->
-        <div>
-          <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Contraseña</label>
-          <div class="relative">
-            <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
-              class="block w-full rounded-xl border-0 py-3 pl-4 pr-12 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-white/50 transition-all sm:text-sm sm:leading-6 duration-300 hover:bg-white"
-              [class.ring-red-500]="isSubmitted() && password?.invalid"
-              [class.focus:ring-red-500]="isSubmitted() && password?.invalid">
-            <button type="button" (click)="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors">
-              @if (showPassword()) {
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-              } @else {
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              }
-            </button>
+      <!-- Main Google Register Button -->
+      <button type="button"
+        (click)="onGoogleLogin()"
+        [disabled]="isLoading()"
+        class="cursor-pointer flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-800 shadow-md hover:bg-slate-50 hover:border-slate-300 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+        @if (isLoading()) {
+          <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <span>Conectando con Google...</span>
+        } @else {
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
+          <span>Registrarse con Google</span>
+        }
+      </button>
+
+      <!-- Benefits & Info Box -->
+      <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-3">
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">¿Qué podrás hacer en RCManager?</p>
+        <div class="space-y-2 text-xs text-slate-600">
+          <div class="flex items-center gap-2">
+            <span class="text-blue-600 font-bold">✓</span>
+            <span>Contabilizar tus <strong>credits</strong> y parques visitados</span>
           </div>
-          
-          <!-- Password Strength Indicator -->
-          <div class="mt-2">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs text-slate-500 font-medium">Seguridad de la contraseña</span>
-              <span class="text-xs font-bold" [ngClass]="strengthColor().replace('bg-', 'text-')">{{ strengthLabel() }}</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden flex">
-              <div class="h-1.5 rounded-full transition-all duration-500 ease-out" [ngClass]="strengthColor()" [style.width.%]="passwordStrength()"></div>
-            </div>
+          <div class="flex items-center gap-2">
+            <span class="text-blue-600 font-bold">✓</span>
+            <span>Organizar <strong>viajes</strong> y compartir ranking con amigos</span>
           </div>
-
-          @if (isSubmitted() && password?.errors?.['required']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">La contraseña es obligatoria</p>
-          }
-          @if (isSubmitted() && password?.errors?.['minlength']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">Debe tener al menos 8 caracteres</p>
-          }
-        </div>
-
-        <!-- Confirm Password -->
-        <div>
-          <label for="confirmPassword" class="block text-sm font-semibold text-slate-700 mb-2">Confirmar contraseña</label>
-          <div class="relative">
-            <input id="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword" placeholder="••••••••"
-              class="block w-full rounded-xl border-0 py-3 pl-4 pr-12 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 bg-white/50 transition-all sm:text-sm sm:leading-6 duration-300 hover:bg-white"
-              [class.ring-red-500]="isSubmitted() && confirmPassword?.invalid"
-              [class.focus:ring-red-500]="isSubmitted() && confirmPassword?.invalid">
-            <button type="button" (click)="toggleConfirmPassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors">
-              @if (showConfirmPassword()) {
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-              } @else {
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              }
-            </button>
-          </div>
-          @if (isSubmitted() && confirmPassword?.errors?.['required']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">Debes confirmar la contraseña</p>
-          }
-          @if (isSubmitted() && confirmPassword?.errors?.['passwordMismatch']) {
-            <p class="mt-2 text-sm text-red-600 animate-fade-in-up" style="animation-duration: 0.3s;">Las contraseñas no coinciden</p>
-          }
-        </div>
-
-        <div>
-          <!-- API Error Message -->
-          @if (errorMessage()) {
-            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in-up" style="animation-duration: 0.3s;">
-              <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-              </svg>
-              <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
-            </div>
-          }
-          <button
-            type="submit"
-            [disabled]="isLoading()"
-            class="group relative flex w-full justify-center rounded-xl bg-blue-600 px-3 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-            @if (isLoading()) {
-              <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              Creando cuenta...
-            } @else {
-              Registrarse
-            }
-            <div class="absolute inset-0 rounded-xl ring-2 ring-white/20 group-hover:ring-white/40 transition-all pointer-events-none"></div>
-          </button>
-        </div>
-
-        <!-- Divider -->
-        <div class="relative my-2">
-          <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="w-full border-t border-slate-200"></div>
-          </div>
-          <div class="relative flex justify-center text-xs">
-            <span class="bg-white px-3 text-slate-500 font-medium tracking-wide">o regístrate con</span>
+          <div class="flex items-center gap-2">
+            <span class="text-blue-600 font-bold">✓</span>
+            <span>Asignar una <strong>contraseña</strong> más adelante en tu Perfil</span>
           </div>
         </div>
+      </div>
 
-        <!-- Social Buttons -->
-        <div class="space-y-3">
+      <p class="text-[11px] text-center text-slate-400 leading-tight">
+        Al registrarte, aceptas nuestros Términos de Servicio y la Política de Privacidad.
+      </p>
 
-          <!-- Google - Large full width -->
-          <button type="button"
-            (click)="onGoogleLogin()"
-            [disabled]="isLoading()"
-            class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-            @if (isLoading()) {
-              <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              Conectando...
-            } @else {
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
-              Continuar con Google
-            }
-          </button>
-
-          <!-- Apple - Large full width -->
-          <button type="button"
-            class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-900 bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-700 transition-all duration-200">
-            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.42.07 2.4.83 3.23.89 1.2-.24 2.35-1.02 3.65-.89 1.56.17 2.73.77 3.51 1.97-3.22 1.94-2.46 5.9.59 7.08-.61 1.64-1.44 3.28-2.98 4.81zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-            </svg>
-            Continuar con Apple
-          </button>
-
-        </div>
-      </form>
     </div>
   </div>
 </section>

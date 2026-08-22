@@ -1,5 +1,5 @@
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -273,7 +273,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     { id: 2, parkName: 'Europa-Park',   date: '22 Oct 2026', image: 'https://images.unsplash.com/photo-1719640502390-5c6e85176ea9?auto=format&fit=crop&q=80&w=400' }
   ]);
 
-  showPasswordModal    = signal(false);
   isTwoFactorEnabled   = signal(false);
   showEditProfileModal = signal(false);
   editForm             = signal<UserInfo>({ ...this.userInfo() });
@@ -337,15 +336,239 @@ export class ProfileComponent implements OnInit, OnDestroy {
     input.click();
   }
 
-  changePassword() {
-    this.showPasswordModal.set(false);
-    this.showFeedback('Contraseña Cambiada', 'Tu contraseña se ha cambiado exitosamente (Simulación).', 'success');
+  // ── Password Management ────────────────────────────────────────────────────
+  showPasswordModal    = signal(false);
+  passwordForm         = signal({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  showCurrentPassword  = signal(false);
+  showNewPassword      = signal(false);
+  showConfirmPassword  = signal(false);
+  passwordLoading      = signal(false);
+  passwordError        = signal<string | null>(null);
+
+  // Computeds for strength and rules
+  passwordStrength = computed(() => {
+    const pw = this.passwordForm().newPassword || '';
+    if (!pw) return 0;
+    let score = 0;
+    if (pw.length >= 8) score += 25;
+    if (/[A-Z]/.test(pw)) score += 25;
+    if (/[0-9]/.test(pw)) score += 25;
+    if (/[^A-Za-z0-9]/.test(pw)) score += 25;
+    return score;
+  });
+
+  strengthColor = computed(() => {
+    const s = this.passwordStrength();
+    if (s === 0) return 'bg-slate-200 text-slate-400';
+    if (s <= 25) return 'bg-red-500 text-red-600';
+    if (s <= 50) return 'bg-amber-500 text-amber-600';
+    if (s <= 75) return 'bg-yellow-400 text-yellow-600';
+    return 'bg-emerald-500 text-emerald-600';
+  });
+
+  strengthLabel = computed(() => {
+    const s = this.passwordStrength();
+    if (s === 0) return '';
+    if (s <= 25) return 'Débil';
+    if (s <= 50) return 'Regular';
+    if (s <= 75) return 'Buena';
+    return 'Muy Fuerte';
+  });
+
+  hasMinLength = computed(() => (this.passwordForm().newPassword || '').length >= 8);
+  hasUpperCase = computed(() => /[A-Z]/.test(this.passwordForm().newPassword || ''));
+  hasNumber = computed(() => /[0-9]/.test(this.passwordForm().newPassword || ''));
+  hasSpecialChar = computed(() => /[^A-Za-z0-9]/.test(this.passwordForm().newPassword || ''));
+  
+  passwordsMatch = computed(() => {
+    const { newPassword, confirmPassword } = this.passwordForm();
+    return !!newPassword && !!confirmPassword && newPassword === confirmPassword;
+  });
+
+  openPasswordModal() {
+    this.passwordForm.set({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    this.showCurrentPassword.set(false);
+    this.showNewPassword.set(false);
+    this.showConfirmPassword.set(false);
+    this.passwordError.set(null);
+    this.passwordLoading.set(false);
+    this.showPasswordModal.set(true);
   }
 
+  closePasswordModal() {
+    this.showPasswordModal.set(false);
+    this.passwordError.set(null);
+  }
+
+  submitPasswordChange() {
+    const { currentPassword, newPassword, confirmPassword } = this.passwordForm();
+    this.passwordError.set(null);
+
+    if (!newPassword || newPassword.length < 8) {
+      this.passwordError.set('La nueva contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      this.passwordError.set('Las contraseñas no coinciden.');
+      return;
+    }
+
+    this.passwordLoading.set(true);
+    this.authService.changePassword(newPassword, currentPassword ? currentPassword : undefined).subscribe({
+      next: () => {
+        this.passwordLoading.set(false);
+        this.showPasswordModal.set(false);
+        this.passwordForm.set({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        this.showFeedback('¡Contraseña Guardada!', 'Tu nueva contraseña ha sido establecida correctamente. Ahora puedes iniciar sesión tanto con Google como con tu correo y contraseña.', 'success');
+      },
+      error: (err) => {
+        this.passwordLoading.set(false);
+        const msg = err?.error?.error || 'No se pudo actualizar la contraseña. Revisa los datos e inténtalo de nuevo.';
+        this.passwordError.set(msg);
+      }
+    });
+  }
+
+  // ── 2FA Management ──────────────────────────────────────────────────────────
+  show2FASetupModal    = signal(false);
+  show2FADisableModal  = signal(false);
+  selected2FAType      = signal<'EMAIL' | 'APP'>('EMAIL');
+  current2FAType       = signal<'EMAIL' | 'APP'>(this._user?.twoFactorType || 'APP');
+  twoFASetupData       = signal<{ secret: string; qrCode: string; otpauthUrl: string } | null>(null);
+  twoFACodeInput       = signal('');
+  twoFALoading         = signal(false);
+  twoFAError           = signal<string | null>(null);
+  twoFACopied          = signal(false);
+  emailCodeSent        = signal(false);
+  emailCodeSending     = signal(false);
+
   toggleTwoFactor() {
-    this.isTwoFactorEnabled.set(!this.isTwoFactorEnabled());
-    const status = this.isTwoFactorEnabled() ? 'activada' : 'desactivada';
-    this.showFeedback('Seguridad Actualizada', `La verificación en dos pasos ha sido ${status} (Simulación).`, 'success');
+    if (this.isTwoFactorEnabled()) {
+      this.twoFACodeInput.set('');
+      this.twoFAError.set(null);
+      this.show2FADisableModal.set(true);
+    } else {
+      this.open2FASetup();
+    }
+  }
+
+  set2FAMethod(type: 'EMAIL' | 'APP') {
+    this.selected2FAType.set(type);
+    this.twoFACodeInput.set('');
+    this.twoFAError.set(null);
+
+    if (type === 'APP' && !this.twoFASetupData()) {
+      this.loadAppQR();
+    }
+  }
+
+  open2FASetup() {
+    this.twoFALoading.set(false);
+    this.twoFAError.set(null);
+    this.twoFACodeInput.set('');
+    this.twoFACopied.set(false);
+    this.emailCodeSent.set(false);
+    this.selected2FAType.set(this._user?.twoFactorType || 'EMAIL');
+    this.show2FASetupModal.set(true);
+
+    if (this.selected2FAType() === 'APP') {
+      this.loadAppQR();
+    }
+  }
+
+  loadAppQR() {
+    this.twoFALoading.set(true);
+    this.authService.setup2FA().subscribe({
+      next: (data) => {
+        this.twoFASetupData.set(data);
+        this.twoFALoading.set(false);
+      },
+      error: (err) => {
+        this.twoFALoading.set(false);
+        this.twoFAError.set(err?.error?.error || 'No se pudo generar el código QR.');
+      }
+    });
+  }
+
+  sendEmail2FACode() {
+    this.emailCodeSending.set(true);
+    this.twoFAError.set(null);
+
+    this.authService.send2FAEmailCode().subscribe({
+      next: () => {
+        this.emailCodeSending.set(false);
+        this.emailCodeSent.set(true);
+      },
+      error: (err) => {
+        this.emailCodeSending.set(false);
+        this.twoFAError.set(err?.error?.error || 'Error al enviar código al correo.');
+      }
+    });
+  }
+
+  confirm2FAEnable() {
+    const code = this.twoFACodeInput().trim();
+    const type = this.selected2FAType();
+
+    if (!code || code.length !== 6) {
+      this.twoFAError.set('Introduce el código de 6 dígitos.');
+      return;
+    }
+
+    this.twoFALoading.set(true);
+    this.twoFAError.set(null);
+
+    const payload: { type: 'EMAIL' | 'APP'; code: string; secret?: string } = {
+      type,
+      code,
+      secret: type === 'APP' ? this.twoFASetupData()?.secret : undefined
+    };
+
+    this.authService.enable2FA(payload).subscribe({
+      next: () => {
+        this.twoFALoading.set(false);
+        this.isTwoFactorEnabled.set(true);
+        this.current2FAType.set(type);
+        this.show2FASetupModal.set(false);
+        this.showFeedback(
+          '¡Verificación 2FA Activada!',
+          `Tu cuenta ahora está protegida mediante ${type === 'EMAIL' ? 'código enviado a tu correo' : 'App Authenticator'}.`,
+          'success'
+        );
+      },
+      error: (err) => {
+        this.twoFALoading.set(false);
+        this.twoFAError.set(err?.error?.error || 'Código incorrecto. Inténtalo de nuevo.');
+      }
+    });
+  }
+
+  confirm2FADisable() {
+    this.twoFALoading.set(true);
+    this.twoFAError.set(null);
+
+    this.authService.disable2FA().subscribe({
+      next: () => {
+        this.twoFALoading.set(false);
+        this.isTwoFactorEnabled.set(false);
+        this.show2FADisableModal.set(false);
+        this.showFeedback('2FA Desactivado', 'La verificación en dos pasos ha sido desactivada en tu cuenta.', 'info');
+      },
+      error: (err) => {
+        this.twoFALoading.set(false);
+        this.twoFAError.set(err?.error?.error || 'No se pudo desactivar el 2FA.');
+      }
+    });
+  }
+
+  copy2FASecret() {
+    const secret = this.twoFASetupData()?.secret;
+    if (secret && typeof navigator !== 'undefined') {
+      navigator.clipboard.writeText(secret);
+      this.twoFACopied.set(true);
+      setTimeout(() => this.twoFACopied.set(false), 2500);
+    }
   }
 
   openEditProfile() { this.editForm.set({ ...this.userInfo() }); this.showEditProfileModal.set(true); }

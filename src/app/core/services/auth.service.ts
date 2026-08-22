@@ -12,13 +12,19 @@ export interface User {
   firstName?: string;
   lastName?: string;
   profileImage?: string;
+  twoFactorEnabled?: boolean;
+  twoFactorType?: 'EMAIL' | 'APP';
   createdAt: string;
 }
 
 export interface AuthResponse {
   message: string;
-  token: string;
-  user: User;
+  token?: string;
+  user?: User;
+  requires2FA?: boolean;
+  twoFactorType?: 'EMAIL' | 'APP';
+  tempToken?: string;
+  maskedEmail?: string;
 }
 
 export interface LoginPayload {
@@ -75,30 +81,104 @@ export class AuthService {
           },
           error: (err) => {
             console.error('Error al intercambiar el token de Supabase con el backend:', err);
-            this.logout();
           }
         });
-      }
-
-      if (!session && event === 'SIGNED_OUT') {
-        this._token.set(null);
-        this._user.set(null);
       }
     });
   }
 
-  // ── Register ───────────────────────────────────────────────────────────────
-  register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${API_BASE}/register`, payload).pipe(
-      tap(res => this.handleAuthSuccess(res)),
+  // ── Login normal (Email + Password) ────────────────────────────────────────
+  login(payload: LoginPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/login`, payload).pipe(
+      tap((res) => {
+        if (!res.requires2FA) {
+          this.handleAuthSuccess(res);
+        }
+      }),
+      catchError((err) => throwError(() => err))
+    );
+  }
+
+  // ── Login 2FA (Verificar código 6 dígitos TOTP o EMAIL) ────────────────────
+  login2FA(tempToken: string, code: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/login/2fa`, { tempToken, code }).pipe(
+      tap((res) => {
+        this.handleAuthSuccess(res);
+      }),
+      catchError((err) => throwError(() => err))
+    );
+  }
+
+  // ── Reenviar código de 2FA por Email en Login ──────────────────────────────
+  resendLogin2FAEmail(tempToken: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${API_BASE}/login/2fa/resend`, { tempToken }).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
-  // ── Login ──────────────────────────────────────────────────────────────────
-  login(payload: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${API_BASE}/login`, payload).pipe(
-      tap(res => this.handleAuthSuccess(res)),
+  // ── Register con Google únicamente ─────────────────────────────────────────
+  register(payload: RegisterPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/register`, payload).pipe(
+      tap((res) => {
+        this.handleAuthSuccess(res);
+      }),
+      catchError((err) => throwError(() => err))
+    );
+  }
+
+  // ── 2FA Management ─────────────────────────────────────────────────────────
+  setup2FA(): Observable<{ secret: string; qrCode: string; otpauthUrl: string }> {
+    return this.http.post<{ secret: string; qrCode: string; otpauthUrl: string }>(
+      `${API_BASE}/2fa/setup`,
+      {},
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  send2FAEmailCode(): Observable<{ message: string; email: string; maskedEmail: string }> {
+    return this.http.post<{ message: string; email: string; maskedEmail: string }>(
+      `${API_BASE}/2fa/send-email-code`,
+      {},
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  enable2FA(payload: { type: 'EMAIL' | 'APP'; code: string; secret?: string }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${API_BASE}/2fa/enable`,
+      payload,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      tap(() => {
+        const u = this._user();
+        if (u) {
+          const updated: User = { ...u, twoFactorEnabled: true, twoFactorType: payload.type };
+          localStorage.setItem(USER_KEY, JSON.stringify(updated));
+          this._user.set(updated);
+        }
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  disable2FA(code?: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${API_BASE}/2fa/disable`,
+      { code },
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      tap(() => {
+        const u = this._user();
+        if (u) {
+          const updated = { ...u, twoFactorEnabled: false };
+          localStorage.setItem(USER_KEY, JSON.stringify(updated));
+          this._user.set(updated);
+        }
+      }),
       catchError(err => throwError(() => err))
     );
   }
@@ -131,6 +211,17 @@ export class AuthService {
         localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
         this._user.set(updatedUser);
       }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Change / Set Password ───────────────────────────────────────────────────
+  changePassword(newPassword: string, currentPassword?: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      'https://rc-manager-api.vercel.app/api/users/password',
+      { newPassword, currentPassword },
+      { headers: this.getAuthHeaders() }
+    ).pipe(
       catchError(err => throwError(() => err))
     );
   }
@@ -195,10 +286,12 @@ export class AuthService {
   }
 
   private handleAuthSuccess(res: AuthResponse): void {
-    localStorage.setItem(TOKEN_KEY, res.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-    this._token.set(res.token);
-    this._user.set(res.user);
+    if (res.token && res.user) {
+      localStorage.setItem(TOKEN_KEY, res.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      this._token.set(res.token);
+      this._user.set(res.user);
+    }
   }
 
   private getStoredToken(): string | null {
