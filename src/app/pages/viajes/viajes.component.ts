@@ -6,9 +6,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TripsService, TripModel } from '../../core/services/trips.service';
+import { FriendsService } from '../../core/services/friends.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AirbnbCalendarComponent } from './airbnb-calendar.component';
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 
@@ -28,6 +28,7 @@ interface UITrip extends TripModel {
 })
 export class ViajesComponent implements OnInit, OnDestroy {
   private tripsService = inject(TripsService);
+  private friendsService = inject(FriendsService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   authService = inject(AuthService);
@@ -109,28 +110,15 @@ export class ViajesComponent implements OnInit, OnDestroy {
   tripTitle = signal('');
   tripDescription = signal('');
 
-  // Step 3
+  // Step 3 (Companions - Only accepted friends)
   searchUserQuery = signal('');
   selectedCompanions = signal<any[]>([]);
   suggestedUsers = signal<any[]>([]);
-  private userSearch$ = new Subject<string>();
+  acceptedFriends = signal<{ id: number; username: string; avatar?: string }[]>([]);
 
   readonly MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-  constructor() {
-    this.userSearch$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
-      if (q.length < 2) { this.suggestedUsers.set([]); return; }
-      this.tripsService.searchUsers(q).subscribe({
-        next: users => {
-          const selectedIds = this.selectedCompanions().map(c => c.id);
-          const tripIds = this.tripToAddCompanion() ? this.tripToAddCompanion()!.companions.map(c => c.user?.id || c.userId) : [];
-          const currentUserId = this.authService.currentUser()?.id;
-          this.suggestedUsers.set(users.filter(u => !selectedIds.includes(u.id) && !tripIds.includes(u.id) && u.id !== currentUserId));
-        },
-        error: () => this.suggestedUsers.set([])
-      });
-    });
-  }
+  constructor() {}
 
   // ── Validation ─────────────────────────────────
   get step1Valid() { return !!this.selectedParkForTrip(); }
@@ -140,6 +128,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadTrips();
     this.loadParks();
+    this.loadFriends();
     this.timer = setInterval(() => this.tickCountdowns(), 1000);
   }
 
@@ -253,6 +242,50 @@ export class ViajesComponent implements OnInit, OnDestroy {
   countdown = signal(2);
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
+  loadFriends() {
+    this.friendsService.getFriendships().subscribe({
+      next: (reqs) => {
+        const myId = this.authService.currentUser()?.id;
+        const accepted = reqs
+          .filter(r => r.status === 'ACCEPTED')
+          .map(r => {
+            const isSender = r.user_id === myId;
+            const username = isSender ? r.friend_username : r.user_username;
+            const id = isSender ? r.friend_id : r.user_id;
+            return {
+              id,
+              username,
+              avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=1D4ED8&color=fff`
+            };
+          });
+        this.acceptedFriends.set(accepted);
+        this.filterSuggestedFriends(this.searchUserQuery());
+      },
+      error: (err) => console.error('Error loading friends in viajes:', err)
+    });
+  }
+
+  filterSuggestedFriends(q: string = '') {
+    const cleanQ = (q || '').trim().toLowerCase().replace(/^@/, '');
+    const selectedIds = this.selectedCompanions().map(c => c.id);
+    const tripIds = this.tripToAddCompanion()
+      ? this.tripToAddCompanion()!.companions.map(c => c.user?.id || c.userId)
+      : [];
+    const myId = this.authService.currentUser()?.id;
+
+    let friends = this.acceptedFriends().filter(f =>
+      !selectedIds.includes(f.id) &&
+      !tripIds.includes(f.id) &&
+      f.id !== myId
+    );
+
+    if (cleanQ) {
+      friends = friends.filter(f => f.username.toLowerCase().includes(cleanQ));
+    }
+
+    this.suggestedUsers.set(friends);
+  }
+
   // ── Wizard controls ────────────────────────────
   openWizard() {
     this.isWizardOpen.set(true);
@@ -265,15 +298,20 @@ export class ViajesComponent implements OnInit, OnDestroy {
     this.tripEndDate.set('');
     this.tripDateLabel.set('');
     this.searchUserQuery.set('');
-    this.suggestedUsers.set([]);
     this.selectedCompanions.set([]);
     this.isSubmitting.set(false);
+    this.loadFriends();
+    this.filterSuggestedFriends('');
   }
 
   closeWizard() { this.isWizardOpen.set(false); }
 
   nextStep() {
     this.wizardStep.update(s => s + 1);
+    if (this.wizardStep() === 3) {
+      this.loadFriends();
+      this.filterSuggestedFriends(this.searchUserQuery());
+    }
   }
 
   prevStep() {
@@ -282,12 +320,21 @@ export class ViajesComponent implements OnInit, OnDestroy {
 
   selectPark(park: any) { this.selectedParkForTrip.set(park); this.searchParkQuery.set(park.name); }
 
-  onUserSearchChange(q: string) { this.searchUserQuery.set(q); this.userSearch$.next(q); }
+  onUserSearchChange(q: string) { 
+    this.searchUserQuery.set(q); 
+    this.filterSuggestedFriends(q); 
+  }
+  
   addCompanion(user: any) {
     this.selectedCompanions.update(l => [...l, user]);
-    this.searchUserQuery.set(''); this.suggestedUsers.set([]);
+    this.searchUserQuery.set(''); 
+    this.filterSuggestedFriends('');
   }
-  removeCompanion(id: number) { this.selectedCompanions.update(l => l.filter(c => c.id !== id)); }
+  
+  removeCompanion(id: number) { 
+    this.selectedCompanions.update(l => l.filter(c => c.id !== id));
+    this.filterSuggestedFriends(this.searchUserQuery());
+  }
 
   finishTripCreation() {
     if (this.isSubmitting() || !this.step2Valid) return;
@@ -318,9 +365,10 @@ export class ViajesComponent implements OnInit, OnDestroy {
   openAddCompanionModal(trip: UITrip) {
     this.tripToAddCompanion.set(trip);
     this.searchUserQuery.set('');
-    this.suggestedUsers.set([]);
     this.selectedCompanions.set([]);
     this.showAddCompanionModal.set(true);
+    this.loadFriends();
+    this.filterSuggestedFriends('');
   }
 
   closeAddCompanionModal() {

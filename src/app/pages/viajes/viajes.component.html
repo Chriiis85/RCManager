@@ -315,37 +315,68 @@
           }
 
           <div class="space-y-4">
+            <!-- Helper notice -->
+            <div class="p-3.5 bg-blue-50/80 border border-blue-200/80 rounded-2xl flex items-start gap-2.5 text-left text-blue-900 shadow-sm">
+              <span class="text-base leading-none mt-0.5 flex-shrink-0">💡</span>
+              <div class="text-xs leading-snug">
+                <p class="font-bold text-blue-950">Solo puedes invitar a tus amigos aceptados</p>
+                <p class="text-[11px] text-blue-700 mt-0.5">
+                  Si no encuentras a alguien, asegúrate de que ambos sois amigos y la solicitud de amistad esté <strong>aceptada</strong> en el Perfil.
+                </p>
+              </div>
+            </div>
+
             <div class="relative">
-              <svg class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
-              <input type="text" placeholder="Buscar por nombre de usuario..."
+              <span class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 font-bold">@</span>
+              <input type="text" placeholder="Buscar entre tus amigos..."
                 [ngModel]="searchUserQuery()" (ngModelChange)="onUserSearchChange($event)"
-                class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-10 pr-4 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
             </div>
 
             @if (suggestedUsers().length > 0) {
-              <div class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-                @for (u of suggestedUsers(); track u.id) {
-                  <button (click)="addCompanion(u)" class="cursor-pointer w-full flex items-center justify-between p-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
-                        {{ u.username.substring(0,2).toUpperCase() }}
+              <div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Amigos disponibles para añadir:</p>
+                <div class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-50 max-h-48 overflow-y-auto">
+                  @for (u of suggestedUsers(); track u.id) {
+                    <button (click)="addCompanion(u)" class="cursor-pointer w-full flex items-center justify-between p-3 hover:bg-blue-50/60 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                          {{ u.username.substring(0,2).toUpperCase() }}
+                        </div>
+                        <span class="text-sm font-bold text-slate-800">&#64;{{ u.username }}</span>
                       </div>
-                      <span class="text-sm font-bold text-slate-700">&#64;{{ u.username }}</span>
-                    </div>
-                    <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                  </button>
-                }
+                      <span class="text-blue-600 bg-blue-100/80 hover:bg-blue-200 px-2.5 py-1 rounded-xl text-xs font-bold transition-colors">+ Añadir</span>
+                    </button>
+                  }
+                </div>
               </div>
+            } @else {
+              @if (acceptedFriends().length === 0) {
+                <div class="text-center py-6 px-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                  </div>
+                  <p class="text-xs font-bold text-slate-800">Aún no tienes amigos agregados</p>
+                  <p class="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
+                    Conecta con otros usuarios como amigos en tu <strong>Perfil</strong> para poder invitarlos a este viaje.
+                  </p>
+                </div>
+              } @else if (searchUserQuery()) {
+                <div class="text-center py-5 px-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                  <p class="text-xs font-bold text-slate-700">No se encontró a ningún amigo con "&#64;{{ searchUserQuery() }}"</p>
+                  <p class="text-[11px] text-slate-400 mt-1">
+                    Solo se muestran los amigos con solicitud aceptada que no estén ya en el viaje.
+                  </p>
+                </div>
+              }
             }
 
             @if (selectedCompanions().length > 0) {
               <div>
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Añadir a:</h4>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Nuevos acompañantes a añadir:</h4>
                 <div class="flex flex-wrap gap-2">
                   @for (c of selectedCompanions(); track c.id) {
-                    <div class="flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-800 py-1.5 pl-2 pr-1.5 rounded-full text-xs font-bold">
+                    <div class="flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-800 py-1.5 pl-2.5 pr-1.5 rounded-full text-xs font-bold shadow-sm">
                       <span>&#64;{{ c.username }}</span>
                       <button (click)="removeCompanion(c.id)" class="cursor-pointer w-5 h-5 rounded-full hover:bg-blue-200 flex items-center justify-center transition-colors">
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -581,42 +612,73 @@
         <!-- ── STEP 3: AMIGOS ─────────── -->
         @if (wizardStep() === 3) {
           <div class="animate-fade-in space-y-4">
-            <p class="text-slate-500 text-sm">Busca amigos por su <strong>&#64;username</strong>. Puedes dejarlo vacío y crear el viaje solo.</p>
+            <!-- Helper notice -->
+            <div class="p-3.5 bg-blue-50/80 border border-blue-200/80 rounded-2xl flex items-start gap-2.5 text-left text-blue-900 shadow-sm">
+              <span class="text-base leading-none mt-0.5 flex-shrink-0">💡</span>
+              <div class="text-xs leading-snug">
+                <p class="font-bold text-blue-950">Solo puedes invitar a tus amigos aceptados</p>
+                <p class="text-[11px] text-blue-700 mt-0.5">
+                  Si no ves a alguien en la lista, pídele que acepte tu solicitud de amistad desde la pestaña <strong>Amigos</strong> en su Perfil.
+                </p>
+              </div>
+            </div>
 
             <div class="relative">
               <span class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 font-bold">@</span>
-              <input type="text" id="search-user-input" placeholder="nombre_usuario"
+              <input type="text" id="search-user-input" placeholder="Buscar entre tus amigos..."
                 [ngModel]="searchUserQuery()" (ngModelChange)="onUserSearchChange($event)"
-                class="w-full rounded-2xl border-0 py-3 pl-9 pr-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50">
+                class="w-full rounded-2xl border-0 py-3 pl-9 pr-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50 transition-all">
             </div>
 
             @if (suggestedUsers().length > 0) {
-              <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-50">
-                @for (user of suggestedUsers(); track user.id) {
-                  <button (click)="addCompanion(user)" class="cursor-pointer w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center justify-between transition-colors">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-black text-xs">
-                        {{ user.username.substring(0, 2).toUpperCase() }}
+              <div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tus amigos disponibles:</p>
+                <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-50 max-h-52 overflow-y-auto">
+                  @for (user of suggestedUsers(); track user.id) {
+                    <button (click)="addCompanion(user)" class="cursor-pointer w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center justify-between transition-colors">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-sm">
+                          {{ user.username.substring(0, 2).toUpperCase() }}
+                        </div>
+                        <span class="font-bold text-slate-900 text-sm">&#64;{{ user.username }}</span>
                       </div>
-                      <span class="font-bold text-slate-900 text-sm">&#64;{{ user.username }}</span>
-                    </div>
-                    <span class="text-blue-600 bg-blue-100 px-2 py-0.5 rounded-lg text-xs font-bold">+ Añadir</span>
-                  </button>
-                }
+                      <span class="text-blue-600 bg-blue-100/80 hover:bg-blue-200 px-2.5 py-1 rounded-xl text-xs font-bold transition-colors">+ Invitar</span>
+                    </button>
+                  }
+                </div>
               </div>
+            } @else {
+              @if (acceptedFriends().length === 0) {
+                <div class="text-center py-6 px-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                  </div>
+                  <p class="text-xs font-bold text-slate-800">Aún no tienes amigos en tu lista</p>
+                  <p class="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
+                    Para poder añadir acompañantes, primero debes conectar con otros usuarios como amigos desde tu <strong>Perfil</strong>.
+                  </p>
+                </div>
+              } @else if (searchUserQuery()) {
+                <div class="text-center py-5 px-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                  <p class="text-xs font-bold text-slate-700">No se encontró a ningún amigo con "&#64;{{ searchUserQuery() }}"</p>
+                  <p class="text-[11px] text-slate-400 mt-1">
+                    Recuerda que solo aparecen los amigos con solicitud aceptada.
+                  </p>
+                </div>
+              }
             }
 
             @if (selectedCompanions().length > 0) {
               <div>
-                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">👥 Acompañantes ({{ selectedCompanions().length }})</h5>
+                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">👥 Acompañantes seleccionados ({{ selectedCompanions().length }})</h5>
                 <div class="flex flex-wrap gap-2">
                   @for (comp of selectedCompanions(); track comp.id) {
-                    <div class="bg-blue-50 border border-blue-100 rounded-full flex items-center gap-2 pl-1 pr-3 py-1">
-                      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-black text-xs">
+                    <div class="bg-blue-50 border border-blue-100 rounded-full flex items-center gap-2 pl-1.5 pr-3 py-1 shadow-sm">
+                      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs">
                         {{ comp.username.substring(0, 2).toUpperCase() }}
                       </div>
                       <span class="text-sm font-bold text-blue-900">&#64;{{ comp.username }}</span>
-                      <button (click)="removeCompanion(comp.id)" class="cursor-pointer text-blue-300 hover:text-red-500 ml-1 transition-colors">
+                      <button (click)="removeCompanion(comp.id)" class="cursor-pointer text-blue-400 hover:text-red-500 ml-1 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                       </button>
                     </div>
