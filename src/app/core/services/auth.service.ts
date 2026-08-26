@@ -28,7 +28,9 @@ export interface AuthResponse {
 }
 
 export interface LoginPayload {
-  email: string;
+  email?: string;
+  username?: string;
+  identifier?: string;
   password: string;
 }
 
@@ -201,15 +203,45 @@ export class AuthService {
     }
   }
 
+  // ── Check Username Availability ───────────────────────────────────────────
+  checkUsername(username: string): Observable<{ available: boolean; exists?: boolean; suggestions?: string[]; message?: string }> {
+    return this.http.get<{ available: boolean; exists?: boolean; suggestions?: string[]; message?: string }>(
+      'https://rc-manager-api.vercel.app/api/users/check-username',
+      {
+        headers: this.getAuthHeaders(),
+        params: { username }
+      }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Fetch Current User Profile from Server ────────────────────────────────
+  fetchCurrentUser(): Observable<{ user: User }> {
+    return this.http.get<{ user: User }>(`${API_BASE}/me`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      tap(({ user }) => {
+        if (user) {
+          localStorage.setItem(USER_KEY, JSON.stringify(user));
+          this._user.set(user);
+        }
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
   // ── Update Profile ─────────────────────────────────────────────────────────
   updateProfile(data: Partial<User>): Observable<User> {
     return this.http.put<User>('https://rc-manager-api.vercel.app/api/users/profile', data, {
       headers: this.getAuthHeaders()
     }).pipe(
       tap((updatedUser) => {
-        // Actualizar la caché local
-        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
-        this._user.set(updatedUser);
+        // Actualizar la caché local fusionando con los datos existentes
+        const current = this._user();
+        const merged: User = { ...(current || {}), ...updatedUser };
+        localStorage.setItem(USER_KEY, JSON.stringify(merged));
+        this._user.set(merged);
       }),
       catchError(err => throwError(() => err))
     );

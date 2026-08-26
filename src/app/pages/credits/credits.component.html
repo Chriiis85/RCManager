@@ -47,6 +47,7 @@
               [ngModel]="searchQuery()"
               (ngModelChange)="updateSearch($event)"
               placeholder="Encuentra tu próxima montaña rusa..." 
+              maxlength="80"
               class="block w-full rounded-[1.25rem] border-0 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-4 text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200/80 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 focus:shadow-[0_8px_30px_rgb(59,130,246,0.15)] bg-slate-50/50 hover:bg-slate-50 focus:bg-white transition-all duration-300 text-sm font-bold outline-none"
             >
           </div>
@@ -250,10 +251,14 @@
             <div class="group bg-white overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
                  [ngClass]="mobileGridMode() === 'compact' ? 'rounded-2xl' : 'rounded-3xl'">
               <!-- Image Container -->
-              <div class="relative overflow-hidden" [ngClass]="mobileGridMode() === 'compact' ? 'aspect-square sm:aspect-[4/3]' : 'aspect-[4/3]'">
+              <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'aspect-square sm:aspect-[4/3]' : 'aspect-[4/3]'">
                 <img 
                   [src]="coaster.image" 
                   [alt]="coaster.name"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="cImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800'"
+                  #cImg
                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 >
                 <div class="absolute right-2 top-2 sm:top-4 sm:right-4">
@@ -283,15 +288,15 @@
                 <div class="grid grid-cols-3 border-y border-slate-50 mb-auto"
                      [ngClass]="mobileGridMode() === 'compact' ? 'gap-1 py-2 sm:gap-2 sm:py-4 hidden sm:grid' : 'gap-2 py-4'">
                   <div class="text-center">
-                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Alt</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Alt</p>
                     <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.height }}</p>
                   </div>
                   <div class="text-center border-x border-slate-50">
-                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Vel</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Vel</p>
                     <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.speed }}</p>
                   </div>
                   <div class="text-center">
-                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Long</p>
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Long</p>
                     <p class="font-extrabold text-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'text-xs sm:text-sm' : 'text-sm'">{{ coaster.length }}</p>
                   </div>
                 </div>
@@ -299,7 +304,7 @@
                 <!-- Action -->
                 <div class="flex items-center justify-between"
                      [ngClass]="mobileGridMode() === 'compact' ? 'mt-2 sm:mt-6' : 'mt-6'">
-                  <span class="font-medium text-slate-400 truncate pr-2"
+                  <span class="font-semibold text-slate-500 truncate pr-2"
                         [ngClass]="mobileGridMode() === 'compact' ? 'text-[9px] sm:text-xs' : 'text-xs'">{{ coaster.manufacturer }}</span>
                   <button 
                     (click)="handleAction(coaster)" 
@@ -335,6 +340,23 @@
             </button>
           </div>
         }
+      } @else if (hasError()) {
+        <!-- Error Connection State -->
+        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 p-6 animate-fade-in max-w-lg mx-auto">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 mb-4 border border-red-100 shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">No se pudo cargar el catálogo</h3>
+          <p class="text-slate-500 text-sm mb-6">
+            Ha ocurrido un problema de conexión al obtener el listado de montañas rusas.
+          </p>
+          <button (click)="fetchCoasters()" class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/25 active:scale-95">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Reintentar conexión</span>
+          </button>
+        </div>
       } @else {
         <!-- Empty State -->
         <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
@@ -423,8 +445,8 @@
 
   <!-- Delete Confirmation Modal -->
   @if (showDeleteConfirmModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
         <button (click)="showDeleteConfirmModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -449,8 +471,8 @@
 
   <!-- Add Confirmation Modal -->
   @if (showAddConfirmModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
         <button (click)="showAddConfirmModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>

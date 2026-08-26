@@ -3,14 +3,13 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, O
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { RecordsService, CoasterCredit, AttractionRecord, ParkVisit } from '../../core/services/records.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { FriendsService, FriendRequest } from '../../core/services/friends.service';
 import { TripsService } from '../../core/services/trips.service';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface UserInfo {
   username: string;
@@ -135,6 +134,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ngOnInit() { 
     this.loadStats(); 
     this.loadFriends();
+    this.refreshUserProfile();
+  }
+
+  refreshUserProfile() {
+    this.authService.fetchCurrentUser().subscribe({
+      next: ({ user }) => {
+        if (user) {
+          this.isTwoFactorEnabled.set(!!user.twoFactorEnabled);
+          this.current2FAType.set(user.twoFactorType || 'APP');
+          this.userInfo.set({
+            username: user.username || this.userInfo().username,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            avatar: user.profileImage || this.userInfo().avatar
+          });
+        }
+      },
+      error: (err) => console.error('Error refreshing user profile:', err)
+    });
   }
 
   ngOnDestroy() {
@@ -182,7 +201,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
   suggestedUsers = signal<{id: number, username: string}[]>([]);
   private userSearch$ = new Subject<string>();
 
+  // ── Edit Profile & Username Checking ───────────────────────────────────────
+  isTwoFactorEnabled   = signal<boolean>(!!this._user?.twoFactorEnabled);
+  showEditProfileModal = signal(false);
+  editForm             = signal<UserInfo>({ ...this.userInfo() });
+
+  usernameChecking     = signal(false);
+  usernameStatus       = signal<'idle' | 'valid' | 'invalid' | 'same'>('same');
+  usernameError        = signal<string | null>(null);
+  usernameSuggestions  = signal<string[]>([]);
+  profileSaving        = signal(false);
+  profileError         = signal<string | null>(null);
+  private usernameCheck$ = new Subject<string>();
+
+  showFeedbackModal = signal(false);
+  feedbackContent   = signal({ title: '', message: '', type: 'success' });
+
   constructor() {
+    // Pipeline para búsqueda de usuarios para amigos
     this.userSearch$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
       if (q.length < 2) { this.suggestedUsers.set([]); return; }
       this.tripsService.searchUsers(q).subscribe({
@@ -194,6 +230,70 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
       });
     });
+
+    // Pipeline para comprobación de disponibilidad de nombre de usuario en tiempo real
+    this.usernameCheck$.pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      switchMap(username => {
+        const clean = (username || '').trim();
+        if (!clean || clean.toLowerCase() === this.userInfo().username.toLowerCase()) {
+          this.usernameChecking.set(false);
+          this.usernameStatus.set('same');
+          this.usernameError.set(null);
+          this.usernameSuggestions.set([]);
+          return of(null);
+        }
+        return this.authService.checkUsername(clean).pipe(
+          catchError(() => {
+            // Fallback en caso de que el backend esté en transición
+            return this.tripsService.searchUsers(clean).pipe(
+              map(users => {
+                const currentUserId = this._user?.id;
+                const exists = users.some(
+                  u => u.username.toLowerCase() === clean.toLowerCase() && u.id !== currentUserId
+                );
+                return {
+                  available: !exists,
+                  exists,
+                  suggestions: exists
+                    ? [
+                        `${clean}${Math.floor(10 + Math.random() * 90)}`,
+                        `${clean}${Math.floor(100 + Math.random() * 900)}`,
+                        `${clean}_${new Date().getFullYear().toString().slice(-2)}`
+                      ]
+                    : ([] as string[]),
+                  message: exists ? 'Este nombre de usuario ya está en uso.' : 'Nombre de usuario disponible.'
+                };
+              }),
+              catchError(() => of<{ available: boolean; exists?: boolean; suggestions?: string[]; message?: string }>({
+                available: true,
+                exists: false,
+                suggestions: [],
+                message: 'Nombre de usuario disponible.'
+              }))
+            );
+          })
+        );
+      })
+    ).subscribe(result => {
+      this.usernameChecking.set(false);
+      if (!result) return;
+      if (result.available) {
+        this.usernameStatus.set('valid');
+        this.usernameError.set(null);
+        this.usernameSuggestions.set([]);
+      } else {
+        this.usernameStatus.set('invalid');
+        this.usernameError.set(result.message || 'Este nombre de usuario ya está en uso.');
+        this.usernameSuggestions.set(result.suggestions || []);
+      }
+    });
+  }
+
+  showFeedback(title: string, message: string, type: 'success' | 'info' = 'success') {
+    this.feedbackContent.set({ title, message, type });
+    this.showFeedbackModal.set(true);
   }
 
   get myFriends(): FriendRequest[] {
@@ -273,32 +373,34 @@ export class ProfileComponent implements OnInit, OnDestroy {
     { id: 2, parkName: 'Europa-Park',   date: '22 Oct 2026', image: 'https://images.unsplash.com/photo-1719640502390-5c6e85176ea9?auto=format&fit=crop&q=80&w=400' }
   ]);
 
-  isTwoFactorEnabled   = signal(false);
-  showEditProfileModal = signal(false);
-  editForm             = signal<UserInfo>({ ...this.userInfo() });
 
-  showFeedbackModal = signal(false);
-  feedbackContent   = signal({ title: '', message: '', type: 'success' });
-  
-  usernameSuggestions = signal<string[]>([]);
-
-  showFeedback(title: string, message: string, type: 'success' | 'info' = 'success') {
-    this.feedbackContent.set({ title, message, type });
-    this.showFeedbackModal.set(true);
-  }
 
   changeAvatar() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = async (e: any) => {
-      const file = e.target.files[0];
+      const file = e.target.files?.[0];
       if (!file) return;
+
+      // Validación de seguridad de archivo
+      if (!file.type || !file.type.startsWith('image/')) {
+        this.showFeedback('Formato no válido', 'Por favor selecciona un archivo de imagen válido (JPEG, PNG, WebP).', 'info');
+        return;
+      }
+
+      // Límite de tamaño: 5 MB (5 * 1024 * 1024 bytes)
+      const MAX_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_SIZE) {
+        this.showFeedback('Imagen demasiado grande', 'La imagen seleccionada no puede superar los 5 MB de tamaño.', 'info');
+        return;
+      }
 
       this.isLoading.set(true);
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${this.userInfo().username}_${Date.now()}.${fileExt}`;
+        const fileExt = (file.name.split('.').pop() || 'jpg').replace(/[^a-zA-Z0-9]/g, '');
+        const cleanUser = (this.userInfo().username || 'user').replace(/[^a-zA-Z0-9_.-]/g, '');
+        const fileName = `${cleanUser}_${Date.now()}.${fileExt}`;
         
         const { data, error } = await this.supabaseService.supabase
           .storage
@@ -507,6 +609,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  on2FACodeInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+      const digitsOnly = input.value.replace(/\D/g, '').slice(0, 6);
+      this.twoFACodeInput.set(digitsOnly);
+      input.value = digitsOnly;
+    }
+  }
+
   confirm2FAEnable() {
     const code = this.twoFACodeInput().trim();
     const type = this.selected2FAType();
@@ -571,18 +682,97 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  openEditProfile() { this.editForm.set({ ...this.userInfo() }); this.showEditProfileModal.set(true); }
+  openEditProfile() {
+    this.editForm.set({ ...this.userInfo() });
+    this.usernameStatus.set('same');
+    this.usernameError.set(null);
+    this.usernameSuggestions.set([]);
+    this.usernameChecking.set(false);
+    this.profileError.set(null);
+    this.profileSaving.set(false);
+    this.showEditProfileModal.set(true);
+  }
+
+  onUsernameChange(val: string) {
+    this.editForm.update(f => ({ ...f, username: val }));
+    const trimmed = (val || '').trim();
+
+    if (!trimmed || trimmed.toLowerCase() === this.userInfo().username.toLowerCase()) {
+      this.usernameStatus.set('same');
+      this.usernameError.set(null);
+      this.usernameSuggestions.set([]);
+      this.usernameChecking.set(false);
+      return;
+    }
+
+    if (trimmed.length < 3) {
+      this.usernameStatus.set('invalid');
+      this.usernameError.set('El nombre de usuario debe tener al menos 3 caracteres.');
+      this.usernameSuggestions.set([]);
+      this.usernameChecking.set(false);
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_.-]+$/.test(trimmed)) {
+      this.usernameStatus.set('invalid');
+      this.usernameError.set('Solo se permiten letras, números, puntos y guiones.');
+      this.usernameSuggestions.set([]);
+      this.usernameChecking.set(false);
+      return;
+    }
+
+    this.usernameStatus.set('idle');
+    this.usernameError.set(null);
+    this.usernameSuggestions.set([]);
+    this.usernameChecking.set(true);
+    this.usernameCheck$.next(trimmed);
+  }
+
+  selectSuggestion(suggestion: string) {
+    this.editForm.update(f => ({ ...f, username: suggestion }));
+    this.usernameSuggestions.set([]);
+    this.usernameError.set(null);
+    this.usernameStatus.set('valid');
+  }
 
   saveProfile() {
-    this.usernameSuggestions.set([]); // Limpiar sugerencias previas
+    const form = this.editForm();
+    const cleanUsername = (form.username || '').trim();
+    const isUsernameChanged = cleanUsername.toLowerCase() !== this.userInfo().username.toLowerCase();
+
+    if (isUsernameChanged) {
+      if (cleanUsername.length < 3) {
+        this.usernameError.set('El nombre de usuario debe tener al menos 3 caracteres.');
+        this.usernameStatus.set('invalid');
+        return;
+      }
+      if (cleanUsername.length > 30) {
+        this.usernameError.set('El nombre de usuario no puede superar los 30 caracteres.');
+        this.usernameStatus.set('invalid');
+        return;
+      }
+      if (!/^[a-zA-Z0-9_.-]+$/.test(cleanUsername)) {
+        this.usernameError.set('Solo se permiten letras, números, puntos y guiones.');
+        this.usernameStatus.set('invalid');
+        return;
+      }
+      if (this.usernameStatus() === 'invalid') {
+        return;
+      }
+    }
+
+    this.profileSaving.set(true);
+    this.profileError.set(null);
+
     const dataToSave = {
-      firstName: this.editForm().firstName,
-      lastName: this.editForm().lastName,
-      username: this.editForm().username !== this.userInfo().username ? this.editForm().username : undefined
+      firstName: form.firstName ? form.firstName.trim().slice(0, 50) : '',
+      lastName: form.lastName ? form.lastName.trim().slice(0, 50) : '',
+      username: isUsernameChanged ? cleanUsername : undefined
     };
-    
+
     this.authService.updateProfile(dataToSave).subscribe({
       next: (updatedUser) => {
+        this.profileSaving.set(false);
         this.userInfo.set({
           ...this.userInfo(),
           firstName: updatedUser.firstName || '',
@@ -593,19 +783,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.showFeedback('Datos Guardados', 'Los datos de tu perfil se actualizaron correctamente.', 'success');
       },
       error: (err) => {
-        console.error(err);
-        if (err.status === 409 && err.error?.suggestions) {
-          this.usernameSuggestions.set(err.error.suggestions);
-          // No cerramos el modal para que pueda elegir una sugerencia
+        this.profileSaving.set(false);
+        console.error('Error al guardar perfil:', err);
+        if (err.status === 409) {
+          this.usernameStatus.set('invalid');
+          const msg = err.error?.error || 'Este nombre de usuario ya está en uso.';
+          this.usernameError.set(msg);
+          if (err.error?.suggestions && err.error.suggestions.length > 0) {
+            this.usernameSuggestions.set(err.error.suggestions);
+          }
         } else {
-          this.showFeedback('Error', 'Hubo un problema guardando tu perfil.', 'info');
+          const msg = err.error?.error || err.error?.message || 'Hubo un problema guardando tu perfil.';
+          this.profileError.set(msg);
         }
       }
     });
-  }
-
-  selectSuggestion(suggestion: string) {
-    this.editForm.set({ ...this.editForm(), username: suggestion });
-    this.usernameSuggestions.set([]);
   }
 }

@@ -20,6 +20,8 @@ interface Coaster {
   status: string;
 }
 
+let cachedCoasters: Coaster[] | null = null;
+
 @Component({
   selector: 'app-credits',
   standalone: true,
@@ -47,6 +49,7 @@ export class CreditsComponent implements OnInit {
   selectedCoaster = signal<Coaster | null>(null);
   countdown = signal(2);
   isLoading = signal(true);
+  hasError = signal(false);
 
   successTimer: any;
   successInterval: any;
@@ -133,9 +136,17 @@ export class CreditsComponent implements OnInit {
   }
 
   async fetchCoasters() {
+    if (cachedCoasters && cachedCoasters.length > 0) {
+      this.coasters.set(cachedCoasters);
+      this.isLoading.set(false);
+      return;
+    }
+
     this.isLoading.set(true);
+    this.hasError.set(false);
     try {
       const response = await fetch('https://rc-manager-api.vercel.app/api/coasters');
+      if (!response.ok) throw new Error('Error al consultar el catálogo de montañas rusas');
       const data = await response.json();
       
       const mappedCoasters: Coaster[] = data.map((c: any) => ({
@@ -148,7 +159,7 @@ export class CreditsComponent implements OnInit {
         speed: c.speed ? `${c.speed} km/h` : 'N/A',
         length: c.length ? `${c.length}m` : 'N/A',
         status: this.mapStatus(c.status),
-        image: c.imageUrl || `https://images.unsplash.com/photo-1513413173474-29c9161a04d3?auto=format&fit=crop&q=80&w=800&q=80&id=${c.id}`,
+        image: c.imageUrl || `https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800&id=${c.id}`,
         manufacturer: c.manufacturer || 'Desconocido'
       }));
 
@@ -158,9 +169,11 @@ export class CreditsComponent implements OnInit {
         [mappedCoasters[i], mappedCoasters[j]] = [mappedCoasters[j], mappedCoasters[i]];
       }
 
+      cachedCoasters = mappedCoasters;
       this.coasters.set(mappedCoasters);
     } catch (error) {
       console.error('Error fetching coasters:', error);
+      this.hasError.set(true);
     } finally {
       this.isLoading.set(false);
     }

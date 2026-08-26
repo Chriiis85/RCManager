@@ -1,4 +1,4 @@
-<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-6 lg:px-8 animate-fade-in-up">
+<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
   <div class="max-w-7xl mx-auto space-y-8">
     
     <!-- Header Page -->
@@ -230,6 +230,46 @@
             }
           </div>
         </div>
+
+        <!-- Legal & Privacy Card -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+          <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span class="text-xl">⚖️</span> Privacidad y Legal
+          </h3>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Consulta los acuerdos legales y gestiona tus derechos de protección de datos (RGPD).
+          </p>
+
+          <div class="space-y-2 pt-2 border-t border-slate-100 text-xs font-semibold">
+            <a routerLink="/terminos" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-blue-600 transition-colors">
+              <span>📜 Términos de Servicio</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            <a routerLink="/privacidad" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-blue-600 transition-colors">
+              <span>🔒 Política de Privacidad</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            <a routerLink="/cookies" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-blue-600 transition-colors">
+              <span>🍪 Política de Cookies</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            <a routerLink="/aviso-legal" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-blue-600 transition-colors">
+              <span>⚖️ Aviso Legal</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+
+          <!-- Account Erasure / Privacy rights notice -->
+          <div class="pt-3 border-t border-slate-100">
+            <a href="mailto:rcmanager.support@gmail.com?subject=Solicitud de Eliminación de Cuenta RCManager" class="w-full flex items-center justify-center gap-1.5 p-2.5 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>Solicitar Eliminación de Cuenta</span>
+            </a>
+            <p class="text-[10px] text-slate-400 text-center mt-1 leading-tight">
+              Cumplimiento Directiva Apple 5.1.1(v) y RGPD.
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Right Column: Stats, Lists -->
@@ -283,8 +323,12 @@
               @for (item of creditsList().slice(0, 3); track item.id) {
                 <div class="flex items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
                   <div class="flex items-center gap-3 min-w-0">
-                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 overflow-hidden relative shadow-sm">
-                      <img [src]="item.coaster?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.coasterId" 
+                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 overflow-hidden relative shadow-sm">
+                      <img [src]="item.coaster?.imageUrl || 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200&id=' + item.coasterId" 
+                           (error)="creditPreviewImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200'"
+                           #creditPreviewImg
+                           loading="lazy"
+                           decoding="async"
                            class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
@@ -322,8 +366,12 @@
               @for (item of attractionsList().slice(0, 3); track item.id) {
                 <div class="flex items-center justify-between gap-3 p-3 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors group">
                   <div class="flex items-center gap-3 min-w-0">
-                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 overflow-hidden relative shadow-sm">
-                      <img [src]="item.attraction?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.attractionId" 
+                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 overflow-hidden relative shadow-sm">
+                      <img [src]="item.attraction?.imageUrl || 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200&id=' + item.attractionId" 
+                           (error)="attrPreviewImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200'"
+                           #attrPreviewImg
+                           loading="lazy"
+                           decoding="async"
                            class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
@@ -364,9 +412,11 @@
                   <div class="flex items-center justify-between gap-3 p-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/20 transition-all group">
                     <div class="flex items-center gap-3 min-w-0">
                       <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/20 overflow-hidden relative shadow-sm">
-                        <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
-                             (error)="parkImg.src='https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200'"
+                        <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
+                             (error)="parkImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200'"
                              #parkImg
+                             loading="lazy"
+                             decoding="async"
                              class="w-full h-full object-cover">
                       </div>
                       <div class="flex-1 min-w-0 text-left">
@@ -498,6 +548,8 @@
                      [ngModel]="passwordForm().currentPassword" 
                      (ngModelChange)="passwordForm.set({...passwordForm(), currentPassword: $event})" 
                      name="currentPassword" 
+                     autocomplete="current-password"
+                     maxlength="128"
                      placeholder="Déjalo vacío si entraste con Google"
                      class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
@@ -525,6 +577,8 @@
                      [ngModel]="passwordForm().newPassword" 
                      (ngModelChange)="passwordForm.set({...passwordForm(), newPassword: $event})" 
                      name="newPassword" 
+                     autocomplete="new-password"
+                     maxlength="128"
                      placeholder="Mínimo 8 caracteres"
                      class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
@@ -583,6 +637,8 @@
                      [ngModel]="passwordForm().confirmPassword" 
                      (ngModelChange)="passwordForm.set({...passwordForm(), confirmPassword: $event})" 
                      name="confirmPassword" 
+                     autocomplete="new-password"
+                     maxlength="128"
                      placeholder="Repite la nueva contraseña"
                      class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
@@ -708,10 +764,11 @@
                 <div>
                   <input type="text"
                          inputmode="numeric"
+                         pattern="[0-9]*"
                          maxlength="6"
                          autocomplete="one-time-code"
                          [ngModel]="twoFACodeInput()"
-                         (ngModelChange)="twoFACodeInput.set($event)"
+                         (input)="on2FACodeInput($event)"
                          name="twoFAEmailCode"
                          placeholder="123456"
                          class="text-center font-mono text-2xl font-bold tracking-[0.3em] text-slate-900 w-full rounded-2xl border-0 py-3 px-4 ring-2 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 bg-slate-50 transition-all">
@@ -796,10 +853,11 @@
                   </label>
                   <input type="text"
                          inputmode="numeric"
+                         pattern="[0-9]*"
                          maxlength="6"
                          autocomplete="one-time-code"
                          [ngModel]="twoFACodeInput()"
-                         (ngModelChange)="twoFACodeInput.set($event)"
+                         (input)="on2FACodeInput($event)"
                          name="twoFAAppCode"
                          placeholder="123456"
                          class="text-center font-mono text-2xl font-bold tracking-[0.3em] text-slate-900 w-full rounded-2xl border-0 py-3 px-4 ring-2 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-emerald-500 bg-slate-50 transition-all">
@@ -842,8 +900,8 @@
   <!-- MODAL: Desactivar Verificación en Dos Pasos                       -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (show2FADisableModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-fade-in px-4">
-      <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-slide-up border border-slate-100">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-slide-up border border-slate-100 my-auto">
         <button (click)="show2FADisableModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none p-1 rounded-lg hover:bg-slate-100">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -871,9 +929,11 @@
             <label class="block text-[11px] font-bold text-slate-700 text-center mb-1">Código de confirmación de tu app:</label>
             <input type="text"
                    inputmode="numeric"
+                   pattern="[0-9]*"
                    maxlength="6"
+                   autocomplete="one-time-code"
                    [ngModel]="twoFACodeInput()"
-                   (ngModelChange)="twoFACodeInput.set($event)"
+                   (input)="on2FACodeInput($event)"
                    name="disableCode"
                    placeholder="123456"
                    class="text-center font-mono text-xl font-bold tracking-widest text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-red-500 bg-slate-50 transition-shadow">
@@ -905,41 +965,106 @@
   <!-- MODAL: Editar Datos Personales                                     -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showEditProfileModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100 my-auto">
         <button (click)="showEditProfileModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         
         <h3 class="text-xl font-bold text-slate-900 mb-6">Editar Datos Personales</h3>
         
+        @if (profileError()) {
+          <div class="p-3.5 mb-5 rounded-2xl bg-red-50 border border-red-200 text-xs font-semibold text-red-700 flex items-start gap-2.5 animate-fade-in-up">
+            <svg class="w-4 h-4 shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="leading-relaxed">{{ profileError() }}</span>
+          </div>
+        }
+
         <form class="space-y-4" (submit)="$event.preventDefault(); saveProfile()">
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE</label>
-              <input type="text" [ngModel]="editForm().firstName" (ngModelChange)="editForm.set({...editForm(), firstName: $event})" name="firstName" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+              <input type="text" 
+                     [ngModel]="editForm().firstName" 
+                     (ngModelChange)="editForm.set({...editForm(), firstName: $event})" 
+                     name="firstName" 
+                     maxlength="50"
+                     autocomplete="given-name"
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">APELLIDOS</label>
-              <input type="text" [ngModel]="editForm().lastName" (ngModelChange)="editForm.set({...editForm(), lastName: $event})" name="lastName" class="cursor-pointer text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+              <input type="text" 
+                     [ngModel]="editForm().lastName" 
+                     (ngModelChange)="editForm.set({...editForm(), lastName: $event})" 
+                     name="lastName" 
+                     maxlength="50"
+                     autocomplete="family-name"
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
             </div>
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">NOMBRE DE USUARIO</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-[11px] font-bold text-slate-700 tracking-wider">NOMBRE DE USUARIO</label>
+              @if (usernameStatus() === 'valid') {
+                <span class="text-[11px] font-bold text-emerald-600">✓ Disponible</span>
+              } @else if (usernameStatus() === 'invalid') {
+                <span class="text-[11px] font-bold text-red-500">✗ No disponible</span>
+              }
+            </div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-slate-400 font-bold">&#64;</span>
               </div>
-              <input type="text" [ngModel]="editForm().username" (ngModelChange)="editForm.set({...editForm(), username: $event})" name="username" class="cursor-pointer pl-8 text-slate-900 w-full rounded-xl border-0 py-2.5 pr-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+              <input type="text" 
+                     [ngModel]="editForm().username" 
+                     (ngModelChange)="onUsernameChange($event)" 
+                     name="username" 
+                     maxlength="30"
+                     autocomplete="username"
+                     autocapitalize="none"
+                     spellcheck="false"
+                     [class]="usernameStatus() === 'invalid' 
+                               ? 'ring-red-300 focus:ring-red-500 bg-red-50/30' 
+                               : usernameStatus() === 'valid' 
+                                 ? 'ring-emerald-300 focus:ring-emerald-500 bg-emerald-50/20' 
+                                 : 'ring-slate-200 focus:ring-blue-600 bg-slate-50'"
+                     class="pl-8 pr-10 text-slate-900 w-full rounded-xl border-0 py-2.5 ring-1 ring-inset focus:ring-2 sm:text-sm transition-all">
+              
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                @if (usernameChecking()) {
+                  <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                } @else if (usernameStatus() === 'valid') {
+                  <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                  </svg>
+                } @else if (usernameStatus() === 'invalid') {
+                  <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                }
+              </div>
             </div>
-            @if (usernameSuggestions().length > 0) {
-              <div class="mt-2 p-3 bg-red-50 border border-red-100 rounded-xl">
-                <p class="text-xs text-red-600 font-medium mb-2">Este nombre de usuario ya está en uso. Prueba con uno de estos:</p>
-                <div class="flex flex-wrap gap-2">
-                  @for (suggestion of usernameSuggestions(); track suggestion) {
-                    <button type="button" (click)="selectSuggestion(suggestion)" class="text-xs bg-white border border-red-200 text-red-700 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors">
-                      {{ suggestion }}
-                    </button>
+
+            @if (usernameError()) {
+              <div class="mt-2 p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs font-semibold text-red-700 flex items-start gap-2 animate-fade-in">
+                <svg class="w-4 h-4 shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="flex-1">
+                  <span>{{ usernameError() }}</span>
+                  @if (usernameSuggestions().length > 0) {
+                    <p class="text-[11px] text-red-600 font-medium mt-1 mb-1.5">Sugerencias disponibles para ti:</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (suggestion of usernameSuggestions(); track suggestion) {
+                        <button type="button" (click)="selectSuggestion(suggestion)" class="cursor-pointer text-[11px] font-bold bg-white border border-red-200 text-red-700 px-2 py-0.5 rounded-lg hover:bg-red-100 transition-colors active:scale-95 shadow-sm">
+                          &#64;{{ suggestion }}
+                        </button>
+                      }
+                    </div>
                   }
                 </div>
               </div>
@@ -949,9 +1074,27 @@
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">CORREO ELECTRÓNICO</label>
             <input type="email" [ngModel]="editForm().email" disabled name="email" class="cursor-not-allowed text-slate-500 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 bg-slate-100 sm:text-sm mb-4">
           </div>
-          <button type="submit" class="cursor-pointer w-full rounded-2xl bg-blue-600 py-3 text-sm font-bold text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 active:scale-95 transition-all focus:outline-none mt-2">
-            Guardar Cambios
-          </button>
+          
+          <div class="flex gap-3 pt-2">
+            <button type="button" 
+                    (click)="showEditProfileModal.set(false)" 
+                    class="cursor-pointer w-1/3 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 active:scale-95 transition-all focus:outline-none">
+              Cancelar
+            </button>
+            <button type="submit" 
+                    [disabled]="profileSaving() || usernameChecking() || usernameStatus() === 'invalid'" 
+                    class="cursor-pointer flex-1 rounded-2xl bg-blue-600 py-3 text-sm font-bold text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 active:scale-95 transition-all focus:outline-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              @if (profileSaving()) {
+                <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <span>Guardando...</span>
+              } @else {
+                <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -993,8 +1136,8 @@
   <!-- MODAL: Añadir Amigo                                                -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   @if (showAddFriendModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100 min-h-[400px] flex flex-col">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-slide-up border border-slate-100 min-h-[350px] max-h-[85dvh] flex flex-col my-auto">
         <button (click)="showAddFriendModal.set(false)" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -1007,7 +1150,12 @@
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
-          <input type="text" [ngModel]="searchUserQuery()" (ngModelChange)="onFriendSearchChange($event)" placeholder="Busca por nombre de usuario..." class="pl-11 text-slate-900 w-full rounded-2xl border-0 py-3.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+          <input type="text" 
+                 [ngModel]="searchUserQuery()" 
+                 (ngModelChange)="onFriendSearchChange($event)" 
+                 placeholder="Busca por nombre de usuario..." 
+                 maxlength="50"
+                 class="pl-11 text-slate-900 w-full rounded-2xl border-0 py-3.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
         </div>
 
         <div class="flex-1 overflow-y-auto pr-2 space-y-3">

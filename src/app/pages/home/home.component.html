@@ -3,7 +3,7 @@
   <!-- Dynamic Theme Park Background Layer -->
   <div class="absolute inset-0 z-0">
     <!-- Unsplash Rollercoaster image with heavy opacity drop and blur to create a dynamic, textural background without overwhelming text -->
-    <img src="https://images.unsplash.com/photo-1596701548816-641505c24e65?q=80&w=2074&auto=format&fit=crop" alt="Theme park roller coaster" class="w-full h-full object-cover opacity-5 scale-105 blur-[2px]" />
+    <img src="https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=2000" alt="Theme park roller coaster" class="w-full h-full object-cover opacity-5 scale-105 blur-[2px]" />
     <div class="absolute inset-0 bg-gradient-to-b from-slate-50/95 via-white/80 to-slate-50/95"></div>
   </div>
 
@@ -12,11 +12,11 @@
     <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-sky-200 via-blue-300 to-indigo-400 opacity-40 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
   </div>
 
-  <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+  <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-2xl text-center animate-fade-in-up">
       <!-- Badge tag -->
       <div class="mb-6 flex justify-center">
-        <span (click)="scrollToDescubre()" class="relative rounded-full px-5 py-1.5 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-blue-600/50 transition-all font-semibold shadow-sm flex items-center gap-2 cursor-pointer group bg-white/70 backdrop-blur-sm">
+        <span (click)="scrollToDescubre()" class="relative rounded-full px-5 py-1.5 text-xs sm:text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-blue-600/50 transition-all font-semibold shadow-sm flex items-center gap-2 cursor-pointer group bg-white/70 backdrop-blur-sm">
           <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75 left-3"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500 mr-1"></span>
           Control total de tus viajes <a class="font-bold text-blue-600"><span class="absolute inset-0" aria-hidden="true"></span>Saber más <span aria-hidden="true" class="group-hover:translate-x-1 inline-block transition-transform">&rarr;</span></a>
@@ -24,7 +24,7 @@
       </div>
 
       <!-- Main Headline using "Adrenalina" -->
-      <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-7xl mb-6">
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6">
         Tu Pasaporte a la <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-500 drop-shadow-sm inline-block transform">Adrenalina</span> Extrema
       </h1>
       
@@ -56,10 +56,9 @@
       <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-white/50 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-2 transition-all duration-500 group">
         <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
           <!-- Star/Trophy Icon -->
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
         <h3 class="text-slate-900 font-bold text-xl mb-2">Suma Credits</h3>
-        <p class="text-slate-500 text-base leading-relaxed">Clasifica y puntúa las montañas rusas en las que te has montado y compáralas con tus amigos en un ranking interactivo.</p>
+        <p class="text-slate-600 text-base leading-relaxed">Clasifica y puntúa las montañas rusas en las que te has montado y compáralas con tus amigos en un ranking interactivo.</p>
       </div>
       <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-white/50 shadow-sm hover:shadow-xl hover:shadow-sky-900/5 hover:-translate-y-2 transition-all duration-500 group">
         <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-600 mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
@@ -67,15 +66,15 @@
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <h3 class="text-slate-900 font-bold text-xl mb-2">Explora Parques</h3>
-        <p class="text-slate-500 text-base leading-relaxed">Accede a una extensa base de datos con los mejores parques de atracciones de todo el globo y descubre nuevas joyas.</p>
+        <p class="text-slate-600 text-base leading-relaxed">Accede a una extensa base de datos con los mejores parques de atracciones de todo el globo y descubre nuevas joyas.</p>
       </div>
       <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-white/50 shadow-sm hover:shadow-xl hover:shadow-indigo-900/5 hover:-translate-y-2 transition-all duration-500 group">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
           <!-- Calendar/Timer Icon -->
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <h3 class="text-slate-900 font-bold text-xl mb-2">Cuenta Regresiva</h3>
-        <p class="text-slate-500 text-base leading-relaxed">Organiza tus viajes y observa cómo se acerca el día en un contador en vivo diseñado a medida para tu expedición.</p>
+        <p class="text-slate-600 text-base leading-relaxed">Organiza tus viajes y observa cómo se acerca el día en un contador en vivo diseñado a medida para tu expedición.</p>
       </div>
     </div>
   </div>

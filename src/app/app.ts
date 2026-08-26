@@ -1,6 +1,8 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
+import { NetworkService } from './core/services/network.service';
 import { filter } from 'rxjs/operators';
 import { BlockScrollDirective } from './core/directives/block-scroll.directive';
 
@@ -17,6 +19,8 @@ import { BlockScrollDirective } from './core/directives/block-scroll.directive';
 export class App implements OnInit {
   protected readonly title = signal('RCManager');
   authService = inject(AuthService);
+  themeService = inject(ThemeService);
+  networkService = inject(NetworkService);
   router = inject(Router);
   
   ngOnInit() {
@@ -63,7 +67,7 @@ export class App implements OnInit {
     } else if (type === 'cookies') {
       this.legalModalText.set('RCManager utiliza cookies y almacenamiento local estrictamente necesarios para mantener tu sesión activa y almacenar tus preferencias de inicio de sesión. No utilizamos cookies de rastreo publicitario de terceros.');
     } else if (type === 'contact') {
-      this.legalModalText.set('¿Tienes algún problema, sugerencia o quieres colaborar con RCManager? Envíanos un correo a: soporte@rcmanager.com y te responderemos a la velocidad de Kingda Ka.');
+      this.legalModalText.set('¿Tienes algún problema, sugerencia o quieres colaborar con RCManager? Envíanos un correo a: rcmanager.support@gmail.com y te responderemos a la velocidad de Kingda Ka.');
     } else if (type === 'faq') {
       this.legalModalText.set('¿Qué es un "Credit"?\nUn credit es una montaña rusa en la que te has subido.\n\n¿Cómo añado un parque?\nBusca el parque en la sección "Parques Temáticos" y marca las atracciones en las que has estado.');
     } else if (type === 'suggest') {

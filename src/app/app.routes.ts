@@ -1,29 +1,73 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { ViajesComponent } from './pages/viajes/viajes.component';
-import { LoginComponent } from './pages/auth/login/login.component';
-import { RegisterComponent } from './pages/auth/register/register.component';
-import { CreditsComponent } from './pages/credits/credits.component';
-import { AttractionsComponent } from './pages/attractions/attractions.component';
-import { ParksComponent } from './pages/parks/parks.component';
-import { RankingComponent } from './pages/ranking/ranking.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { MisCreditsComponent } from './pages/mis-credits/mis-credits.component';
-import { MisAtraccionesComponent } from './pages/mis-atracciones/mis-atracciones.component';
-import { MisParquesComponent } from './pages/mis-parques/mis-parques.component';
 import { authGuard, unAuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [unAuthGuard] },
-  { path: 'viajes', component: ViajesComponent, canActivate: [authGuard] },
-  { path: 'login', component: LoginComponent, canActivate: [unAuthGuard] },
-  { path: 'register', component: RegisterComponent, canActivate: [unAuthGuard] },
-  { path: 'credits', component: CreditsComponent },
-  { path: 'atracciones', component: AttractionsComponent },
-  { path: 'parques', component: ParksComponent },
-  { path: 'ranking', component: RankingComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-  { path: 'mis-credits', component: MisCreditsComponent, canActivate: [authGuard] },
-  { path: 'mis-atracciones', component: MisAtraccionesComponent, canActivate: [authGuard] },
-  { path: 'mis-parques', component: MisParquesComponent, canActivate: [authGuard] }
+  { 
+    path: '', 
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent), 
+    canActivate: [unAuthGuard] 
+  },
+  { 
+    path: 'viajes', 
+    loadComponent: () => import('./pages/viajes/viajes.component').then(m => m.ViajesComponent), 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent), 
+    canActivate: [unAuthGuard] 
+  },
+  { 
+    path: 'register', 
+    loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent), 
+    canActivate: [unAuthGuard] 
+  },
+  { 
+    path: 'credits', 
+    loadComponent: () => import('./pages/credits/credits.component').then(m => m.CreditsComponent) 
+  },
+  { 
+    path: 'atracciones', 
+    loadComponent: () => import('./pages/attractions/attractions.component').then(m => m.AttractionsComponent) 
+  },
+  { 
+    path: 'parques', 
+    loadComponent: () => import('./pages/parks/parks.component').then(m => m.ParksComponent) 
+  },
+  { 
+    path: 'ranking', 
+    loadComponent: () => import('./pages/ranking/ranking.component').then(m => m.RankingComponent) 
+  },
+  { 
+    path: 'profile', 
+    loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent), 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'mis-credits', 
+    loadComponent: () => import('./pages/mis-credits/mis-credits.component').then(m => m.MisCreditsComponent), 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'mis-atracciones', 
+    loadComponent: () => import('./pages/mis-atracciones/mis-atracciones.component').then(m => m.MisAtraccionesComponent), 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'mis-parques', 
+    loadComponent: () => import('./pages/mis-parques/mis-parques.component').then(m => m.MisParquesComponent), 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'legal', 
+    loadComponent: () => import('./pages/legal/legal.component').then(m => m.LegalComponent) 
+  },
+  { 
+    path: 'legal/:tab', 
+    loadComponent: () => import('./pages/legal/legal.component').then(m => m.LegalComponent) 
+  },
+  { path: 'terminos', redirectTo: 'legal/terminos', pathMatch: 'full' },
+  { path: 'privacidad', redirectTo: 'legal/privacidad', pathMatch: 'full' },
+  { path: 'cookies', redirectTo: 'legal/cookies', pathMatch: 'full' },
+  { path: 'aviso-legal', redirectTo: 'legal/aviso-legal', pathMatch: 'full' }
 ];

@@ -35,6 +35,8 @@ interface ThemePark {
   hasTodayData?: boolean;
 }
 
+const WIKIPEDIA_IMAGE_CACHE = new Map<string, string>();
+
 @Component({
   selector: 'app-parks',
   standalone: true,
@@ -115,6 +117,7 @@ export class ParksComponent implements OnInit, OnDestroy {
   rideSortOrder = signal<'asc' | 'desc'>('desc');
   isLoadingQueue = signal(false);
   isInitialLoading = signal(true);
+  hasError = signal(false);
 
   sortedRides = computed(() => {
     const data = this.parkQueueTimes();
@@ -164,14 +167,17 @@ export class ParksComponent implements OnInit, OnDestroy {
     'United Kingdom': 'https://images.unsplash.com/photo-1517086822157-2b0358e7684a?auto=format&fit=crop&q=80&w=800',
     'Germany':        'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&q=80&w=800',
     'France':         'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=80&w=800',
-    'Spain':          'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800',
-    'Netherlands':    'https://images.unsplash.com/photo-1535213761639-0f69d1f2e2d0?auto=format&fit=crop&q=80&w=800',
+    'Spain':          'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&q=80&w=800',
+    'Netherlands':    'https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&q=80&w=800',
     'Japan':          'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&q=80&w=800',
-    'China':          'https://images.unsplash.com/photo-1547523220717-3c9f2882b28d?auto=format&fit=crop&q=80&w=800',
-    'DEFAULT':        'https://images.unsplash.com/photo-1547675960-7634cf1b0856?auto=format&fit=crop&q=80&w=800',
+    'China':          'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&q=80&w=800',
+    'DEFAULT':        'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800',
   };
 
   private async fetchWikipediaImage(parkName: string): Promise<string | null> {
+    if (WIKIPEDIA_IMAGE_CACHE.has(parkName)) {
+      return WIKIPEDIA_IMAGE_CACHE.get(parkName) ?? null;
+    }
     try {
       const encoded = encodeURIComponent(parkName);
       // Buscamos directamente fotos en Wikimedia Commons (namespace 6)
@@ -184,7 +190,11 @@ export class ParksComponent implements OnInit, OnDestroy {
       const page = Object.values(pages)[0] as any;
       
       // Intentamos usar la miniatura a 800px para no cargar fotos de 10MB, si no existe usamos la original
-      return page?.imageinfo?.[0]?.thumburl ?? page?.imageinfo?.[0]?.url ?? null;
+      const resultUrl = page?.imageinfo?.[0]?.thumburl ?? page?.imageinfo?.[0]?.url ?? null;
+      if (resultUrl) {
+        WIKIPEDIA_IMAGE_CACHE.set(parkName, resultUrl);
+      }
+      return resultUrl;
     } catch {
       return null;
     }
@@ -238,7 +248,13 @@ export class ParksComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // 1. Petición para conseguir todos los parques
+    this.fetchParks();
+  }
+
+  fetchParks() {
+    this.isInitialLoading.set(true);
+    this.hasError.set(false);
+    
     fetch('/queue-times-api/parks.json', {
       method: 'GET',
     })
@@ -276,13 +292,14 @@ export class ParksComponent implements OnInit, OnDestroy {
           const bIsSpain = b.country === 'Spain' || b.country === 'España' || b.country === 'Spain ';
           if (aIsSpain && !bIsSpain) return -1;
           if (!aIsSpain && bIsSpain) return 1;
-          return 0; // The rest of the sorting will be handled by the filteredParks computed signal
+          return 0;
         });
 
         this.parks.set(mappedParks);
       })
       .catch((err) => {
         console.error('Error al conectar con la API de parques (queue-times):', err);
+        this.hasError.set(true);
         this.isInitialLoading.set(false);
       });
   }
@@ -294,7 +311,6 @@ export class ParksComponent implements OnInit, OnDestroy {
   }
 
   private async updateAllParkStatuses(mappedParks: ThemePark[]) {
-    // Procesamos en lotes de 15 para velocidad sin bloquear peticiones
     const batchSize = 15;
     for (let i = 0; i < mappedParks.length; i += batchSize) {
       const batch = mappedParks.slice(i, i + batchSize);
@@ -321,21 +337,18 @@ export class ParksComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Comprobar si los datos son de HOY (2026-03-25)
       const today = new Date().toISOString().split('T')[0];
       const hasFreshData = allRides.some((r) => r.last_updated && r.last_updated.startsWith(today));
 
       if (!hasFreshData) {
-        return; // No marcamos como que tiene datos de hoy
+        return;
       }
 
-      // Lógica solicitada: Cerrado si todas están cerradas O todas a cero
       const allClosed = allRides.every((r) => r.is_open === false);
       const allZeroWait = allRides.every((r) => r.wait_time === 0 || r.wait_time === null);
 
       const newStatus: 'Abierto' | 'Cerrado' = allClosed || allZeroWait ? 'Cerrado' : 'Abierto';
 
-      // Lógica avanzada para crowds: basada en presión total (Total Wait / Total Rides)
       let newCrowds: 'Muy Baja' | 'Baja' | 'Normal' | 'Alta' | 'Muy Alta' = 'Baja';
       const totalRides = allRides.length;
       if (totalRides > 0) {
@@ -372,11 +385,9 @@ export class ParksComponent implements OnInit, OnDestroy {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(`[Queue-Times API] Tiempos de ${park.name}:`, data);
         this.parkQueueTimes.set(data);
         this.isLoadingQueue.set(false);
 
-        // También actualizamos el estado del parque en la lista principal
         const allRides: any[] = [];
         if (data.rides) allRides.push(...data.rides);
         if (data.lands) {
@@ -417,7 +428,6 @@ export class ParksComponent implements OnInit, OnDestroy {
   toggleRideSort() {
     this.rideSortOrder.set(this.rideSortOrder() === 'desc' ? 'asc' : 'desc');
 
-    // Scroll to top of the list
     if (this.rideListContainer) {
       this.rideListContainer.nativeElement.scrollTo({
         top: 0,
@@ -429,8 +439,6 @@ export class ParksComponent implements OnInit, OnDestroy {
   fetchUserParks() {
     this.recordsService.getParks().subscribe({
       next: (visits) => {
-        // park.apiId es el ID externo de Queue-Times que coincide con park.id del frontend
-        // v.parkId es el ID interno de la BD y NO coincide
         const ids = new Set(
           visits
             .map(v => v.park?.apiId)
@@ -564,41 +572,32 @@ export class ParksComponent implements OnInit, OnDestroy {
 
     return this.parks()
       .filter((p) => {
-        // 1. Búsqueda por texto
         const matchesSearch =
           p.name.toLowerCase().includes(query) ||
           p.location.toLowerCase().includes(query) ||
           p.country.toLowerCase().includes(query);
         if (!matchesSearch) return false;
 
-        // 2. Filtro de País
         if (selCountries.length > 0 && !selCountries.includes(p.country)) return false;
 
-        // 3. Filtro de Estado
         if (selStatuses.length > 0) {
           const pStatus = p.hasTodayData ? p.status : 'Sin Datos';
           if (!selStatuses.includes(pStatus)) return false;
-        } else {
-          // Si no hay filtro de estado, mostramos todos los parques (tengan o no datos aún)
         }
 
-        // 4. Filtro de Afluencia
         if (selCrowds.length > 0 && p.hasTodayData && !selCrowds.includes(p.crowds)) return false;
 
         return true;
       })
       .sort((a, b) => {
-        // 1. Prioridad: Parques de España
         const aIsSpain = a.country === 'Spain' || a.country === 'España' || a.country === 'Spain ';
         const bIsSpain = b.country === 'Spain' || b.country === 'España' || b.country === 'Spain ';
         if (aIsSpain && !bIsSpain) return -1;
         if (!aIsSpain && bIsSpain) return 1;
 
-        // 2. Estado: Abierto (primero) > Cerrado (después)
         if (a.status === 'Abierto' && b.status === 'Cerrado') return -1;
         if (a.status === 'Cerrado' && b.status === 'Abierto') return 1;
 
-        // 3. Alfabético (terciario)
         return a.name.localeCompare(b.name);
       });
   });
@@ -619,13 +618,9 @@ export class ParksComponent implements OnInit, OnDestroy {
     const currentLimit = this.visibleParksLimit();
     const nextLimit = currentLimit + 12;
     
-    // Obtenemos los siguientes parques que se van a mostrar
     const nextBatch = this.allFilteredParks().slice(currentLimit, nextLimit);
-    
-    // Esperamos a que terminen de cargar sus datos de Wikipedia y colas ANTES de mostrarlos
     await this.loadDataForVisibleParks(nextBatch);
     
-    // Ahora sí, aumentamos el límite para que aparezcan en pantalla ya cargados
     this.visibleParksLimit.update((limit) => limit + 12);
     this.isLoadingMore.set(false);
   }
@@ -674,7 +669,6 @@ export class ParksComponent implements OnInit, OnDestroy {
     if (!this.showFilters()) return;
 
     const target = event.target as HTMLElement;
-    // Buscamos si el click fue dentro del botón o del panel
     const isFilterButton = target.closest('.filter-toggle-btn');
     const isFilterPanel = target.closest('.filter-panel');
 
@@ -692,5 +686,13 @@ export class ParksComponent implements OnInit, OnDestroy {
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  handleImageError(event: Event, park: ThemePark) {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800';
+      target.style.opacity = '1';
+    }
   }
 }

@@ -9,7 +9,7 @@ import { TripsService, TripModel } from '../../core/services/trips.service';
 import { FriendsService } from '../../core/services/friends.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { AirbnbCalendarComponent } from './airbnb-calendar.component';
+import { TripCalendarComponent } from './trip-calendar.component';
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 
 type Countdown = { days: number, hours: number, minutes: number, seconds: number };
@@ -22,7 +22,7 @@ interface UITrip extends TripModel {
 @Component({
   selector: 'app-viajes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AirbnbCalendarComponent, BlockScrollDirective],
+  imports: [CommonModule, FormsModule, TripCalendarComponent, BlockScrollDirective],
   templateUrl: './viajes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -55,6 +55,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
   // ── Main data ──────────────────────────────────
   trips = signal<UITrip[]>([]);
   isLoading = signal(true);
+  hasError = signal(false);
   
   isPendingForCurrentUser = (t: UITrip): boolean => {
     const currentUserId = this.authService.currentUser()?.id;
@@ -137,8 +138,9 @@ export class ViajesComponent implements OnInit, OnDestroy {
   }
 
   // ── Data loading ───────────────────────────────
-  private loadTrips() {
+  loadTrips() {
     this.isLoading.set(true);
+    this.hasError.set(false);
     this.tripsService.getTrips().subscribe({
       next: data => {
         const now = Date.now();
@@ -150,7 +152,10 @@ export class ViajesComponent implements OnInit, OnDestroy {
         this.tickCountdowns();
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.hasError.set(true);
+      }
     });
   }
 
@@ -189,7 +194,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
   fmt(n: number) { return n < 10 ? `0${n}` : `${n}`; }
 
   getParkImage(park: any): string {
-    if (!park) return 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop';
+    if (!park) return 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800';
     if (park.imageUrl) return park.imageUrl;
     if (park.image_url) return park.image_url;
     
@@ -198,7 +203,7 @@ export class ViajesComponent implements OnInit, OnDestroy {
     if (found && found.imageUrl) return found.imageUrl;
     if (found && found.image_url) return found.image_url;
 
-    return 'https://images.unsplash.com/photo-1547675960-7634cf1b0856?q=80&w=2074&auto=format&fit=crop';
+    return 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800';
   }
 
   formatDateRange(startDate: string, endDate?: string | null): string {

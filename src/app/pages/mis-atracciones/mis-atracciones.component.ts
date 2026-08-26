@@ -20,6 +20,7 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
 
   attractions = signal<AttractionRecord[]>([]);
   isLoading = signal(true);
+  hasError = signal(false);
   searchQuery = signal('');
   hideRemoved = signal(true);
 
@@ -53,12 +54,16 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
 
   loadAttractions() {
     this.isLoading.set(true);
+    this.hasError.set(false);
     this.recordsService.getAttractions().subscribe({
       next: (data) => {
         this.attractions.set(data);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.hasError.set(true);
+      }
     });
   }
 
@@ -110,12 +115,21 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
     this.showCountModal.set(true);
   }
 
+  incrementCount() {
+    this.rideCount.update(c => Math.min(9999, c + 1));
+  }
+
+  decrementCount() {
+    this.rideCount.update(c => Math.max(1, c - 1));
+  }
+
   saveCount() {
     const attraction = this.selectedAttraction();
     if (!attraction) return;
     this.isSubmitting.set(true);
 
-    this.recordsService.updateAttractionCount(attraction.id, this.rideCount()).subscribe({
+    const idToUpdate = attraction.attraction?.apiId || attraction.attractionId;
+    this.recordsService.updateAttractionCount(idToUpdate, this.rideCount()).subscribe({
       next: (updated) => {
         this.attractions.update(list => list.map(a => a.id === attraction.id ? { ...a, rating: updated.rating } : a));
         this.showCountModal.set(false);
@@ -123,13 +137,5 @@ export class MisAtraccionesComponent implements OnInit, OnDestroy {
       },
       error: () => this.isSubmitting.set(false)
     });
-  }
-
-  incrementCount() {
-    this.rideCount.update(v => v + 1);
-  }
-
-  decrementCount() {
-    this.rideCount.update(v => Math.max(1, v - 1));
   }
 }

@@ -20,12 +20,16 @@ export class MisParquesComponent implements OnInit, OnDestroy {
 
   parks = signal<ParkVisit[]>([]);
   isLoading = signal(true);
+  hasError = signal(false);
   searchQuery = signal('');
 
   // Modal states
   showDeleteModal = signal(false);
   showDeleteSuccessModal = signal(false);
+  showCountModal = signal(false);
   selectedPark = signal<ParkVisit | null>(null);
+  editingPark = signal<ParkVisit | null>(null);
+  newCount = signal(1);
   isSubmitting = signal(false);
   countdown = signal(2);
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -45,12 +49,16 @@ export class MisParquesComponent implements OnInit, OnDestroy {
 
   loadParks() {
     this.isLoading.set(true);
+    this.hasError.set(false);
     this.recordsService.getParks().subscribe({
       next: (data) => {
         this.parks.set(data);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.hasError.set(true);
+      }
     });
   }
 
@@ -76,38 +84,6 @@ export class MisParquesComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Count Modal logic
-  showCountModal = signal(false);
-  editingPark = signal<ParkVisit | null>(null);
-  newCount = signal<number>(1);
-
-  openCountModal(park: ParkVisit) {
-    this.editingPark.set(park);
-    this.newCount.set(park.rating || 1);
-    this.showCountModal.set(true);
-  }
-
-  closeCountModal() {
-    this.showCountModal.set(false);
-    this.editingPark.set(null);
-  }
-
-  updateCount() {
-    const park = this.editingPark();
-    if (!park || this.newCount() < 1) return;
-    this.isSubmitting.set(true);
-
-    const idToUpdate = park.park?.apiId || park.parkId;
-    this.recordsService.updateParkCount(idToUpdate, this.newCount()).subscribe({
-      next: (updated) => {
-        this.parks.update(list => list.map(p => p.id === park.id ? { ...p, rating: updated.rating } : p));
-        this.closeCountModal();
-        this.isSubmitting.set(false);
-      },
-      error: () => this.isSubmitting.set(false)
-    });
-  }
-
   openDeleteSuccessModal() {
     this.countdown.set(2);
     this.showDeleteSuccessModal.set(true);
@@ -122,6 +98,35 @@ export class MisParquesComponent implements OnInit, OnDestroy {
     if (this.countdownInterval) { clearInterval(this.countdownInterval); this.countdownInterval = null; }
     this.showDeleteSuccessModal.set(false);
     this.selectedPark.set(null);
+  }
+
+  openCountModal(park: ParkVisit) {
+    this.editingPark.set(park);
+    this.newCount.set(park.rating || 1);
+    this.showCountModal.set(true);
+  }
+
+  closeCountModal() {
+    this.showCountModal.set(false);
+    this.editingPark.set(null);
+  }
+
+  updateCount() {
+    const park = this.editingPark();
+    if (!park) return;
+
+    this.isSubmitting.set(true);
+    const idToUpdate = park.park?.apiId || park.parkId;
+    this.recordsService.updateParkCount(idToUpdate, this.newCount()).subscribe({
+      next: (updated) => {
+        this.parks.update(list => list.map(p => p.id === park.id ? { ...p, rating: updated.rating } : p));
+        this.isSubmitting.set(false);
+        this.closeCountModal();
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+      }
+    });
   }
 
   ngOnDestroy() {

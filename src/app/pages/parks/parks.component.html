@@ -48,6 +48,7 @@
               [ngModel]="searchQuery()"
               (ngModelChange)="updateSearch($event)"
               placeholder="Nombre, ciudad o país..." 
+              maxlength="80"
               class="block w-full rounded-[1.25rem] border-0 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-4 text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200/80 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 focus:shadow-[0_8px_30px_rgb(59,130,246,0.15)] bg-slate-50/50 hover:bg-slate-50 focus:bg-white transition-all duration-300 text-sm font-bold outline-none"
             >
           </div>
@@ -237,16 +238,14 @@
             <div class="group bg-white overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
                  [ngClass]="gridMode() === 'compact' ? 'rounded-[1.5rem]' : 'rounded-[2.5rem]'">
               <!-- Image Section -->
-              <div class="relative overflow-hidden bg-slate-100" [ngClass]="gridMode() === 'compact' ? 'h-32 sm:h-64' : 'h-64'">
-                <!-- Shimmer skeleton mientras carga Wikipedia -->
-                <div class="absolute inset-0 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse"></div>
+              <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800" [ngClass]="gridMode() === 'compact' ? 'h-32 sm:h-64' : 'h-64'">
                 <img
                   [src]="park.image"
                   [alt]="park.name"
-                  class="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 opacity-0"
-                  (load)="$event.target && ($any($event.target).style.opacity = '1')"
-                  (error)="$event.target && ($any($event.target).style.opacity = '1')"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  (error)="handleImageError($event, park)"
                   loading="lazy"
+                  decoding="async"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/10 to-transparent pointer-events-none"></div>
 
@@ -369,6 +368,23 @@
             </button>
           </div>
         }
+      } @else if (hasError()) {
+        <!-- Error Connection State -->
+        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 p-6 animate-fade-in max-w-lg mx-auto">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 mb-4 border border-red-100 shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">No se pudo cargar el listado de parques</h3>
+          <p class="text-slate-500 text-sm mb-6">
+            Ha ocurrido un problema de conexión con el servidor de parques y tiempos de espera.
+          </p>
+          <button (click)="fetchParks()" class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/25 active:scale-95">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Reintentar conexión</span>
+          </button>
+        </div>
       } @else {
         <!-- Empty State -->
         <div class="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
@@ -516,8 +532,8 @@
 
   <!-- Park Details Modal -->
   @if (selectedPark()) {
-    <div (click)="closeParkDetails()" class="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in p-4 sm:p-6 sm:pt-20 cursor-pointer">
-      <div (click)="$event.stopPropagation()" class="bg-white rounded-[2.5rem] shadow-2xl max-w-xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-slate-100 animate-slide-up relative mt-16 sm:mt-0 cursor-default">
+    <div (click)="closeParkDetails()" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in p-4 sm:p-6 overflow-y-auto cursor-pointer">
+      <div (click)="$event.stopPropagation()" class="bg-white rounded-[2.5rem] shadow-2xl max-w-xl w-full max-h-[85dvh] overflow-hidden flex flex-col border border-slate-100 animate-slide-up relative my-auto cursor-default">
         <!-- Close Button -->
         <button (click)="closeParkDetails()" class="cursor-pointer absolute top-6 right-6 z-10 h-10 w-10 rounded-full bg-slate-100/80 backdrop-blur-md flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-white transition-all shadow-sm">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -525,7 +541,12 @@
 
         <!-- Modal Header -->
         <div class="relative h-48 overflow-hidden flex-shrink-0 text-white">
-          <img [src]="selectedPark()?.image" [alt]="selectedPark()?.name" class="w-full h-full object-cover">
+          <img 
+            [src]="selectedPark()?.image" 
+            [alt]="selectedPark()?.name" 
+            (error)="modalParkImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800'"
+            #modalParkImg
+            class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
           <div class="absolute bottom-6 left-8">
             <p class="text-xs font-black text-blue-200 uppercase tracking-[0.2em] mb-1">{{ selectedPark()?.country }}</p>

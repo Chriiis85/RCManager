@@ -1,20 +1,20 @@
 <div
-  class="min-h-screen flex flex-col bg-white font-sans text-slate-800 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden"
+  class="min-h-screen flex flex-col bg-white dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden transition-colors duration-200"
 >
   <!-- Navbar -->
   <nav
-    class="fixed top-0 z-[1000] w-full border-b border-slate-100 bg-white/95 shadow-sm transition-all duration-300"
+    class="fixed top-0 z-[1000] w-full border-b border-slate-100 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm transition-all duration-300"
   >
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 lg:px-8">
       <div class="flex items-center gap-x-3">
         <!-- Logo Text -->
         <a
           routerLink="/"
-          class="text-2xl font-black tracking-tighter text-blue-900 transition-colors hover:text-blue-700 flex items-center gap-2 group"
+          class="text-2xl font-black tracking-tighter text-blue-900 dark:text-white transition-colors hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-2 group"
         >
           <!-- Roller Coaster Logo -->
           <svg 
-            class="h-7 w-7 text-blue-600 transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:-rotate-3" 
+            class="h-7 w-7 text-blue-600 dark:text-blue-400 transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:-rotate-3" 
             viewBox="0 0 24 24" 
             fill="none" 
             stroke="currentColor" 
@@ -27,7 +27,7 @@
             <rect x="7" y="4.5" width="3" height="2" rx="0.5" fill="currentColor" stroke="none" class="animate-bounce" style="animation-duration: 2s;" />
           </svg>
           <span class="flex items-baseline">
-            RC<span class="text-blue-600">Manager</span>
+            RC<span class="text-blue-600 dark:text-blue-400">Manager</span>
           </span>
         </a>
       </div>
@@ -36,46 +36,70 @@
       <div class="hidden md:flex md:gap-x-8">
         <a
           routerLink="/credits"
-          class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+          routerLinkActive="text-blue-600 dark:text-blue-400 font-bold"
+          class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
           >Credits</a
         >
         <a
           routerLink="/atracciones"
-          class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+          routerLinkActive="text-blue-600 dark:text-blue-400 font-bold"
+          class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
           >Atracciones</a
         >
         <a
           routerLink="/parques"
-          class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+          routerLinkActive="text-blue-600 dark:text-blue-400 font-bold"
+          class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
           >Parques Temáticos</a
         >
         <a
           routerLink="/ranking"
-          class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+          routerLinkActive="text-blue-600 dark:text-blue-400 font-bold"
+          class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
           >Ranking</a
         >
         @if (authService.isAuthenticated()) {
           <a
             routerLink="/viajes"
-            class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+            routerLinkActive="text-blue-600 dark:text-blue-400 font-bold"
+            class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
             >Viajes</a
           >
         }
         <a
           href="https://parks-ia.vercel.app"
           target="_blank"
-          class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer flex items-center gap-1"
+          class="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors cursor-pointer flex items-center gap-1"
           >
           <span>🤖</span> ParksIA
         </a>
       </div>
 
-      <!-- Mobile Menu Button -->
-      <div class="flex md:hidden">
+      <!-- Mobile Right Controls (Theme Toggle + Menu Button) -->
+      <div class="flex items-center gap-2 md:hidden">
+        <!-- Mobile Theme Toggle Button -->
+        <button 
+          type="button"
+          (click)="themeService.toggleTheme()" 
+          [attr.aria-label]="themeService.isDarkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          [title]="themeService.isDarkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          class="cursor-pointer h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95"
+        >
+          @if (themeService.isDarkMode()) {
+            <svg class="h-4 w-4 transition-transform duration-300 animate-scale-up" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+          } @else {
+            <svg class="h-4 w-4 transition-transform duration-300 animate-scale-up" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          }
+        </button>
+
         <button 
           type="button" 
           (click)="toggleMenu()"
-          class="inline-flex items-center justify-center rounded-md p-2.5 text-slate-700 hover:bg-slate-50 transition-colors"
+          class="inline-flex items-center justify-center rounded-xl p-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           [attr.aria-expanded]="isMenuOpen()"
         >
           <span class="sr-only">Abrir menú principal</span>
@@ -91,22 +115,41 @@
         </button>
       </div>
 
-      <!-- CTA Auth Buttons (Desktop) -->
-      <div class="hidden md:flex items-center gap-x-4">
+      <!-- CTA Auth Buttons & Theme Toggle (Desktop) -->
+      <div class="hidden md:flex items-center gap-x-3">
+        <!-- Desktop Theme Toggle Button -->
+        <button 
+          type="button"
+          (click)="themeService.toggleTheme()" 
+          [attr.aria-label]="themeService.isDarkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          [title]="themeService.isDarkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          class="cursor-pointer h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-amber-300 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center transition-all duration-300 active:scale-95"
+        >
+          @if (themeService.isDarkMode()) {
+            <svg class="h-4 w-4 transition-transform duration-300 animate-scale-up" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+          } @else {
+            <svg class="h-4 w-4 transition-transform duration-300 animate-scale-up" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          }
+        </button>
+
         @if (authService.isAuthenticated()) {
-          <div class="flex items-center gap-4">
-            <span class="hidden md:inline-block text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser()?.username }}</span></span>
-            <a routerLink="/profile" class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-100 transition-colors cursor-pointer ring-1 ring-inset ring-blue-700/10">
+          <div class="flex items-center gap-3">
+            <span class="hidden md:inline-block text-sm font-medium text-slate-600 dark:text-slate-300">Hola, <span class="font-bold text-slate-900 dark:text-white">{{ authService.currentUser()?.username }}</span></span>
+            <a routerLink="/profile" class="rounded-full bg-blue-50 dark:bg-blue-950/60 px-4 py-2 text-sm font-bold text-blue-700 dark:text-blue-300 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
               Mi Cuenta
             </a>
-            <button (click)="doLogout()" class="text-slate-400 hover:text-red-500 transition-colors ml-2 cursor-pointer" title="Cerrar sesión">
+            <button (click)="doLogout()" class="text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors ml-1 cursor-pointer" title="Cerrar sesión">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             </button>
           </div>
         } @else {
           <a
             routerLink="/login"
-            class="hidden md:block text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+            class="hidden md:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
             >Iniciar sesión</a
           >
           <a
@@ -122,52 +165,69 @@
     <!-- Mobile Menu Overlay -->
     @if (isMenuOpen()) {
       <div class="md:hidden animate-fade-in-down" style="animation-duration: 0.2s;">
-        <div class="space-y-1 px-6 pb-6 pt-2 border-t border-slate-50 bg-white shadow-lg">
+        <div class="space-y-1 px-6 pb-6 pt-2 border-t border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg">
           <a
             routerLink="/credits"
             (click)="closeMenu()"
-            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >Credits</a>
           <a
             routerLink="/atracciones"
             (click)="closeMenu()"
-            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >Atracciones</a>
           <a
             routerLink="/parques"
             (click)="closeMenu()"
-            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >Parques Temáticos</a>
           <a
             routerLink="/ranking"
             (click)="closeMenu()"
-            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+            class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >Ranking</a>
           @if (authService.isAuthenticated()) {
             <a
               routerLink="/viajes"
               (click)="closeMenu()"
-              class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 transition-colors"
+              class="block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >Viajes</a>
           }
           <a
             href="https://parks-ia.vercel.app"
             target="_blank"
             (click)="closeMenu()"
-            class="block rounded-lg px-3 py-2.5 text-base font-bold leading-7 text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-2"
+            class="block rounded-lg px-3 py-2.5 text-base font-bold leading-7 text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2"
           >🤖 ParksIA</a>
+
+          <!-- Mobile Theme Mode Switch Item -->
+          <div class="pt-2">
+            <button 
+              type="button"
+              (click)="themeService.toggleTheme();"
+              class="cursor-pointer flex items-center justify-between w-full rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <span class="flex items-center gap-2.5">
+                <span>{{ themeService.isDarkMode() ? '☀️' : '🌙' }}</span>
+                <span>Modo {{ themeService.isDarkMode() ? 'Claro' : 'Oscuro' }}</span>
+              </span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                {{ themeService.isDarkMode() ? 'Activado' : 'Desactivado' }}
+              </span>
+            </button>
+          </div>
           
-          <div class="py-4 mt-2 border-t border-slate-100 italic">
+          <div class="py-4 mt-2 border-t border-slate-100 dark:border-slate-800 italic">
             @if (authService.isAuthenticated()) {
               <div class="flex flex-col gap-4">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-slate-600">Hola, <span class="font-bold text-slate-900">{{ authService.currentUser()?.username }}</span></span>
-                  <button (click)="doLogout()" class="text-sm font-bold text-red-600">Cerrar sesión</button>
+                  <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Hola, <span class="font-bold text-slate-900 dark:text-white">{{ authService.currentUser()?.username }}</span></span>
+                  <button (click)="doLogout()" class="text-sm font-bold text-red-600 dark:text-red-400">Cerrar sesión</button>
                 </div>
                 <a 
                   routerLink="/profile" 
                   (click)="closeMenu()"
-                  class="flex justify-center rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                  class="flex justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20"
                 >
                   Ir a Mi Cuenta
                 </a>
@@ -177,7 +237,7 @@
                 <a
                   routerLink="/login"
                   (click)="closeMenu()"
-                  class="flex justify-center rounded-xl px-4 py-3 text-sm font-bold text-slate-700 bg-slate-50 transition-colors"
+                  class="flex justify-center rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 transition-colors"
                 >Iniciar sesión</a>
                 <a
                   routerLink="/register"
@@ -192,7 +252,27 @@
     }
   </nav>
 
-
+  <!-- Network Status Floating Toast Banner -->
+  @if (!networkService.isOnline()) {
+    <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[1100] max-w-[92%] sm:max-w-md animate-fade-in-down pointer-events-none">
+      <div class="bg-amber-500/95 dark:bg-amber-600/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl shadow-amber-950/20 border border-amber-300/40 flex items-center gap-3 text-xs sm:text-sm font-bold pointer-events-auto">
+        <span class="flex h-2.5 w-2.5 rounded-full bg-amber-200 animate-ping shrink-0"></span>
+        <svg class="h-5 w-5 shrink-0 text-amber-100" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <span>Sin conexión a internet. Comprueba tu red.</span>
+      </div>
+    </div>
+  } @else if (networkService.showReconnected()) {
+    <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[1100] max-w-[92%] sm:max-w-md animate-fade-in-down pointer-events-none">
+      <div class="bg-emerald-600/95 dark:bg-emerald-600/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl shadow-emerald-950/20 border border-emerald-300/40 flex items-center gap-3 text-xs sm:text-sm font-bold pointer-events-auto">
+        <svg class="h-5 w-5 shrink-0 text-emerald-100" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>¡Conexión a internet restablecida!</span>
+      </div>
+    </div>
+  }
 
   <main class="flex-1 flex flex-col">
     <router-outlet></router-outlet>
@@ -254,9 +334,10 @@
             <div>
               <h3 class="text-sm font-semibold leading-6 text-white uppercase tracking-wider">Legal</h3>
               <ul role="list" class="mt-6 space-y-4">
-                <li><a (click)="openInfoModal('Privacidad', 'privacy')" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Privacidad</a></li>
-                <li><a (click)="openInfoModal('Términos de servicio', 'terms')" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Términos de servicio</a></li>
-                <li><a (click)="openInfoModal('Política de Cookies', 'cookies')" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Cookies</a></li>
+                <li><a routerLink="/privacidad" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Privacidad</a></li>
+                <li><a routerLink="/terminos" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Términos de servicio</a></li>
+                <li><a routerLink="/cookies" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Cookies</a></li>
+                <li><a routerLink="/aviso-legal" class="text-sm leading-6 text-blue-200/80 hover:text-white transition-colors cursor-pointer">Aviso Legal</a></li>
               </ul>
             </div>
             <div class="mt-10 md:mt-0">
@@ -270,7 +351,7 @@
           </div>
         </div>
       </div>
-      <div class="mt-16 border-t border-blue-700/40 pt-8 sm:mt-20 lg:mt-24 flex items-center justify-between gap-4">
+      <div class="mt-16 border-t border-blue-700/40 pt-8 sm:mt-20 lg:mt-24 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <p class="text-xs leading-5 text-blue-300/70">&copy; 2026 RCManager. Todos los derechos reservados. Construido con pura adrenalina.</p>
         <p class="text-xs leading-5 text-blue-300/70 shrink-0">Versión 0.1</p>
       </div>
@@ -278,17 +359,17 @@
   </footer>
   <!-- Logout Success Modal -->
   @if (showLogoutModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-      <div class="bg-white rounded-2xl shadow-xl w-[90%] sm:max-w-sm overflow-hidden flex flex-col relative animate-scale-up" style="animation-duration: 0.3s;">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-[90%] sm:max-w-sm overflow-hidden flex flex-col relative animate-scale-up border border-slate-100 dark:border-slate-800" style="animation-duration: 0.3s;">
         <div class="p-6 text-center space-y-4">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto text-blue-500 shadow-inner">
+          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-950/60 rounded-full flex items-center justify-center mx-auto text-blue-500 dark:text-blue-400 shadow-inner">
             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
           </div>
-          <h3 class="text-xl font-black text-slate-800">¡Hasta pronto!</h3>
-          <p class="text-slate-500 text-sm font-medium">Has cerrado sesión correctamente.</p>
+          <h3 class="text-xl font-black text-slate-800 dark:text-white">¡Hasta pronto!</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Has cerrado sesión correctamente.</p>
         </div>
         <!-- Progress bar -->
-        <div class="h-1.5 w-full bg-slate-100 mt-2">
+        <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 mt-2">
           <div class="h-full bg-blue-500 transition-all duration-75 ease-linear" [style.width.%]="logoutCountdown()"></div>
         </div>
       </div>
@@ -297,21 +378,21 @@
 
   <!-- Generic Info Modal (Legal/Support) -->
   @if (showLegalModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4">
-      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col relative animate-scale-up" style="animation-duration: 0.3s;">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-fade-in px-4">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col relative animate-scale-up border border-slate-100 dark:border-slate-800" style="animation-duration: 0.3s;">
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-          <h3 class="text-lg font-bold text-slate-900">{{ legalModalTitle() }}</h3>
-          <button (click)="closeInfoModal()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors focus:outline-none">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ legalModalTitle() }}</h3>
+          <button (click)="closeInfoModal()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         <!-- Body -->
         <div class="p-6">
-          <p class="text-slate-600 leading-relaxed whitespace-pre-line">{{ legalModalText() }}</p>
+          <p class="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ legalModalText() }}</p>
         </div>
         <!-- Footer -->
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end">
           <button (click)="closeInfoModal()" class="px-6 py-2 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-500 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
             Entendido
           </button>

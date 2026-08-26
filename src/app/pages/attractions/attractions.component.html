@@ -47,6 +47,7 @@
               [ngModel]="searchQuery()"
               (ngModelChange)="updateSearch($event)"
               placeholder="Nombre de atracción o parque..." 
+              maxlength="80"
               class="block w-full rounded-[1.25rem] border-0 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-4 text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200/80 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 focus:shadow-[0_8px_30px_rgb(147,51,234,0.15)] bg-slate-50/50 hover:bg-slate-50 focus:bg-white transition-all duration-300 text-sm font-bold outline-none"
             >
           </div>
@@ -250,8 +251,16 @@
             <div class="group bg-white overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 flex flex-col"
                  [ngClass]="mobileGridMode() === 'compact' ? 'rounded-2xl' : 'rounded-3xl'">
               <!-- Image Container -->
-              <div class="relative overflow-hidden" [ngClass]="mobileGridMode() === 'compact' ? 'aspect-square sm:aspect-[4/3]' : 'aspect-[4/3]'">
-                <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800" [ngClass]="mobileGridMode() === 'compact' ? 'aspect-square sm:aspect-[4/3]' : 'aspect-[4/3]'">
+                <img 
+                  [src]="item.image" 
+                  [alt]="item.name"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="attrImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800'"
+                  #attrImg
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                >
                 <div class="absolute right-2 top-2 sm:top-4 sm:right-4 flex flex-col gap-1 sm:gap-2 items-end">
                   <span class="inline-flex items-center rounded-full bg-white/95 backdrop-blur-md font-black uppercase tracking-wider shadow-sm ring-1 ring-inset {{ mobileGridMode() === 'compact' ? 'px-1.5 py-0.5 text-[7px] sm:px-3 sm:py-1 sm:text-[10px]' : 'px-3 py-1 text-[10px]' }}"
                     [ngClass]="{
@@ -282,7 +291,7 @@
                       </svg>
                       <span class="truncate">{{ item.park }}</span>
                     </p>
-                    <p class="text-slate-400 font-medium px-4"
+                    <p class="text-slate-500 font-medium px-4"
                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[8px] sm:text-[10px]' : 'text-[10px]'">{{ item.country }}</p>
                   </div>
                 </div>
@@ -296,13 +305,13 @@
                 <div class="grid grid-cols-2 border-y border-slate-50 mb-auto"
                      [ngClass]="mobileGridMode() === 'compact' ? 'gap-1 py-2 sm:gap-4 sm:py-4 hidden sm:grid' : 'gap-4 py-4'">
                   <div>
-                    <p class="uppercase tracking-wider text-slate-400 font-black mb-1"
+                    <p class="uppercase tracking-wider text-slate-500 font-black mb-1"
                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[7px] sm:text-[9px]' : 'text-[9px]'">Fabricante</p>
                     <p class="font-extrabold text-slate-700 line-clamp-1"
                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[9px] sm:text-[11px]' : 'text-[11px]'">{{ item.manufacturer }}</p>
                   </div>
                   <div class="border-l border-slate-50 pl-2 sm:pl-4">
-                    <p class="uppercase tracking-wider text-slate-400 font-black mb-1"
+                    <p class="uppercase tracking-wider text-slate-500 font-black mb-1"
                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[7px] sm:text-[9px]' : 'text-[9px]'">Estreno</p>
                     <p class="font-extrabold text-slate-700"
                        [ngClass]="mobileGridMode() === 'compact' ? 'text-[9px] sm:text-[11px]' : 'text-[11px]'">{{ item.openingYear === 0 ? 'Desconocido' : item.openingYear }}</p>
@@ -347,6 +356,23 @@
             </button>
           </div>
         }
+      } @else if (hasError()) {
+        <!-- Error Connection State -->
+        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 p-6 animate-fade-in max-w-lg mx-auto">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 mb-4 border border-red-100 shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">No se pudo cargar el catálogo</h3>
+          <p class="text-slate-500 text-sm mb-6">
+            Ha ocurrido un problema de conexión al obtener el listado de atracciones.
+          </p>
+          <button (click)="fetchAttractions()" class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-500 transition-all shadow-lg shadow-purple-500/25 active:scale-95">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Reintentar conexión</span>
+          </button>
+        </div>
       } @else {
         <!-- Empty State -->
         <div class="text-center py-24 bg-white rounded-[3rem] border border-dashed border-slate-200 shadow-sm animate-in fade-in duration-500">
@@ -414,8 +440,8 @@
 
   <!-- Delete Confirmation Modal -->
   @if (showDeleteConfirmModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
         <button (click)="closeDeleteConfirm()" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -440,8 +466,8 @@
 
   <!-- Add Confirmation Modal -->
   @if (showAddConfirmModal()) {
-    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+    <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+      <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
         <button (click)="closeAddConfirm()" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>

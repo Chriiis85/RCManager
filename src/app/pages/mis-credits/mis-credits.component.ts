@@ -20,6 +20,7 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
 
   credits = signal<CoasterCredit[]>([]);
   isLoading = signal(true);
+  hasError = signal(false);
   searchQuery = signal('');
   hideRemoved = signal(true);
 
@@ -53,12 +54,16 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
 
   loadCredits() {
     this.isLoading.set(true);
+    this.hasError.set(false);
     this.recordsService.getCredits().subscribe({
       next: (data) => {
         this.credits.set(data);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.hasError.set(true);
+      }
     });
   }
 
@@ -110,12 +115,21 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
     this.showCountModal.set(true);
   }
 
+  incrementCount() {
+    this.rideCount.update(c => Math.min(9999, c + 1));
+  }
+
+  decrementCount() {
+    this.rideCount.update(c => Math.max(1, c - 1));
+  }
+
   saveCount() {
     const credit = this.selectedCredit();
     if (!credit) return;
     this.isSubmitting.set(true);
 
-    this.recordsService.updateCreditCount(credit.id, this.rideCount()).subscribe({
+    const idToUpdate = credit.coaster?.apiId || credit.coasterId;
+    this.recordsService.updateCreditCount(idToUpdate, this.rideCount()).subscribe({
       next: (updated) => {
         this.credits.update(list => list.map(c => c.id === credit.id ? { ...c, rating: updated.rating } : c));
         this.showCountModal.set(false);
@@ -123,13 +137,5 @@ export class MisCreditsComponent implements OnInit, OnDestroy {
       },
       error: () => this.isSubmitting.set(false)
     });
-  }
-
-  incrementCount() {
-    this.rideCount.update(v => v + 1);
-  }
-
-  decrementCount() {
-    this.rideCount.update(v => Math.max(1, v - 1));
   }
 }

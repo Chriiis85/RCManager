@@ -19,6 +19,8 @@ interface Attraction {
   description: string;
 }
 
+let cachedAttractions: Attraction[] | null = null;
+
 @Component({
   selector: 'app-attractions',
   standalone: true,
@@ -35,6 +37,7 @@ export class AttractionsComponent implements OnInit {
   hideRemoved = signal(true);
   
   isLoading = signal(true);
+  hasError = signal(false);
   showFilters = signal(false);
   mobileGridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
 
@@ -92,10 +95,20 @@ export class AttractionsComponent implements OnInit {
     });
   }
 
-  private fetchAttractions() {
+  fetchAttractions() {
+    if (cachedAttractions && cachedAttractions.length > 0) {
+      this.attractions.set(cachedAttractions);
+      this.isLoading.set(false);
+      return;
+    }
+
     this.isLoading.set(true);
+    this.hasError.set(false);
     fetch('https://rc-manager-api.vercel.app/api/attractions')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Error al consultar atracciones');
+        return res.json();
+      })
       .then(data => {
         const mappedData: Attraction[] = data.map((a: any) => ({
           id: a.id,
@@ -106,7 +119,7 @@ export class AttractionsComponent implements OnInit {
           manufacturer: a.manufacturer || 'Desconocido',
           openingYear: a.openingYear || 0,
           status: this.mapStatus(a.status),
-          image: a.imageUrl || `https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=800&id=${a.id}`,
+          image: a.imageUrl || `https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=800&id=${a.id}`,
           description: `Disfruta de la emocionante atracción ${a.name} en ${a.park?.name}.`
         }));
         // Barajar (shuffle) las atracciones para que salgan en orden aleatorio
@@ -115,11 +128,13 @@ export class AttractionsComponent implements OnInit {
           [mappedData[i], mappedData[j]] = [mappedData[j], mappedData[i]];
         }
 
+        cachedAttractions = mappedData;
         this.attractions.set(mappedData);
         this.isLoading.set(false);
       })
       .catch(err => {
         console.error('Error fetching attractions:', err);
+        this.hasError.set(true);
         this.isLoading.set(false);
       });
   }

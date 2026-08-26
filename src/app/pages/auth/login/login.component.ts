@@ -34,11 +34,12 @@ export class LoginComponent {
   private resendTimer: any = null;
 
   loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    identifier: ['', [Validators.required]],
     password: ['', [Validators.required]]
   });
 
-  get email() { return this.loginForm.get('email'); }
+  get identifier() { return this.loginForm.get('identifier'); }
+  get email() { return this.loginForm.get('identifier'); }
   get password() { return this.loginForm.get('password'); }
 
   togglePassword() {
@@ -52,10 +53,11 @@ export class LoginComponent {
 
     if (this.loginForm.invalid) return;
 
-    const { email, password } = this.loginForm.getRawValue();
+    const { identifier, password } = this.loginForm.getRawValue();
+    const cleanIdentifier = identifier.trim();
     this.isLoading.set(true);
 
-    this.authService.login({ email, password }).subscribe({
+    this.authService.login({ identifier: cleanIdentifier, email: cleanIdentifier, password }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
         if (res.requires2FA && res.tempToken) {
@@ -76,15 +78,25 @@ export class LoginComponent {
         // Limpiar cualquier mención a Apple si el backend remoto aún la envía
         msg = msg.replace(/\s*o\s+Apple/gi, '').replace(/Apple/gi, '');
 
-        // Si fallan las credenciales o es cuenta OAuth/Google, guiar al usuario a Google
-        if (err?.error?.isOAuthHint || msg.toLowerCase().includes('google') || err.status === 401) {
-          msg = 'Contraseña incorrecta o cuenta sin contraseña manual. Si te registraste con Google, pulsa en el botón de Google abajo para entrar y luego podrás crear tu contraseña en tu Perfil.';
+        // Mostrar sugerencia de Google solo si el backend indica que es una cuenta sin contraseña manual
+        if (err?.error?.isOAuthHint) {
           this.isGoogleHint.set(true);
+        } else {
+          this.isGoogleHint.set(false);
         }
 
         this.errorMessage.set(msg);
       }
     });
+  }
+
+  on2FAInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+      const digitsOnly = input.value.replace(/\D/g, '').slice(0, 6);
+      this.twoFACode.set(digitsOnly);
+      input.value = digitsOnly;
+    }
   }
 
   onSubmit2FA() {

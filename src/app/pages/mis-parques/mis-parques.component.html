@@ -28,6 +28,7 @@
           placeholder="Buscar por nombre o país..."
           [ngModel]="searchQuery()"
           (ngModelChange)="searchQuery.set($event)"
+          maxlength="80"
           class="w-full rounded-2xl border-0 py-3 pl-11 pr-4 ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-600 bg-slate-50 text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none transition-all"
         >
       </div>
@@ -53,9 +54,33 @@
 
     <!-- Content -->
     @if (isLoading()) {
-      <div class="flex flex-col items-center justify-center py-32">
-        <div class="h-16 w-16 border-4 border-slate-100 border-t-emerald-600 rounded-full animate-spin mb-4"></div>
-        <p class="text-slate-400 font-bold text-sm tracking-widest uppercase">Cargando tus parques...</p>
+      <div class="flex flex-col items-center justify-center py-28 space-y-6 animate-fade-in text-center">
+        <div class="relative">
+          <div class="h-20 w-20 border-6 border-slate-100 border-t-emerald-600 rounded-full animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center text-2xl">
+            🏞️
+          </div>
+        </div>
+        <div class="space-y-1 max-w-sm mx-auto px-4">
+          <h3 class="text-lg font-bold text-slate-800 tracking-tight">Cargando tus parques</h3>
+          <p class="text-xs text-slate-400 font-medium animate-pulse">Sincronizando tus visitas registradas...</p>
+        </div>
+      </div>
+    } @else if (hasError()) {
+      <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 p-6 animate-fade-in">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 mb-4 border border-red-100 shadow-inner">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">No pudimos conectar con tus datos</h3>
+        <p class="text-slate-500 text-sm max-w-md mx-auto mb-6">
+          Ha ocurrido un problema de conexión al consultar tu lista de parques. Tus visitas registradas siguen seguras.
+        </p>
+        <button (click)="loadParks()" class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/25 active:scale-95">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Reintentar conexión</span>
+        </button>
       </div>
     } @else if (filteredParks().length === 0) {
       <div class="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
@@ -80,10 +105,12 @@
               
               <div class="flex items-center gap-4 sm:gap-5 min-w-0">
                 <!-- Icon/Image -->
-                <div class="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-100 overflow-hidden relative shadow-sm">
-                  <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
-                       (error)="parkImg.src='https://images.unsplash.com/photo-1513254222046-817812228834?auto=format&fit=crop&q=80&w=200'"
+                <div class="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden relative shadow-sm">
+                  <img [src]="item.park?.imageUrl || 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200&id=' + item.parkId" 
+                       (error)="parkImg.src='https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&q=80&w=200'"
                        #parkImg
+                       loading="lazy"
+                       decoding="async"
                        class="w-full h-full object-cover">
                 </div>
 
@@ -149,10 +176,10 @@
   </div>
 </main>
 
-<!-- Delete Modal -->
+<!-- Delete Confirmation Modal -->
 @if (showDeleteModal()) {
-  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
       <div class="absolute top-0 inset-x-0 h-1.5 bg-red-500 rounded-t-[2.5rem]"></div>
       <button (click)="showDeleteModal.set(false)" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -178,8 +205,8 @@
 
 <!-- Delete Success Modal -->
 @if (showDeleteSuccessModal()) {
-  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-    <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in px-4 py-6 overflow-y-auto">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
       <button (click)="closeDeleteSuccess()" class="cursor-pointer absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
@@ -204,8 +231,8 @@
 
 <!-- Edit Count Modal -->
 @if (showCountModal()) {
-  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4">
-    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden">
+  <div appBlockScroll class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md animate-fade-in px-4 py-6 overflow-y-auto">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border border-slate-100 animate-slide-up relative overflow-hidden my-auto">
       <div class="absolute top-0 inset-x-0 h-1.5 bg-emerald-500 rounded-t-[2.5rem]"></div>
       <button (click)="closeCountModal()" class="cursor-pointer absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -225,7 +252,7 @@
         <div class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex flex-col items-center justify-center">
           <span class="text-3xl font-black text-emerald-600 leading-none">{{ newCount() }}</span>
         </div>
-        <button (click)="newCount.set(newCount() + 1)" class="cursor-pointer w-12 h-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-all text-xl font-bold hover:-translate-y-0.5 active:translate-y-0">+</button>
+        <button (click)="newCount.set(newCount() + 1)" [disabled]="newCount() >= 9999" class="cursor-pointer w-12 h-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-50 transition-all text-xl font-bold hover:-translate-y-0.5 active:translate-y-0">+</button>
       </div>
 
       <div class="flex gap-3">

@@ -12,7 +12,7 @@ interface CalendarDay {
 }
 
 @Component({
-  selector: 'app-airbnb-calendar',
+  selector: 'app-trip-calendar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -141,7 +141,7 @@ interface CalendarDay {
     :host { display: block; }
   `]
 })
-export class AirbnbCalendarComponent {
+export class TripCalendarComponent {
   // Inputs
   minDate = input<Date>(new Date());
 
@@ -205,7 +205,9 @@ export class AirbnbCalendarComponent {
 
   @HostListener('window:resize')
   onResize() {
-    this.showDualMonth.set(window.innerWidth >= 640);
+    if (typeof window !== 'undefined') {
+      this.showDualMonth.set(window.innerWidth >= 640);
+    }
   }
 
   trackDay(index: number, day: CalendarDay | null): string {
