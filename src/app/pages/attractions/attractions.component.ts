@@ -1,5 +1,6 @@
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
+import { CoverageInfoComponent } from '../../shared/components/coverage-info/coverage-info.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -24,7 +25,7 @@ let cachedAttractions: Attraction[] | null = null;
 @Component({
   selector: 'app-attractions',
   standalone: true,
-  imports: [CommonModule, FormsModule, BlockScrollDirective],
+  imports: [CoverageInfoComponent, CommonModule, FormsModule, BlockScrollDirective],
   templateUrl: './attractions.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,6 +40,7 @@ export class AttractionsComponent implements OnInit {
   isLoading = signal(true);
   hasError = signal(false);
   showFilters = signal(false);
+  showCoverageInfo = signal(false);
   mobileGridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
 
   showSuccessModal = signal(false);
@@ -410,3 +412,7 @@ export class AttractionsComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
+
+
+
+

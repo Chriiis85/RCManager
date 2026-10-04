@@ -1,5 +1,5 @@
 export const PARQUES_TEMATICOS_JSON = [
-  { "puesto": 1, "nombre": "Europa-Park", "puntuacion": 98.8, "tipo": "Temático / Resort Familiar", "gestor": "Mack Rides / Familia Mack", "ubicacion": { "localidad": "Rust", "pais": "Alemania" } },
+  { "puesto": 1, "nombre": "Dollywood", "puntuacion": 99.5, "tipo": "Cultura Regional / Familiar", "gestor": "Herschend Family Entertainment", "ubicacion": { "localidad": "Pigeon Forge, TN", "pais": "EE.UU." } },
   { "puesto": 2, "nombre": "Universal Epic Universe", "puntuacion": 98.2, "tipo": "Inmersivo / Next-Gen", "gestor": "Universal Destinations & Experiences", "ubicacion": { "localidad": "Orlando, Florida", "pais": "EE.UU." } },
   { "puesto": 3, "nombre": "Tokyo DisneySea", "puntuacion": 97.9, "tipo": "Fantasía / Náutico", "gestor": "Oriental Land Co. (Disney License)", "ubicacion": { "localidad": "Urayasu, Chiba", "pais": "Japón" } },
   { "puesto": 4, "nombre": "Magic Kingdom", "puntuacion": 97.5, "tipo": "Temático Clásico", "gestor": "Disney Experiences", "ubicacion": { "localidad": "Lake Buena Vista, FL", "pais": "EE.UU." } },
@@ -136,7 +136,7 @@ export const MAPPED_THEME_PARKS = PARQUES_TEMATICOS_JSON.map((park) => {
 });
 
 export const WATER_PARKS_DATA = [
-  { id: 'wp_1', position: 1, name: 'Siam Park', subtitle: 'Tenerife, España', image: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'stable' as const, tipo: 'Tailandés / Épico', gestor: 'Loro Parque Group' },
+  { id: 'wp_1', position: 1, name: 'Splashin\' Safari', subtitle: 'Santa Claus, Indiana, EE.UU.', image: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&q=80&w=800', score: 9.9, trend: 'up' as const, tipo: 'Water Park', gestor: 'Holiday World' },
   { id: 'wp_2', position: 2, name: 'Universal Volcano Bay', subtitle: 'Orlando, Florida, EE.UU.', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.7, trend: 'up' as const, tipo: 'Polinesio / Inmersivo', gestor: 'Universal Destinations' },
   { id: 'wp_3', position: 3, name: "Disney's Typhoon Lagoon", subtitle: 'Bay Lake, Florida, EE.UU.', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=800', score: 9.6, trend: 'stable' as const, tipo: 'Tormenta Tropical', gestor: 'Disney Experiences' },
   { id: 'wp_4', position: 4, name: 'Rulantica', subtitle: 'Rust, Alemania', image: 'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&q=80&w=800', score: 9.5, trend: 'up' as const, tipo: 'Nórdico / Indoor & Outdoor', gestor: 'Europa-Park / Mack' },
@@ -164,7 +164,7 @@ export const WATER_PARKS_DATA = [
 ];
 
 export const COASTERS_DATA = [
-  { id: 'rc_1', position: 1, name: 'Steel Vengeance', park: 'Cedar Point', subtitle: 'RMC Hybrid Hyper Coaster', image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'stable' as const, tipo: 'RMC Hyper Hybrid', gestor: 'Cedar Point (EE.UU.)' },
+  { id: 'rc_1', position: 1, name: 'Falcon\'s Flight', park: 'Six Flags Qiddiya City', subtitle: 'Exa Coaster', image: 'https://images.unsplash.com/photo-1465996140498-df84be101126?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'up' as const, tipo: 'Intamin Exa Coaster', gestor: 'Six Flags Qiddiya City (Arabia Saudita)' },
   { id: 'rc_2', position: 2, name: 'Jurassic World VelociCoaster', park: 'Islands of Adventure', subtitle: 'Intamin Launch Coaster', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.90, trend: 'up' as const, tipo: 'Intamin Multi-Launch', gestor: 'Universal Orlando (EE.UU.)' },
   { id: 'rc_3', position: 3, name: 'Fury 325', park: 'Carowinds', subtitle: 'B&M Giga Coaster', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.85, trend: 'stable' as const, tipo: 'B&M Giga Coaster (99m)', gestor: 'Carowinds (EE.UU.)' },
   { id: 'rc_4', position: 4, name: 'Iron Gwazi', park: 'Busch Gardens Tampa Bay', subtitle: 'RMC Hybrid Coaster', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.80, trend: 'up' as const, tipo: 'RMC IBox Track', gestor: 'Busch Gardens (EE.UU.)' },
@@ -192,7 +192,7 @@ export const COASTERS_DATA = [
 ];
 
 export const ATTRACTIONS_DATA = [
-  { id: 'at_1', position: 1, name: 'Star Wars: Rise of the Resistance', park: "Disney's Hollywood Studios", subtitle: 'Trackless Dark Ride Multiatracción', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'stable' as const, tipo: 'Trackless + Drop + Simulator', gestor: 'Walt Disney World (EE.UU.)' },
+  { id: 'at_1', position: 1, name: 'Monsters Unchained: The Frankenstein Experiment', park: 'Universal\'s Epic Universe', subtitle: 'Dark Ride', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'up' as const, tipo: 'Dark Ride', gestor: 'Universal Orlando (EE.UU.)' },
   { id: 'at_2', position: 2, name: 'Avatar Flight of Passage', park: "Disney's Animal Kingdom", subtitle: '3D Flying Theater Simulator', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.90, trend: 'stable' as const, tipo: 'Flying Theater Inmersivo', gestor: 'Walt Disney World (EE.UU.)' },
   { id: 'at_3', position: 3, name: 'Harry Potter and the Forbidden Journey', park: 'Islands of Adventure', subtitle: 'KUKA Robotic Arm Dark Ride', image: 'https://images.unsplash.com/photo-1563656157432-67560011e209?auto=format&fit=crop&q=80&w=800', score: 9.85, trend: 'stable' as const, tipo: 'Robocoaster Dark Ride', gestor: 'Universal Orlando (EE.UU.)' },
   { id: 'at_4', position: 4, name: 'Pirates of the Caribbean: Battle for Sunken Treasure', park: 'Shanghai Disneyland', subtitle: 'Magnetic Boat Dark Ride', image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&q=80&w=800', score: 9.80, trend: 'up' as const, tipo: 'Magnetic Controlled Boat', gestor: 'Shanghai Disney (China)' },
@@ -220,7 +220,7 @@ export const ATTRACTIONS_DATA = [
 ];
 
 export const WATER_RIDES_DATA = [
-  { id: 'wr_1', position: 1, name: 'Chiapas: DIE Wasserbahn', park: 'Phantasialand', subtitle: 'Log Flume con la caída más inclinada del mundo', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800', score: 9.90, trend: 'stable' as const, tipo: 'Intamin Log Flume (53°)', gestor: 'Phantasialand (Alemania)' },
+  { id: 'wr_1', position: 1, name: 'Aquaticar', park: 'Aquarabia', subtitle: 'New Water Park Ride', image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800', score: 9.90, trend: 'up' as const, tipo: 'Water Ride', gestor: 'Aquarabia' },
   { id: 'wr_2', position: 2, name: 'Valhalla', park: 'Blackpool Pleasure Beach', subtitle: 'Dark Water Ride vikingo multimillonario', image: 'https://images.unsplash.com/photo-1517086822157-2b0358e7684a?auto=format&fit=crop&q=80&w=800', score: 9.85, trend: 'up' as const, tipo: 'Intamin Indoor Dark Water Ride', gestor: 'Pleasure Beach (Reino Unido)' },
   { id: 'wr_3', position: 3, name: 'Jurassic Park River Adventure', park: 'Islands of Adventure', subtitle: 'Shoot-the-Chutes jurásico inmersivo', image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=80&w=800', score: 9.80, trend: 'stable' as const, tipo: 'Hopkins Shoot-the-Chutes (26m)', gestor: 'Universal Orlando (EE.UU.)' },
   { id: 'wr_4', position: 4, name: 'Tutuki Splash', park: 'PortAventura Park', subtitle: 'Shoot-the-Chutes en el volcán polinesio', image: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&q=80&w=800', score: 9.70, trend: 'stable' as const, tipo: 'Intamin Spillwater (15m)', gestor: 'PortAventura (España)' },
@@ -248,7 +248,7 @@ export const WATER_RIDES_DATA = [
 ];
 
 export const SHOWS_DATA = [
-  { id: 'sh_1', position: 1, name: 'Le Mime et l\'Étoile', park: 'Puy du Fou', subtitle: 'Espectáculo cinematográfico mudo y música en directo', image: 'https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'up' as const, tipo: 'Teatro en Vivo / Récord GTA', gestor: 'Puy du Fou (Francia)' },
+  { id: 'sh_1', position: 1, name: 'Monster Mash Bash', park: 'Six Flags Fiesta Texas', subtitle: 'New Show', image: 'https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&q=80&w=800', score: 9.95, trend: 'up' as const, tipo: 'Live Show', gestor: 'Six Flags Fiesta Texas (EE.UU.)' },
   { id: 'sh_2', position: 2, name: 'El Sueño de Toledo', park: 'Puy du Fou España', subtitle: 'Macroespectáculo nocturno de 1500 años de historia', image: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&q=80&w=800', score: 9.90, trend: 'up' as const, tipo: 'Nocturno / 200 Actores', gestor: 'Puy du Fou (España)' },
   { id: 'sh_3', position: 3, name: 'Le Signe du Triomphe', park: 'Puy du Fou', subtitle: 'Carreras de cuádrigas y gladiadores en el coliseo romano', image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=80&w=800', score: 9.85, trend: 'stable' as const, tipo: 'Arena Romana en Vivo', gestor: 'Puy du Fou (Francia)' },
   { id: 'sh_4', position: 4, name: 'Disney Dreams!', park: 'Disneyland Paris', subtitle: 'Show nocturno de fuegos, fuentes y mapping en el castillo', image: 'https://images.unsplash.com/photo-1605443791607-80a259dd3c3c?auto=format&fit=crop&q=80&w=800', score: 9.80, trend: 'up' as const, tipo: 'Mapping + Drones + Fireworks', gestor: 'Disneyland Paris (Francia)' },

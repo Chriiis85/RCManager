@@ -287,113 +287,25 @@ export class ParksComponent implements OnInit, OnDestroy {
           crowds: 'Normal' as const,
         }));
 
+        // Determinar país local (España por defecto o por timezone)
+        const localCountry = 'Spain';
+        const isEuropean = (c: string) => ['Spain', 'España', 'France', 'Germany', 'United Kingdom', 'Italy', 'Netherlands', 'Belgium', 'Sweden', 'Denmark', 'Poland', 'Austria', 'Switzerland', 'Finland', 'Norway', 'Ireland', 'Portugal'].includes(c);
+
         mappedParks.sort((a, b) => {
-          const aIsSpain = a.country === 'Spain' || a.country === 'EspaÃ±a' || a.country === 'Spain ';
-          const bIsSpain = b.country === 'Spain' || b.country === 'EspaÃ±a' || b.country === 'Spain ';
-          if (aIsSpain && !bIsSpain) return -1;
-          if (!aIsSpain && bIsSpain) return 1;
-          return 0;
+          const aLocal = a.country === localCountry || a.country === 'España' || a.country === 'Spain ';
+          const bLocal = b.country === localCountry || b.country === 'España' || b.country === 'Spain ';
+          
+          if (aLocal && !bLocal) return -1;
+          if (!aLocal && bLocal) return 1;
+
+          const aEuro = isEuropean(a.country.trim());
+          const bEuro = isEuropean(b.country.trim());
+
+          if (aEuro && !bEuro) return -1;
+          if (!aEuro && bEuro) return 1;
+
+          return a.name.localeCompare(b.name);
         });
-
-        this.parks.set(mappedParks);
-      })
-      .catch((err) => {
-        console.error('Error al conectar con la API de parques (queue-times):', err);
-        this.hasError.set(true);
-        this.isInitialLoading.set(false);
-      });
-  }
-
-  ngOnDestroy() {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = '';
-    }
-  }
-
-  private async updateAllParkStatuses(mappedParks: ThemePark[]) {
-    const batchSize = 15;
-    for (let i = 0; i < mappedParks.length; i += batchSize) {
-      const batch = mappedParks.slice(i, i + batchSize);
-      await Promise.all(batch.map((park) => this.checkAndUpdateStatus(park)));
-    }
-  }
-
-  private async checkAndUpdateStatus(park: ThemePark) {
-    try {
-      const res = await fetch(`/queue-times-api/parks/${park.id}/queue_times.json`);
-      if (!res.ok) return;
-
-      const data = await res.json();
-      const allRides: any[] = [];
-
-      if (data.rides) allRides.push(...data.rides);
-      if (data.lands) {
-        data.lands.forEach((land: any) => {
-          if (land.rides) allRides.push(...land.rides);
-        });
-      }
-
-      if (allRides.length === 0) {
-        return;
-      }
-
-      const today = new Date().toISOString().split('T')[0];
-      const hasFreshData = allRides.some((r) => r.last_updated && r.last_updated.startsWith(today));
-
-      if (!hasFreshData) {
-        return;
-      }
-
-      const allClosed = allRides.every((r) => r.is_open === false);
-      const allZeroWait = allRides.every((r) => r.wait_time === 0 || r.wait_time === null);
-
-      const newStatus: 'Abierto' | 'Cerrado' = allClosed || allZeroWait ? 'Cerrado' : 'Abierto';
-
-      let newCrowds: 'Muy Baja' | 'Baja' | 'Normal' | 'Alta' | 'Muy Alta' = 'Baja';
-      const totalRides = allRides.length;
-      if (totalRides > 0) {
-        const totalWait = allRides.reduce((acc, r) => acc + (r.wait_time || 0), 0);
-        const crowdIndex = totalWait / totalRides;
-
-        if (crowdIndex > 50) newCrowds = 'Muy Alta';
-        else if (crowdIndex > 30) newCrowds = 'Alta';
-        else if (crowdIndex > 15) newCrowds = 'Normal';
-        else if (crowdIndex > 5) newCrowds = 'Baja';
-        else newCrowds = 'Muy Baja';
-      }
-
-      this.parks.update((parks) =>
-        parks.map((p) =>
-          p.id === park.id ? { ...p, status: newStatus, crowds: newCrowds, hasTodayData: true } : p,
-        ),
-      );
-    } catch (error) {
-      // Ignorar errores individuales
-    }
-  }
-
-  showParkDetails(park: ThemePark) {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = 'hidden';
-    }
-    this.selectedPark.set(park);
-    this.isLoadingQueue.set(true);
-    this.parkQueueTimes.set(null);
-
-    fetch(`/queue-times-api/parks/${park.id}/queue_times.json`, {
-      method: 'GET',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        this.parkQueueTimes.set(data);
-        this.isLoadingQueue.set(false);
-
-        const allRides: any[] = [];
-        if (data.rides) allRides.push(...data.rides);
-        if (data.lands) {
-          data.lands.forEach((land: any) => {
-            if (land.rides) allRides.push(...land.rides);
-          });
         }
         if (allRides.length > 0) {
           const allClosed = allRides.every((r: any) => r.is_open === false);
@@ -696,3 +608,4 @@ export class ParksComponent implements OnInit, OnDestroy {
     }
   }
 }
+

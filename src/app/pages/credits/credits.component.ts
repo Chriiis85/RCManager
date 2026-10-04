@@ -1,5 +1,6 @@
 import { BlockScrollDirective } from '../../core/directives/block-scroll.directive';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit, HostListener, effect } from '@angular/core';
+import { CoverageInfoComponent } from '../../shared/components/coverage-info/coverage-info.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -25,13 +26,14 @@ let cachedCoasters: Coaster[] | null = null;
 @Component({
   selector: 'app-credits',
   standalone: true,
-  imports: [CommonModule, FormsModule, BlockScrollDirective],
+  imports: [CoverageInfoComponent, CommonModule, FormsModule, BlockScrollDirective],
   templateUrl: './credits.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreditsComponent implements OnInit {
   searchQuery = signal('');
   showFilters = signal(false);
+  showCoverageInfo = signal(false);
   mobileGridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
   hideRemoved = signal(true);
   
@@ -414,3 +416,8 @@ export class CreditsComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
+
+
+
+
+
