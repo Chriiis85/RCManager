@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
@@ -13,12 +13,30 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  returnUrl = signal<string | null>(this.route.snapshot.queryParams['returnUrl'] || null);
+
+  private getDestinationUrl(): string {
+    const raw = this.returnUrl();
+    if (
+      raw &&
+      raw.startsWith('/') &&
+      !raw.startsWith('//') &&
+      !raw.startsWith('/login') &&
+      !raw.startsWith('/register')
+    ) {
+      return raw;
+    }
+    return '/profile';
+  }
 
   showPassword = signal(false);
   isSubmitted = signal(false);
   isLoading = signal(false);
+  isRedirecting = signal(false);
   errorMessage = signal<string | null>(null);
   isGoogleHint = signal(false);
 
@@ -56,11 +74,12 @@ export class LoginComponent {
     const { identifier, password } = this.loginForm.getRawValue();
     const cleanIdentifier = identifier.trim();
     this.isLoading.set(true);
+    this.isRedirecting.set(false);
 
     this.authService.login({ identifier: cleanIdentifier, email: cleanIdentifier, password }).subscribe({
       next: (res) => {
-        this.isLoading.set(false);
         if (res.requires2FA && res.tempToken) {
+          this.isLoading.set(false);
           this.requires2FA.set(true);
           this.tempToken.set(res.tempToken);
           this.twoFactorType.set(res.twoFactorType || 'APP');
@@ -68,11 +87,22 @@ export class LoginComponent {
           this.twoFACode.set('');
           this.resendSuccess.set(null);
         } else {
-          this.router.navigate(['/profile']);
+          this.isRedirecting.set(true);
+          const dest = this.getDestinationUrl();
+          this.router.navigateByUrl(dest).then((navigated) => {
+            if (!navigated) {
+              this.isLoading.set(false);
+              this.isRedirecting.set(false);
+            }
+          }).catch(() => {
+            this.isLoading.set(false);
+            this.isRedirecting.set(false);
+          });
         }
       },
       error: (err) => {
         this.isLoading.set(false);
+        this.isRedirecting.set(false);
         let msg = err?.error?.error || 'Error al iniciar sesión. Inténtalo de nuevo.';
         
         // Limpiar cualquier mención a Apple si el backend remoto aún la envía
@@ -115,13 +145,24 @@ export class LoginComponent {
     if (!temp) return;
 
     this.isLoading.set(true);
+    this.isRedirecting.set(false);
     this.authService.login2FA(temp, code).subscribe({
       next: () => {
-        this.isLoading.set(false);
-        this.router.navigate(['/profile']);
+        this.isRedirecting.set(true);
+        const dest = this.getDestinationUrl();
+        this.router.navigateByUrl(dest).then((navigated) => {
+          if (!navigated) {
+            this.isLoading.set(false);
+            this.isRedirecting.set(false);
+          }
+        }).catch(() => {
+          this.isLoading.set(false);
+          this.isRedirecting.set(false);
+        });
       },
       error: (err) => {
         this.isLoading.set(false);
+        this.isRedirecting.set(false);
         this.errorMessage.set(err?.error?.error || 'Código de verificación incorrecto o expirado.');
       }
     });

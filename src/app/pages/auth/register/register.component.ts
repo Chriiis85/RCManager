@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);

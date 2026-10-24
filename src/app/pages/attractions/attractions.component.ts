@@ -41,7 +41,7 @@ export class AttractionsComponent implements OnInit {
   hasError = signal(false);
   showFilters = signal(false);
   showCoverageInfo = signal(false);
-  mobileGridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
+  mobileGridMode = signal<'large' | 'compact'>('large');
 
   showSuccessModal = signal(false);
   showLoginPromptModal = signal(false);

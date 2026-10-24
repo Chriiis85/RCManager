@@ -52,7 +52,7 @@ export class ParksComponent implements OnInit, OnDestroy {
   selectedCrowds = signal<string[]>([]);
   visibleParksLimit = signal(15);
   showFilters = signal(false);
-  gridMode = signal<'large' | 'compact'>(typeof window !== 'undefined' && window.innerWidth < 768 ? 'compact' : 'large');
+  gridMode = signal<'large' | 'compact'>('large');
 
   showSuccessModal = signal(false);
   showDeleteSuccessModal = signal(false);

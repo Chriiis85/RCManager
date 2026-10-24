@@ -61,6 +61,10 @@ export class AuthService {
   readonly token = this._token.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token() && !!this._user());
 
+  // Estado reactivo que indica si hay un flujo de retorno o verificación de OAuth en curso
+  readonly isOAuthLoading = signal<boolean>(this.checkHasOAuthHash());
+  private isExchangingSupabase = false;
+
   constructor() {
     // Si venimos de un logout (incluso tras F5), borramos cualquier sesion de Supabase que quede
     if (this.isLoggingOut()) {
@@ -68,25 +72,71 @@ export class AuthService {
       this.clearLogoutFlag();
     }
 
+    // Si al arrancar la app detectamos parámetros OAuth en la URL, activamos el loader inmediatamente
+    if (this.checkHasOAuthHash()) {
+      this.isOAuthLoading.set(true);
+      this.supabaseService.supabase.auth.getSession().then(({ data }) => {
+        if (data?.session?.access_token && !this._token()) {
+          this.exchangeSupabaseToken(data.session.access_token);
+        }
+      });
+    }
+
     this.supabaseService.supabase.auth.onAuthStateChange((event, session) => {
       // Ignorar eventos de Supabase si estamos en proceso de logout
       if (this.isLoggingOut()) return;
 
       if (session && event === 'SIGNED_IN') {
-        this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: session.access_token }).subscribe({
-          next: (res) => {
-            this.handleAuthSuccess(res);
-            const currentUrl = this.router.url;
-            if (currentUrl.includes('/login') || currentUrl.includes('/register')) {
-              this.router.navigate(['/profile']);
-            }
-          },
-          error: (err) => {
-            console.error('Error al intercambiar el token de Supabase con el backend:', err);
-          }
-        });
+        // Solo intercambiar si no estamos autenticados en Angular o venimos de un retorno OAuth nuevo
+        if (!this.isAuthenticated() || this.checkHasOAuthHash()) {
+          this.exchangeSupabaseToken(session.access_token);
+        }
+      }
+
+      if (!session && event === 'SIGNED_OUT') {
+        this._token.set(null);
+        this._user.set(null);
       }
     });
+  }
+
+  // Intercambia el access_token de Supabase por el JWT oficial del backend
+  private exchangeSupabaseToken(accessToken: string): void {
+    if (this.isExchangingSupabase) return;
+    this.isExchangingSupabase = true;
+    this.isOAuthLoading.set(true);
+
+    this.http.post<AuthResponse>(`${API_BASE}/supabase`, { access_token: accessToken }).subscribe({
+      next: (res) => {
+        this.isExchangingSupabase = false;
+        this.isOAuthLoading.set(false);
+        this.handleAuthSuccess(res);
+
+        // Limpiar el hash de la URL para que no quede visible el access_token en el navegador
+        if (typeof window !== 'undefined' && window.history?.replaceState) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+
+        const currentUrl = this.router.url;
+        if (currentUrl.includes('/login') || currentUrl.includes('/register') || currentUrl === '/') {
+          this.router.navigate(['/profile']);
+        }
+      },
+      error: (err) => {
+        console.error('Error al intercambiar el token de Supabase con el backend:', err);
+        this.isExchangingSupabase = false;
+        this.isOAuthLoading.set(false);
+        this.wipeSupabaseKeys();
+        this.clearLogoutFlag();
+      }
+    });
+  }
+
+  private checkHasOAuthHash(): boolean {
+    if (typeof window === 'undefined') return false;
+    const hash = window.location.hash || '';
+    const search = window.location.search || '';
+    return hash.includes('access_token=') || hash.includes('id_token=') || search.includes('code=');
   }
 
   // ── Login normal (Email + Password) ────────────────────────────────────────
@@ -189,6 +239,7 @@ export class AuthService {
   async signInWithGoogle(): Promise<void> {
     // Asegurarse de limpiar el flag de logout antes de iniciar sesion
     this.clearLogoutFlag();
+    this.isOAuthLoading.set(true);
 
     const { error } = await this.supabaseService.supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -198,6 +249,7 @@ export class AuthService {
     });
 
     if (error) {
+      this.isOAuthLoading.set(false);
       console.error('Error iniciando sesion con Google:', error.message);
       throw error;
     }
@@ -260,6 +312,9 @@ export class AuthService {
 
   // ── Logout ─────────────────────────────────────────────────────────────────
   logout(): void {
+    this.isOAuthLoading.set(false);
+    this.isExchangingSupabase = false;
+
     // 1. Marcar en sessionStorage que estamos haciendo logout
     //    (persiste aunque el usuario haga F5 durante los proximos 5 segundos)
     if (typeof window !== 'undefined') {
@@ -318,6 +373,7 @@ export class AuthService {
   }
 
   private handleAuthSuccess(res: AuthResponse): void {
+    this.clearLogoutFlag();
     if (res.token && res.user) {
       localStorage.setItem(TOKEN_KEY, res.token);
       localStorage.setItem(USER_KEY, JSON.stringify(res.user));

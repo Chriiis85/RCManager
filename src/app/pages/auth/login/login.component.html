@@ -24,7 +24,46 @@
     <!-- Login Card -->
     <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-6 sm:p-10">
       
-      @if (!requires2FA()) {
+      @if (returnUrl()) {
+        <div class="mb-6 p-4 rounded-2xl bg-blue-50 border border-blue-200/80 text-blue-900 text-sm flex items-start gap-3 shadow-xs animate-fade-in-down">
+          <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm">Inicio de sesión requerido</h4>
+            <p class="text-xs sm:text-sm text-slate-600 mt-0.5">
+              @if (returnUrl()?.includes('viajes')) {
+                Inicia sesión con tu cuenta para acceder a tu planificador de viajes y expediciones.
+              } @else {
+                Inicia sesión para continuar a la sección solicitada.
+              }
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (authService.isOAuthLoading()) {
+        <!-- Google OAuth Loading State -->
+        <div class="py-12 text-center space-y-5 animate-fade-in">
+          <div class="relative mx-auto w-16 h-16 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-7 h-7 relative z-10">
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xl font-bold text-slate-900">Iniciando sesión con Google</h3>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto">
+              Verificando tu cuenta y conectando con tu perfil de RCManager...
+            </p>
+          </div>
+          <div class="flex items-center justify-center gap-1.5 pt-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 0ms"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 150ms"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 300ms"></span>
+          </div>
+        </div>
+      } @else if (!requires2FA()) {
         <!-- STEP 1: Email + Password Login Form -->
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
           
@@ -130,10 +169,16 @@
           <div>
             <button 
               type="submit" 
-              [disabled]="isLoading()"
+              [disabled]="isLoading() || isRedirecting()"
               class="cursor-pointer group relative flex w-full justify-center rounded-xl bg-blue-600 px-3 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              @if (isLoading()) {
+              @if (isRedirecting()) {
+                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                ¡Sesión iniciada! Entrando...
+              } @else if (isLoading()) {
                 <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -161,9 +206,9 @@
             <!-- Google - Large full width -->
             <button type="button"
               (click)="onGoogleLogin()"
-              [disabled]="isLoading()"
+              [disabled]="isLoading() || isRedirecting()"
               class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer">
-              @if (isLoading()) {
+              @if (isLoading() && !loginForm.dirty) {
                 <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -228,13 +273,16 @@
 
           <!-- API Error Message -->
           @if (errorMessage()) {
-            <div class="rounded-2xl bg-red-50 border border-red-200 p-3.5 text-xs font-semibold text-red-700 flex items-start gap-2 animate-fade-in-up">
-              <svg class="w-4 h-4 shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>{{ errorMessage() }}</span>
+            <div class="rounded-2xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in">
+              <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
             </div>
           }
 
-          <form (submit)="$event.preventDefault(); onSubmit2FA()" class="space-y-4">
+          <!-- 6-digit PIN Input Form -->
+          <form (ngSubmit)="onSubmit2FA()" class="space-y-4">
             <div>
               <input type="text"
                      inputmode="numeric"
@@ -276,10 +324,13 @@
                 Volver
               </button>
               <button type="submit"
-                      [disabled]="isLoading() || twoFACode().trim().length !== 6"
+                      [disabled]="isLoading() || isRedirecting() || twoFACode().trim().length !== 6"
                       [class]="twoFactorType() === 'EMAIL' ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/25' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/25'"
                       class="cursor-pointer flex-1 rounded-2xl py-3.5 text-sm font-bold text-white shadow-md active:scale-95 transition-all focus:outline-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                @if (isLoading()) {
+                @if (isRedirecting()) {
+                  <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                  <span>¡Verificado! Entrando...</span>
+                } @else if (isLoading()) {
                   <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                   <span>Verificando...</span>
                 } @else {

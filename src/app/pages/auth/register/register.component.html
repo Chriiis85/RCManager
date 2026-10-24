@@ -24,70 +24,91 @@
     <!-- Register Card -->
     <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-6 sm:p-10 space-y-6">
       
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-blue-600 shadow-inner border border-blue-100">
-          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
+      @if (authService.isOAuthLoading()) {
+        <!-- Google OAuth Loading State -->
+        <div class="py-12 text-center space-y-5 animate-fade-in">
+          <div class="relative mx-auto w-16 h-16 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-7 h-7 relative z-10">
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xl font-bold text-slate-900">Creando tu cuenta con Google</h3>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto">
+              Configurando tu perfil y preparando tus primeras aventuras en RCManager...
+            </p>
+          </div>
+          <div class="flex items-center justify-center gap-1.5 pt-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 0ms"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 150ms"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 300ms"></span>
+          </div>
         </div>
-        <h2 class="text-lg font-bold text-slate-900">Registro rápido y seguro</h2>
-        <p class="text-xs text-slate-500 leading-relaxed">
-          Crea tu perfil en 1 clic utilizando tu cuenta de Google. Sin contraseñas complicadas que recordar.
-        </p>
-      </div>
-
-      <!-- API Error Message -->
-      @if (errorMessage()) {
-        <div class="rounded-2xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in-up" style="animation-duration: 0.3s;">
-          <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-          </svg>
-          <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+      } @else {
+        <div class="text-center space-y-2">
+          <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-blue-600 shadow-inner border border-blue-100">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold text-slate-900">Registro rápido y seguro</h2>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Crea tu perfil en 1 clic utilizando tu cuenta de Google. Sin contraseñas complicadas que recordar.
+          </p>
         </div>
-      }
 
-      <!-- Main Google Register Button -->
-      <button type="button"
-        (click)="onGoogleLogin()"
-        [disabled]="isLoading()"
-        class="cursor-pointer flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-800 shadow-md hover:bg-slate-50 hover:border-slate-300 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-        @if (isLoading()) {
-          <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-          </svg>
-          <span>Conectando con Google...</span>
-        } @else {
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
-          <span>Registrarse con Google</span>
+        <!-- API Error Message -->
+        @if (errorMessage()) {
+          <div class="rounded-2xl bg-red-50 border border-red-200 p-4 flex items-start gap-3 animate-fade-in-up" style="animation-duration: 0.3s;">
+            <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+            </svg>
+            <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+          </div>
         }
-      </button>
 
-      <!-- Benefits & Info Box -->
-      <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-3">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">¿Qué podrás hacer en RCManager?</p>
-        <div class="space-y-2 text-xs text-slate-600">
-          <div class="flex items-center gap-2">
-            <span class="text-blue-600 font-bold">✓</span>
-            <span>Contabilizar tus <strong>credits</strong> y parques visitados</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-blue-600 font-bold">✓</span>
-            <span>Organizar <strong>viajes</strong> y compartir ranking con amigos</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-blue-600 font-bold">✓</span>
-            <span>Asignar una <strong>contraseña</strong> más adelante en tu Perfil</span>
+        <!-- Main Google Register Button -->
+        <button type="button"
+          (click)="onGoogleLogin()"
+          [disabled]="isLoading()"
+          class="cursor-pointer flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-800 shadow-md hover:bg-slate-50 hover:border-slate-300 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+          @if (isLoading()) {
+            <svg class="animate-spin h-5 w-5 text-slate-700" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span>Conectando con Google...</span>
+          } @else {
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5 flex-shrink-0">
+            <span>Registrarse con Google</span>
+          }
+        </button>
+
+        <!-- Benefits & Info Box -->
+        <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-3">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">¿Qué podrás hacer en RCManager?</p>
+          <div class="space-y-2 text-xs text-slate-600">
+            <div class="flex items-center gap-2">
+              <span class="text-blue-600 font-bold">✓</span>
+              <span>Contabilizar tus <strong>credits</strong> y parques visitados</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-blue-600 font-bold">✓</span>
+              <span>Organizar <strong>viajes</strong> y compartir ranking con amigos</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-blue-600 font-bold">✓</span>
+              <span>Asignar una <strong>contraseña</strong> más adelante en tu Perfil</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <p class="text-[11px] text-center text-slate-400 leading-tight">
-        Al registrarte, aceptas nuestros 
-        <a routerLink="/terminos" target="_blank" class="text-blue-600 font-semibold hover:underline">Términos de Servicio</a> 
-        y la 
-        <a routerLink="/privacidad" target="_blank" class="text-blue-600 font-semibold hover:underline">Política de Privacidad</a>.
-      </p>
+        <p class="text-[11px] text-center text-slate-400 leading-tight">
+          Al registrarte, aceptas nuestros 
+          <a routerLink="/terminos" target="_blank" class="text-blue-600 font-semibold hover:underline">Términos de Servicio</a> 
+          y la 
+          <a routerLink="/privacidad" target="_blank" class="text-blue-600 font-semibold hover:underline">Política de Privacidad</a>.
+        </p>
+      }
 
     </div>
   </div>
