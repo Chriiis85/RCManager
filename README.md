@@ -1,48 +1,48 @@
-# 🎢 RCManager — Coaster Credits & Theme Parks Hub
+# RCManager — Coaster Credits & Theme Parks Hub
 
-[🇪🇸 Ver en Español](#-español) | [🇬🇧 View in English](#-english)
+[Ver en Español](#-español) | [View in English](#-english)
 
-**Live Demo:** [https://rcmanager-nine.vercel.app](https://rcmanager-nine.vercel.app) · **Backend API & Docs:** [https://rc-manager-api.vercel.app](https://rc-manager-api.vercel.app)
+**Demo en vivo:** [https://rcmanager-nine.vercel.app](https://rcmanager-nine.vercel.app) · **API & Docs:** [https://rc-manager-api.vercel.app](https://rc-manager-api.vercel.app)
 
 ---
 
 ## 🇪🇸 Español
 
-¡Hola! 👋 Soy **Christian**, desarrollador Web Full Stack apasionado por la tecnología y el mundo de los parques temáticos y las montañas rusas.
+¡Hola! 👋 Soy **Christian**, desarrollador Web Full Stack.
 
-En la comunidad de *coaster enthusiasts*, llevar la cuenta rigurosa de tus **credits** (cada montaña rusa distinta a la que te has subido en el mundo), comparar experiencias y saber qué atracciones te faltan por probar en cada parque es una auténtica afición. 
+En el mundo de los aficionados a los parques temáticos (*coaster enthusiasts*), llevar la cuenta exacta de tus **credits** (cada montaña rusa distinta a la que te has subido) y saber qué atracciones te faltan en cada parque es una afición muy extendida.
 
-Creé **RCManager** para ofrecer una plataforma web moderna, fluida y completa desarrollada con **Angular 21** y **Tailwind CSS v4**, respaldada por **Supabase** y consumiendo datos en tiempo real de mi propia API desacoplada ([RCManager API](https://github.com/Chriiis85/RCManagerAPI)), además de contar con el asistente inteligente **ParksIA**.
+Desarrollé **RCManager** como una aplicación web moderna con **Angular 21** y **Tailwind CSS v4**, conectada a **Supabase** para la gestión de usuarios y a mi propia API desacoplada ([RCManager API](https://github.com/Chriiis85/RCManagerAPI)) para el catálogo de atracciones y tiempos de espera en vivo, integrando además el asistente **ParksIA**.
 
-### 🚀 ¿Qué ofrece la aplicación?
+### Qué incluye la aplicación
 
-- 🎢 **Gestor Personal de Credits:** Registra cada montaña rusa probada con fecha, puntuación de 1 a 10 y estadísticas automáticas de tu historial.
-- 🗺️ **Catálogo Global de Parques y Atracciones:** Fichas técnicas completas con datos de velocidad punta, altura, longitud, inversiones, fabricante y estado operativo.
-- ⏱️ **Tiempos de Espera en Vivo:** Consulta los minutos de cola y estado de apertura en tiempo real de los principales parques del mundo (PortAventura, Europa-Park, Phantasialand, etc.).
-- 🏆 **Rankings Oficiales y de la Comunidad:** Clasificaciones mundiales basadas en los prestigiosos *Golden Ticket Awards* e informes de la industria.
-- 📅 **Planificador de Viajes Grupales:** Organiza escapadas a parques con cuenta regresiva en tiempo real, invitaciones entre amigos registrados y lista colaborativa de atracciones prioritarias.
-- 🤖 **Asistente Inteligente ParksIA:** Herramienta integrada con inteligencia artificial para resolver dudas técnicas, descubrir récords y optimizar rutas de visita en el parque.
-- 🌓 **Modo Oscuro / Claro:** Diseño moderno, responsive y adaptativo con Tailwind CSS v4.
+- **Gestor de credits:** Registra cada montaña rusa que has probado con fecha de visita, puntuación del 1 al 10 y estadísticas automáticas de tu historial.
+- **Catálogo de parques y atracciones:** Fichas técnicas con datos de velocidad punta, altura, longitud, tipo de vía, fabricante y estado operativo.
+- **Tiempos de espera en vivo:** Consulta los minutos de cola en tiempo real de los principales parques del mundo (PortAventura, Europa-Park, Phantasialand, etc.).
+- **Rankings:** Clasificaciones basadas en los premios Golden Ticket Awards y valoraciones de los usuarios.
+- **Planificador de viajes:** Organiza visitas a parques con tus amigos, con cuenta atrás interactiva y lista compartida de atracciones prioritarias.
+- **Asistente ParksIA:** Herramienta integrada con inteligencia artificial para consultar dudas técnicas, récords o itinerarios recomendados.
+- **Modo oscuro y claro:** Interfaz adaptativa construida con Tailwind CSS v4.
 
-### 💡 Retos técnicos que resolví
+### Retos técnicos resueltos
 
-1. **Angular 21 Moderno y Reactividad con Signals:**  
-   Implementación basada en componentes *Standalone*, eliminando la sobrecarga de módulos tradicionales y aprovechando *Signals* y la nueva sintaxis de control de flujo (`@if`, `@for`) para un rendimiento óptimo en la renderización del catálogo.
-2. **Integración Híbrida de Datos (Supabase + REST API Propia):**  
-   Gestión de sesiones de usuario y persistencia de *credits* privados en Supabase, combinada con el consumo optimizado de la API RESTful de parques para reducir latencias en listados masivos.
-3. **Diseño Mobile-First y Experiencia de Usuario:**  
-   Arquitectura visual limpia y accesible pensada para ser consultada cómodamente tanto desde el ordenador al planificar el viaje como desde el móvil dentro del propio parque.
+1. **Componentes Standalone y Signals en Angular 21:**  
+   Implementé la arquitectura moderna de Angular sin NgModules, apoyándome en *Signals* y en el nuevo control de flujo nativo (`@if`, `@for`) para hacer la navegación y el filtrado del catálogo muy rápidos y reactivos.
+2. **Arquitectura desacoplada (Supabase + API propia):**  
+   Gestioné la autenticación y los datos personales de los usuarios en Supabase, mientras que el catálogo masivo y las consultas de parques se consumen directamente desde un backend Express independiente para optimizar el rendimiento.
+3. **Diseño pensado para móvil:**  
+   La interfaz está diseñada para consultarse cómodamente tanto al planificar la escapada desde el ordenador como desde el propio teléfono mientras estás en las colas del parque.
 
-### 🛠️ Tecnologías utilizadas
+### Tecnologías utilizadas
 
 - **Angular 21** (Standalone Components, Signals, Router)
 - **TypeScript 5.9**
-- **Tailwind CSS v4** (PostCSS integration)
+- **Tailwind CSS v4**
 - **Supabase** (Auth & Database)
 - **RxJS**
-- **Vercel** (Despliegue y CI/CD)
+- **Vercel**
 
-### 💻 Cómo probarlo en local
+### Cómo probarlo en local
 
 ```bash
 # 1. Clonar el repositorio
@@ -52,7 +52,7 @@ cd RCManager/RCManager
 # 2. Instalar dependencias
 npm install
 
-# 3. Levantar el servidor de desarrollo
+# 3. Iniciar el servidor local
 ng serve
 # Abrir en el navegador: http://localhost:4200
 ```
@@ -61,57 +61,56 @@ ng serve
 
 ## 🇬🇧 English
 
-Hello! 👋 I'm **Christian**, a Full Stack Web Developer passionate about software engineering, theme parks, and roller coasters.
+Hello! 👋 I'm **Christian**, a Full Stack Web Developer.
 
-In the coaster enthusiast community, keeping an accurate count of your **credits** (each unique roller coaster you have ridden worldwide), rating them, and discovering unridden rides across global parks is a true passion.
+In the theme park community, enthusiasts track their **credits** (every unique roller coaster ridden worldwide) and plan upcoming trips to hit unridden rides.
 
-I built **RCManager** to provide a modern, fast, and feature-rich web platform using **Angular 21** and **Tailwind CSS v4**, backed by **Supabase** and powered by real-time data from my custom decoupled backend ([RCManager API](https://github.com/Chriiis85/RCManagerAPI)), along with the AI assistant **ParksIA**.
+I built **RCManager** as a modern web app with **Angular 21** and **Tailwind CSS v4**, backed by **Supabase** for user data and a custom decoupled backend ([RCManager API](https://github.com/Chriiis85/RCManagerAPI)) for ride specs and real-time wait times, alongside the **ParksIA** assistant.
 
-### 🚀 Key Features
+### Features
 
-- 🎢 **Personal Coaster Credit Tracker:** Log every roller coaster you ride with date, 1-to-10 rating, and automatic stats on your enthusiast journey.
-- 🗺️ **Worldwide Theme Parks & Rides Directory:** Detailed spec sheets with top speed, height, track length, inversions, manufacturer, and operational status.
-- ⏱️ **Live Wait Times:** Check real-time queue minutes and ride status from major theme parks worldwide (PortAventura, Europa-Park, Phantasialand, etc.).
-- 🏆 **Global Rankings:** Worldwide rankings inspired by the prestigious *Golden Ticket Awards* and community scores.
-- 📅 **Trip Planner with Friends:** Schedule park visits with live countdown timers, invite registered friends, and build a shared ride priority checklist.
-- 🤖 **ParksIA Smart Assistant:** Integrated AI-powered tool to answer technical ride queries, discover coaster records, and optimize park visit routes.
-- 🌓 **Dark / Light Mode:** Modern, accessible, fully responsive interface powered by Tailwind CSS v4.
+- **Coaster Credit Tracker:** Log every roller coaster you ride with dates, 1-to-10 ratings, and personal statistics.
+- **Parks & Rides Directory:** Detailed specs including top speed, height, track length, manufacturer, and live operational status.
+- **Live Queue Times:** Real-time wait minutes across top parks worldwide (PortAventura, Europa-Park, Phantasialand, etc.).
+- **Rankings:** World rankings based on Golden Ticket Awards and community scores.
+- **Trip Planner:** Organize park trips with friends, tracking countdowns and shared ride wishlists.
+- **ParksIA Assistant:** Integrated AI tool to look up coaster records and tips.
+- **Dark / Light Mode:** Fully responsive theme switching powered by Tailwind CSS v4.
 
-### 💡 Technical Highlights
+### Technical Highlights
 
-1. **Modern Angular 21 Architecture & Signals:**  
-   Built entirely with *Standalone Components*, eliminating legacy NgModules and leveraging *Signals* and Angular's built-in control flow (`@if`, `@for`) for snappy catalog rendering.
-2. **Hybrid Data Architecture (Supabase + Custom REST API):**  
-   User auth and private coaster credits stored via Supabase, complemented by high-performance data consumption from the custom RESTful API backend.
+1. **Angular 21 Standalone Architecture & Signals:**  
+   Built without legacy NgModules, using Angular Signals and modern template control flow (`@if`, `@for`) for responsive filtering and state management.
+2. **Decoupled Architecture (Supabase + Custom Backend):**  
+   User auth and private credits are handled through Supabase, while heavy catalog and queue data are served through a dedicated Express API.
 3. **Mobile-First UX:**  
-   Clean, adaptive design built to seamlessly handle trip planning on desktop and fast on-the-go lookups on mobile inside theme parks.
+   Designed to run smoothly on desktop during trip planning and on mobile while walking through parks.
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 - **Angular 21** (Standalone Components, Signals, Router)
 - **TypeScript 5.9**
 - **Tailwind CSS v4**
-- **Supabase** (Auth & Database)
+- **Supabase**
 - **RxJS**
-- **Vercel** (Deploy & Hosting)
+- **Vercel**
 
-### 💻 Local Development Setup
+### Local Setup
 
 ```bash
-# 1. Clone the repository
+# 1. Clone repository
 git clone https://github.com/Chriiis85/RCManager.git
 cd RCManager/RCManager
 
 # 2. Install dependencies
 npm install
 
-# 3. Start local development server
+# 3. Start development server
 ng serve
-# Navigate to: http://localhost:4200
 ```
 
 ---
 
 <div align="center">
-  <sub>Desarrollado con dedicación por Christian Moreno Díaz · © RCManager</sub>
+  <sub>Christian Moreno Díaz · RCManager</sub>
 </div>
