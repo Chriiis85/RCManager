@@ -1,4 +1,4 @@
-<main class="min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+<main class="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
   <div class="max-w-7xl mx-auto space-y-8">
     
     <!-- Header Page -->
@@ -92,7 +92,7 @@
           <div class="w-full pt-4 mt-3 border-t border-slate-100 flex flex-col gap-4">
             <div class="flex items-center justify-center gap-2 cursor-pointer group">
               <svg class="h-5 w-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              <span class="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">{{ userInfo().email }}</span>
+              <span class="text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors truncate max-w-full">{{ userInfo().email }}</span>
             </div>
             
             <button (click)="openEditProfile()" class="cursor-pointer w-full flex items-center justify-center gap-2 rounded-xl bg-blue-50 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-100 transition-all active:scale-95 ring-1 ring-inset ring-blue-700/10">
@@ -233,7 +233,7 @@
       </div>
 
       <!-- Right Column: Stats, Lists -->
-      <div class="lg:col-span-2 space-y-8">
+      <div class="lg:col-span-2 space-y-8 min-w-0">
         
         <!-- Summary Stats (Top Grid) -->
         <div class="grid grid-cols-3 gap-3 sm:gap-6">
@@ -400,7 +400,7 @@
       </div>
 
       <!-- Bottom Section: Privacidad, Legal y Eliminación de Cuenta -->
-      <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-6 min-w-0">
         <div class="space-y-2">
           <div class="flex items-center gap-2">
             <span class="text-xl">⚖️</span>
@@ -552,7 +552,7 @@
                      autocomplete="current-password"
                      maxlength="128"
                      placeholder="Déjalo vacío si entraste con Google"
-                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
                       (click)="showCurrentPassword.set(!showCurrentPassword())" 
                       class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors cursor-pointer">
@@ -581,7 +581,7 @@
                      autocomplete="new-password"
                      maxlength="128"
                      placeholder="Mínimo 8 caracteres"
-                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
                       (click)="showNewPassword.set(!showNewPassword())" 
                       class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors cursor-pointer">
@@ -641,7 +641,7 @@
                      autocomplete="new-password"
                      maxlength="128"
                      placeholder="Repite la nueva contraseña"
-                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 pl-3.5 pr-10 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
               <button type="button" 
                       (click)="showConfirmPassword.set(!showConfirmPassword())" 
                       class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors cursor-pointer">
@@ -991,7 +991,7 @@
                      name="firstName" 
                      maxlength="50"
                      autocomplete="given-name"
-                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">APELLIDOS</label>
@@ -1001,7 +1001,7 @@
                      name="lastName" 
                      maxlength="50"
                      autocomplete="family-name"
-                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                     class="text-slate-900 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
             </div>
           </div>
           <div>
@@ -1030,7 +1030,7 @@
                                : usernameStatus() === 'valid' 
                                  ? 'ring-emerald-300 focus:ring-emerald-500 bg-emerald-50/20' 
                                  : 'ring-slate-200 focus:ring-blue-600 bg-slate-50'"
-                     class="pl-8 pr-10 text-slate-900 w-full rounded-xl border-0 py-2.5 ring-1 ring-inset focus:ring-2 sm:text-sm transition-all">
+                     class="pl-8 pr-10 text-slate-900 w-full rounded-xl border-0 py-2.5 ring-1 ring-inset focus:ring-2 text-base sm:text-sm transition-all">
               
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 @if (usernameChecking()) {
@@ -1073,7 +1073,7 @@
           </div>
           <div class="opacity-70">
             <label class="block text-[11px] font-bold text-slate-700 tracking-wider mb-1">CORREO ELECTRÓNICO</label>
-            <input type="email" [ngModel]="editForm().email" disabled name="email" class="cursor-not-allowed text-slate-500 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 bg-slate-100 sm:text-sm mb-4">
+            <input type="email" [ngModel]="editForm().email" disabled name="email" class="cursor-not-allowed text-slate-500 w-full rounded-xl border-0 py-2.5 px-3 ring-1 ring-inset ring-slate-200 bg-slate-100 text-base sm:text-sm mb-4">
           </div>
           
           <div class="flex gap-3 pt-2">
@@ -1156,7 +1156,7 @@
                  (ngModelChange)="onFriendSearchChange($event)" 
                  placeholder="Busca por nombre de usuario..." 
                  maxlength="50"
-                 class="pl-11 text-slate-900 w-full rounded-2xl border-0 py-3.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm bg-slate-50 transition-shadow">
+                 class="pl-11 text-slate-900 w-full rounded-2xl border-0 py-3.5 px-4 ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base sm:text-sm bg-slate-50 transition-shadow">
         </div>
 
         <div class="flex-1 overflow-y-auto pr-2 space-y-3">

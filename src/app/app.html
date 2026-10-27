@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen flex flex-col bg-white dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden transition-colors duration-200"
+  class="min-h-screen w-full max-w-full relative flex flex-col bg-white dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden transition-colors duration-200"
 >
   <!-- Navbar -->
   <!-- Navbar -->
@@ -357,12 +357,12 @@
     </div>
   }
 
-  <main class="flex-1 flex flex-col">
+  <main class="flex-1 flex flex-col w-full max-w-full overflow-x-hidden">
     <router-outlet></router-outlet>
   </main>
 
   <!-- Global Footer -->
-  <footer class="bg-[#0d1b3e] border-t border-blue-900/40 mt-auto">
+  <footer class="bg-[#0d1b3e] border-t border-blue-900/40 mt-auto w-full max-w-full overflow-x-hidden">
     <div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
       <div class="xl:grid xl:grid-cols-3 xl:gap-8">
         <div class="space-y-8">

@@ -1,21 +1,37 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 
-export interface WebFeature {
-  id: string;
-  badge: string;
-  badgeColor: string;
+export interface CoasterTickerItem {
+  name: string;
+  park: string;
+  location: string;
+  speed: string;
+  height: string;
+  waitTime: string;
+  waitStatus: 'low' | 'normal' | 'high';
+  tag: string;
+  image?: string;
+}
+
+export interface TimelineStep {
+  number: string;
   title: string;
+  subtitle: string;
   description: string;
-  points: string[];
-  image: string;
-  imageAlt: string;
+  badge: string;
+  icon: string;
+}
+
+export interface PerkCard {
+  title: string;
+  badge: string;
+  description: string;
   route?: string;
   externalUrl?: string;
-  ctaText: string;
-  requiresAuth?: boolean;
+  linkText: string;
+  iconBg: string;
 }
 
 @Component({
@@ -29,104 +45,131 @@ export class HomeComponent {
   authService = inject(AuthService);
   private router = inject(Router);
 
-  // Características reales ilustradas con capturas verídicas de nuestra aplicación
-  features: WebFeature[] = [
+  // Ticker en vivo de montañas rusas emblemáticas
+  readonly tickerItems: CoasterTickerItem[] = [
     {
-      id: 'credits',
-      badge: 'Contador Personal',
-      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800',
-      title: 'Tu Diario y Contador de Credits',
-      description: 'Un "credit" es cada montaña rusa en la que te has subido. En RCManager puedes buscarlas en nuestra base de datos, marcarlas como conseguidas, registrar cuántas veces te has subido y puntuarlas del 1 al 10.',
-      points: [
-        'Contador total de credits conseguidos en tu perfil',
-        'Puntuación del 1 al 10 con contador de repeticiones',
-        'Filtro rápido por país y parque temático'
-      ],
-      image: '/screenshots/credits-app.png',
-      imageAlt: 'Captura real de la pantalla de Credits en RCManager',
-      route: '/credits',
-      ctaText: 'Ver Catálogo de Credits'
+      name: 'Fury 325',
+      park: 'Carowinds',
+      location: 'EE.UU.',
+      speed: '153 km/h',
+      height: '99 m',
+      waitTime: '15 min',
+      waitStatus: 'low',
+      tag: '#1 Golden Ticket Coaster'
     },
     {
-      id: 'atracciones',
-      badge: 'Fichas Técnicas',
-      badgeColor: 'bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800',
-      title: 'Catálogo Completo de Atracciones',
-      description: 'Explora miles de atracciones de parques de todo el mundo con sus especificaciones técnicas reales: velocidad punta, altura máxima, longitud, número de inversiones y fabricante.',
-      points: [
-        'Filtro por fabricante: Intamin, B&M, Mack Rides, RMC y Vekoma',
-        'Estado operativo en tiempo real para saber si está abierta',
-        'Ficha detallada con parque de origen y año de inauguración'
-      ],
-      image: '/screenshots/atracciones-app.png',
-      imageAlt: 'Captura real del catálogo de atracciones en RCManager',
-      route: '/atracciones',
-      ctaText: 'Explorar Atracciones'
+      name: 'Voltron Nevera',
+      park: 'Europa-Park',
+      location: 'Alemania',
+      speed: '100 km/h',
+      height: '32 m',
+      waitTime: '25 min',
+      waitStatus: 'normal',
+      tag: 'Best New Coaster 2024'
     },
     {
-      id: 'parques',
-      badge: 'Tiempos en Vivo',
-      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
-      title: 'Parques Temáticos y Tiempos de Espera',
-      description: 'Directorio internacional de parques de ocio conectado a la API de tiempos de espera en vivo. Consulta antes de ir si el parque está abierto, su nivel de afluencia y las colas de cada atracción.',
-      points: [
-        'Tiempos de espera actualizados al minuto',
-        'Indicador de afluencia del parque: Baja, Normal o Alta',
-        'Listado completo de atracciones operativas por parque'
-      ],
-      image: '/screenshots/parques-app.png',
-      imageAlt: 'Captura real del directorio de parques con tiempos de espera en vivo',
-      route: '/parques',
-      ctaText: 'Consultar Parques'
+      name: 'Zadra',
+      park: 'Energylandia',
+      location: 'Polonia',
+      speed: '121 km/h',
+      height: '63 m',
+      waitTime: '10 min',
+      waitStatus: 'low',
+      tag: 'Top RMC Hybrid'
     },
     {
-      id: 'viajes',
-      badge: 'Planificador',
-      badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800',
-      title: 'Planificador de Viajes con Amigos',
-      description: 'Organiza tus próximas visitas a parques temáticos con un calendario dedicado, cuenta regresiva en vivo hasta el día de la visita y añade a tus amigos para coordinar la escapada juntos.',
-      points: [
-        'Cuenta regresiva en vivo con días y horas restantes',
-        'Invita a amigos registrados en la plataforma',
-        'Guarda tu lista privada de atracciones que queréis probar'
-      ],
-      image: '/screenshots/viajes-app.png',
-      imageAlt: 'Captura real del planificador de viajes de RCManager',
+      name: 'Shambhala',
+      park: 'PortAventura World',
+      location: 'España',
+      speed: '134 km/h',
+      height: '76 m',
+      waitTime: '20 min',
+      waitStatus: 'normal',
+      tag: 'Hypercoaster Legend'
+    },
+    {
+      name: 'VelociCoaster',
+      park: 'Universal Orlando',
+      location: 'EE.UU.',
+      speed: '113 km/h',
+      height: '47 m',
+      waitTime: '30 min',
+      waitStatus: 'normal',
+      tag: '#2 Steel Coaster GTA'
+    },
+    {
+      name: 'Steel Vengeance',
+      park: 'Cedar Point',
+      location: 'EE.UU.',
+      speed: '119 km/h',
+      height: '62 m',
+      waitTime: '35 min',
+      waitStatus: 'high',
+      tag: '#3 Steel Coaster GTA'
+    }
+  ];
+
+  // 4 Pasos del Ciclo de Vida del Coaster Enthusiast (Estilo CrypGo Timeline)
+  readonly timelineSteps: TimelineStep[] = [
+    {
+      number: '01',
+      title: 'Explora y Filtra',
+      subtitle: 'Catálogo Mundial',
+      description: 'Accede a más de 4,500 montañas rusas y 800 parques mundiales. Filtra por fabricante (Intamin, B&M, Mack, RMC), velocidad punta, altura y número de inversiones.',
+      badge: 'Buscador en Vivo',
+      icon: 'search'
+    },
+    {
+      number: '02',
+      title: 'Registra tus Credits',
+      subtitle: 'Contador Personal',
+      description: 'Suma cada coaster con un solo clic. Añade tu puntuación personal del 1 al 10, cuenta las repeticiones y crea tu histórico verificado de conquistas.',
+      badge: 'Diario Digital',
+      icon: 'check'
+    },
+    {
+      number: '03',
+      title: 'Tiempos de Espera',
+      subtitle: 'Colas al Minuto',
+      description: 'Monitorea el estado operativo y los minutos exactos de cola en tiempo real de PortAventura, Europa-Park, Phantasialand y cientos de parques más.',
+      badge: 'API en Vivo',
+      icon: 'clock'
+    },
+    {
+      number: '04',
+      title: 'Planifica y Comparte',
+      subtitle: 'Viajes con Amigos',
+      description: 'Crea escapadas grupales, invita a tus amigos con cuenta, sigue una cuenta atrás en vivo y sincronizad qué atracciones son vuestra prioridad.',
+      badge: 'Comunidad',
+      icon: 'users'
+    }
+  ];
+
+  // Pilares y Beneficios
+  readonly perks: PerkCard[] = [
+    {
+      title: 'Comunidad y Amigos',
+      badge: 'Red Social Coaster',
+      description: 'Conéctate con otros entusiastas de habla hispana, añade amigos, compara vuestros credit counts y coordina viajes a parques juntos.',
       route: '/viajes',
-      ctaText: 'Planificar un Viaje',
-      requiresAuth: true
+      linkText: 'Ver Planificador de Viajes',
+      iconBg: 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400'
     },
     {
-      id: 'ranking',
+      title: 'Rankings Mundiales GTA',
       badge: 'Premios Oficiales',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
-      title: 'Ranking Global de Montañas Rusas',
-      description: 'Descubre los destinos y atracciones mejor valorados del planeta con clasificaciones basadas en los prestigiosos Golden Ticket Awards y en las notas de los usuarios.',
-      points: [
-        'Top mundial de montañas rusas de acero y de madera',
-        'Los mejores parques temáticos y familiares del mundo',
-        'Puntuaciones transparentes del 1 al 100'
-      ],
-      image: '/screenshots/ranking-app.png',
-      imageAlt: 'Captura real del ranking global de montañas rusas',
+      description: 'Consulta los podios mundiales de los prestigiosos Golden Ticket Awards y el informe anual TEA/AECOM con notas transparentes y datos reales.',
       route: '/ranking',
-      ctaText: 'Ver Ranking Global'
+      linkText: 'Consultar Ranking 2025',
+      iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
     },
     {
-      id: 'parksia',
-      badge: 'Herramienta Externa',
-      badgeColor: 'bg-violet-50 text-violet-700 border-violet-200/80 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800',
-      title: 'ParksIA: Tu Asistente Inteligente',
-      description: 'Herramienta complementaria con inteligencia artificial especializada en parques temáticos. Pídele rutas óptimas para evitar colas, recomendaciones según tus gustos o datos técnicos al instante.',
-      points: [
-        'Planificación inteligente de itinerarios de parque',
-        'Respuestas inmediatas sobre récords y especificaciones',
-        'Herramienta web externa accesible en un clic'
-      ],
-      image: '/screenshots/parksia-app.png',
-      imageAlt: 'Captura real de la herramienta ParksIA',
+      title: 'ParksIA: Asistente Inteligente',
+      badge: 'Inteligencia Artificial',
+      description: 'Genera rutas óptimas para evitar aglomeraciones en los parques y resuelve dudas sobre récords, aperturas y especificaciones técnicas.',
       externalUrl: 'https://parks-ia.vercel.app',
-      ctaText: 'Abrir ParksIA'
+      linkText: 'Abrir Asistente ParksIA',
+      iconBg: 'bg-violet-50 text-violet-600 dark:bg-violet-950/50 dark:text-violet-400'
     }
   ];
 
@@ -136,13 +179,6 @@ export class HomeComponent {
       this.router.navigate(['/viajes']);
     } else {
       this.router.navigate(['/login'], { queryParams: { returnUrl: '/viajes' } });
-    }
-  }
-
-  scrollToFeatures() {
-    const el = document.getElementById('funciones');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
     }
   }
 }

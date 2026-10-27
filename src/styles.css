@@ -33,12 +33,26 @@
 
 html, body {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 html.dark {
   color-scheme: dark;
   background-color: #090d16;
   color: #f8fafc;
+}
+
+body, app-root {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {

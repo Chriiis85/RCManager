@@ -1,131 +1,317 @@
 <!-- home.component.html -->
-<div class="relative bg-white dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+<div class="relative w-full max-w-full bg-white dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
 
   <!-- ═════════════════════════════════════════════════════════════════════════
-       HERO: Clean White & Blue with Pure Image Preview
+       SECTION 0: MAIN HERO BANNER (CrypGo Main-Banner Inspired)
        ═════════════════════════════════════════════════════════════════════════ -->
-  <section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden border-b border-slate-100 dark:border-slate-800">
-    <!-- Subtle Sky & Blue Ambient Glow -->
+  <section id="main-banner" class="relative w-full max-w-full pt-24 pb-16 lg:pt-36 lg:pb-24 overflow-hidden overflow-x-hidden border-b border-slate-100 dark:border-slate-800 z-10">
+    <!-- Ambient Radial Glows -->
     <div class="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-      <div class="absolute -top-36 left-1/2 -translate-x-1/2 w-[46rem] h-[26rem] bg-gradient-to-tr from-blue-100 via-sky-100 to-indigo-100 dark:from-blue-950/40 dark:via-sky-950/20 dark:to-indigo-950/40 rounded-full blur-3xl opacity-75"></div>
+      <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[50rem] h-[30rem] bg-gradient-to-tr from-blue-100 via-sky-100 to-indigo-100 dark:from-blue-950/40 dark:via-sky-950/20 dark:to-indigo-950/40 rounded-full blur-3xl opacity-70"></div>
+      <div class="absolute top-1/2 -right-32 w-96 h-96 bg-blue-100/60 dark:bg-blue-900/20 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       
-      <!-- Top Title & Value Proposition -->
-      <div class="mx-auto max-w-3xl text-center space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
-        <!-- Pill Tag -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800 shadow-xs">
-          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-          <span>Plataforma oficial para amantes de los parques temáticos</span>
+        <!-- Left Column: Copy & Actions -->
+        <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+          
+          <!-- Eyebrow Badge -->
+          <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800 shadow-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+            <span>Roller Coasters & Parques • <span class="text-blue-600 dark:text-blue-400">RCManager</span></span>
+          </div>
+
+          <!-- Main Headline -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+            Lleva la cuenta de tus <span class="text-blue-600 dark:text-blue-400">Credits</span> y domina cada <span class="text-blue-600 dark:text-blue-400">Parque</span>
+          </h1>
+
+          <!-- Slogan / Subtitle -->
+          <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-xl mx-auto lg:mx-0">
+            El gestor definitivo para entusiastas de montañas rusas. Contabiliza tus conquests, consulta tiempos de espera en vivo de más de 800 parques mundiales y organiza escapadas épicas con amigos.
+          </p>
+
+          <!-- Dual Action Buttons -->
+          <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+            @if (authService.isAuthenticated()) {
+              <a
+                routerLink="/profile"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-7 py-3.5 text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              >
+                <span>Ir a Mi Perfil</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            } @else {
+              <a
+                routerLink="/register"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-7 py-3.5 text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              >
+                <span>Comenzar Ahora • Gratis</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            }
+
+            <a
+              routerLink="/credits"
+              class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold px-6 py-3.5 text-sm sm:text-base border border-slate-200 dark:border-slate-700 shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+            >
+              <span>Ver Catálogo</span>
+            </a>
+
+            <button
+              type="button"
+              (click)="navigateToViajes()"
+              class="inline-flex items-center justify-center gap-1.5 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800 px-4 py-3.5 text-sm font-semibold transition-all cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+              <span>Planificar Viaje</span>
+            </button>
+          </div>
+
+          <!-- Trust & Social Proof Strip -->
+          <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 border-t border-slate-100 dark:border-slate-800/80">
+            <div class="flex items-center gap-1.5 text-amber-500 text-sm font-black">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">4.9/5</span>
+            </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <strong class="text-slate-900 dark:text-white font-bold">+10,000 Credits</strong> registrados por fans
+            </div>
+          </div>
+
         </div>
 
-        <!-- Main Headline -->
-        <h1 class="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.12]">
-          Gestiona tus <span class="text-blue-600 dark:text-blue-400">credits</span>, descubre atracciones y organiza tus viajes
-        </h1>
+        <!-- Right Column: Premium Showcase Graphic with Floating Micro-Cards -->
+        <div class="lg:col-span-6 relative">
+          <div class="relative mx-auto max-w-lg lg:max-w-none">
+            
+            <!-- Outer Glow Behind Graphic -->
+            <div class="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 via-sky-400/20 to-indigo-500/20 rounded-3xl blur-2xl -z-10"></div>
 
-        <!-- Slogan -->
-        <p class="text-base sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
-          En RCManager registras cada montaña rusa en la que te subes, consultas tiempos de espera en vivo de parques de todo el mundo y planificas visitas con amigos.
-        </p>
+            <!-- Main App Window Frame -->
+            <div class="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700/80 shadow-2xl shadow-blue-900/15 bg-white dark:bg-slate-800 transition-transform duration-500 hover:scale-[1.01]">
+              <img
+                src="/screenshots/credits-app.png"
+                alt="Captura real de la pantalla de Credits en RCManager"
+                class="w-full h-auto max-h-[460px] object-cover object-top"
+              />
 
-        <!-- CTAs -->
-        <div class="pt-2 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
-          <!-- Button 1: Credits (si alguien da a credit que te lleve) -->
-          <a
-            routerLink="/credits"
-            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-7 py-3.5 text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-          >
-            <span>Ver Catálogo de Credits</span>
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
+              <!-- Floating Micro-Widget Top-Left: Live Ride Notification -->
+              <div class="absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-xl flex items-center gap-3 animate-fade-in-down">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  ✓
+                </div>
+                <div>
+                  <p class="text-[11px] font-extrabold text-slate-900 dark:text-white leading-tight">
+                    Shambhala • PortAventura
+                  </p>
+                  <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                    ¡Credit #42 Sumado! Nota: 9.8
+                  </p>
+                </div>
+              </div>
 
-          <!-- Button 2: Viajes (si da a viajes que pida antes iniciar sesion) -->
-          <button
-            type="button"
-            (click)="navigateToViajes()"
-            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold px-6 py-3.5 text-sm sm:text-base border border-slate-200 dark:border-slate-700 shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-          >
-            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            <span>Planificar Viaje</span>
-            <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
-              Login
-            </span>
-          </button>
+              <!-- Floating Micro-Widget Bottom-Right: Live Wait Time Badge -->
+              <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-xl flex items-center gap-3 animate-fade-in-up">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                <div>
+                  <p class="text-[11px] font-extrabold text-slate-900 dark:text-white leading-tight">
+                    Europa-Park • Voltron
+                  </p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                    Espera: <span class="font-bold text-emerald-600 dark:text-emerald-400">20 min</span> (Abierta)
+                  </p>
+                </div>
+              </div>
 
-          <!-- Button 3: Atracciones (si da a atracciones que vaya) -->
-          <a
-            routerLink="/atracciones"
-            class="inline-flex items-center justify-center gap-1.5 rounded-2xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 px-5 py-3.5 text-sm font-semibold transition-all cursor-pointer"
-          >
-            <span>Atracciones</span>
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
+            </div>
+
+          </div>
         </div>
 
       </div>
 
-      <!-- Real App Interface Showcase in Hero (Pure Photo, No Mac Bar) -->
-      <div class="mt-14 max-w-5xl mx-auto">
-        <div class="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-2xl shadow-blue-900/10 bg-white dark:bg-slate-800">
-          <img
-            src="/screenshots/credits-app.png"
-            alt="Captura real de la pantalla de Credits en RCManager"
-            class="w-full h-auto max-h-[480px] object-cover object-top"
-          />
-          
-          <!-- Bottom subtle floating banner -->
-          <div class="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 flex flex-wrap items-center justify-between gap-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm">
-                RC
+      <!-- ── Live Coaster & Park Real-Time Ticker (CrypGo Crypto Ticker Concept) ── -->
+      <div class="mt-14 sm:mt-18 pt-6">
+        <div class="flex items-center justify-between mb-4 px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Coasters y Parques Destacados • Datos en Tiempo Real
+            </span>
+          </div>
+          <a routerLink="/parques" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+            Ver los 800+ parques →
+          </a>
+        </div>
+
+        <!-- Ticker Grid / Track -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5">
+          @for (item of tickerItems; track item.name) {
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all group">
+              <!-- Top Header: Name + Badge -->
+              <div class="flex items-start justify-between gap-1 mb-2">
+                <div class="min-w-0">
+                  <h4 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-[120px]">
+                    {{ item.name }}
+                  </h4>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
+                    {{ item.park }}
+                  </p>
+                </div>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800 shrink-0">
+                  {{ item.location }}
+                </span>
+              </div>
+
+              <!-- Metrics -->
+              <div class="flex items-baseline justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60 text-xs">
+                <div>
+                  <span class="font-extrabold text-slate-800 dark:text-slate-100">{{ item.speed }}</span>
+                  <span class="text-[10px] text-slate-400 block">{{ item.height }}</span>
+                </div>
+                <div class="text-right">
+                  <span 
+                    class="font-extrabold px-1.5 py-0.5 rounded-md text-[11px]"
+                    [ngClass]="item.waitStatus === 'low' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'"
+                  >
+                    {{ item.waitTime }}
+                  </span>
+                  <span class="text-[10px] text-slate-400 block mt-0.5">Cola en vivo</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       SECTION 1: KEY PILLARS (CrypGo #work Concept: "Work with us")
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="work" class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/30">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: 4 Pillar Features Grid -->
+        <div class="lg:col-span-7 space-y-6">
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+            Todo en una sola plataforma <span class="text-slate-400 dark:text-slate-600">/ RCManager</span>
+          </p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+            La experiencia coaster completa, desde la planificación hasta la última fila.
+          </h2>
+          <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+            Hemos reunido en una única web todas las herramientas que antes requerían consultar múltiples foros, tablas de Excel y aplicaciones dispersas.
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-6 pt-4">
+            
+            <!-- Pillar 1: Credits -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xs hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+              <div class="p-3.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-2xl shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
               <div>
-                <h4 class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base">
-                  Catálogo y buscador en vivo
-                </h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">
-                  Búsqueda instantánea de montañas rusas, filtros por fabricante y contador oficial.
+                <h3 class="font-bold text-slate-900 dark:text-white text-base">Contador de Credits</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Registra qué coasters has montado, cuántas veces y guarda tus notas personales.
                 </p>
               </div>
             </div>
 
-            <a
-              routerLink="/credits"
-              class="rounded-xl bg-blue-600 text-white font-bold px-4 py-2 text-xs hover:bg-blue-700 transition-colors cursor-pointer"
-            >
-              Probar en vivo
+            <!-- Pillar 2: Wait times -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xs hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+              <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-2xl shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 dark:text-white text-base">Tiempos en Vivo</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Colas al minuto y afluencia estimada de parques de todo el mundo.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pillar 3: Specs -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xs hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+              <div class="p-3.5 bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 rounded-2xl shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 dark:text-white text-base">Fichas Técnicas</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Velocidad, altura, inversiones y filtros por fabricantes (Intamin, B&M, Mack, RMC).
+                </p>
+              </div>
+            </div>
+
+            <!-- Pillar 4: Trips -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xs hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+              <div class="p-3.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 dark:text-white text-base">Viajes con Amigos</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Coordina expediciones grupales con cuenta atrás y listas de rides pendientes.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="pt-2">
+            <a routerLink="/credits" class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+              <span>Explorar todo lo que ofrece RCManager</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </a>
           </div>
         </div>
-      </div>
 
-      <!-- Real Metrics Numbers Strip -->
-      <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center border-t border-slate-100 dark:border-slate-800 pt-8">
-        <div>
-          <span class="text-3xl font-black text-slate-900 dark:text-white block tracking-tight">4,500+</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 block">Montañas rusas catalogadas</span>
+        <!-- Right: Real Showcase Card (Parques Screenshot) -->
+        <div class="lg:col-span-5">
+          <div class="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700/80 shadow-xl bg-white dark:bg-slate-800">
+            <img
+              src="/screenshots/parques-app.png"
+              alt="Directorio de Parques y Tiempos de Espera en Vivo"
+              class="w-full h-auto max-h-[460px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
+              loading="lazy"
+            />
+            <div class="p-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800">
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm">
+                Conexión en vivo con parques internacionales
+              </h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                PortAventura, Europa-Park, Parque Warner, Disneyland Paris, Cedar Point, Phantasialand y más.
+              </p>
+            </div>
+          </div>
         </div>
-        <div>
-          <span class="text-3xl font-black text-slate-900 dark:text-white block tracking-tight">800+</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 block">Parques en todo el mundo</span>
-        </div>
-        <div>
-          <span class="text-3xl font-black text-blue-600 dark:text-blue-400 block tracking-tight">En vivo</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 block">Tiempos de espera oficiales</span>
-        </div>
-        <div>
-          <span class="text-3xl font-black text-slate-900 dark:text-white block tracking-tight">100%</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 block">Acceso libre y gratuito</span>
-        </div>
+
       </div>
 
     </div>
@@ -133,381 +319,60 @@
 
 
   <!-- ═════════════════════════════════════════════════════════════════════════
-       SECTIONS: What RCManager does (Pure Clean Photos, No Mac Frame)
+       SECTION 2: 4-STEP TIMELINE JOURNEY (CrypGo #development Concept)
        ═════════════════════════════════════════════════════════════════════════ -->
-  <section id="funciones" class="py-20 sm:py-28 bg-slate-50/70 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-24">
-
+  <section id="development" class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 border-b border-slate-100 dark:border-slate-800">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
       <!-- Section Header -->
-      <div class="max-w-3xl mx-auto text-center">
-        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/70 border border-blue-200/60 dark:border-blue-800 px-3.5 py-1 rounded-full">
-          Funcionalidades de la web
-        </span>
-        <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-          ¿Qué puedes hacer en RCManager?
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
+          El Ciclo del Coaster Enthusiast <span class="text-slate-400 dark:text-slate-600">/ 4 Pasos</span>
+        </p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+          Cómo funciona RCManager para exprimir al máximo tus visitas.
         </h2>
-        <p class="mt-3 text-slate-600 dark:text-slate-400 text-base leading-relaxed">
-          Descubre cada herramienta de la aplicación explicada con capturas directas de nuestras pantallas.
+        <p class="mt-4 text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Diseñado para acompañarte antes, durante y después de cada día de parque.
         </p>
       </div>
 
-      <!-- Feature 1: CREDITS -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 space-y-5">
-          <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
-            Contador Personal
-          </span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            1. Suma y gestiona tus Credits
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            Un <strong>credit</strong> es la unidad con la que los amantes de los parques cuentan cada montaña rusa en la que se han montado. En RCManager tienes un diario digital donde registrar tu historial completo:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Marca qué montañas rusas has probado y cuántas veces te has subido.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Puntúa cada atracción del 1 al 10 y guarda tus opiniones.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Filtra por país y parque para ver qué te falta por probar antes de viajar.</span>
-            </li>
-          </ul>
-          <div class="pt-2">
-            <a
-              routerLink="/credits"
-              class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
-            >
-              <span>Ir a la sección de Credits</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
+      <!-- 4 Timeline Step Cards in Responsive Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+        @for (step of timelineSteps; track step.number) {
+          <div class="relative p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all group flex flex-col justify-between">
+            
+            <!-- Step Number & Badge -->
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-3xl font-black text-blue-600/30 dark:text-blue-400/30 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-mono">
+                  {{ step.number }}
+                </span>
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800">
+                  {{ step.badge }}
+                </span>
+              </div>
 
-        <!-- Real Screenshot of Credits Screen as Clean Photo -->
-        <div class="lg:col-span-7">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/credits-app.png"
-              alt="Captura real de la pantalla de Credits en RCManager"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">
+                {{ step.title }}
+              </h3>
+              <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                {{ step.subtitle }}
+              </p>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                {{ step.description }}
+              </p>
+            </div>
 
-      <!-- Feature 2: ATRACCIONES -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 lg:order-2 space-y-5">
-          <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800">
-            Fichas Técnicas
-          </span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            2. Catálogo Técnico de Atracciones
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            Consulta especificaciones técnicas precisas de montañas rusas y grandes atracciones para conocer todos los detalles antes de subirte:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-2 text-xs font-bold text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <span>Paso {{ step.number }} completado</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
               </svg>
-              <span>Filtra por velocidad, altura, inversiones y tipo de atracción.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Clasificación por fabricante: Intamin, B&M, Mack Rides, RMC y Vekoma.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Consulta su estado en vivo para saber si se encuentra operativa.</span>
-            </li>
-          </ul>
-          <div class="pt-2">
-            <a
-              routerLink="/atracciones"
-              class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
-            >
-              <span>Explorar catálogo de atracciones</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
+            </div>
 
-        <!-- Real Screenshot of Atracciones Screen as Clean Photo -->
-        <div class="lg:col-span-7 lg:order-1">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/atracciones-app.png"
-              alt="Captura real del catálogo de atracciones de RCManager"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
           </div>
-        </div>
-      </div>
-
-      <!-- Feature 3: PARQUES TEMÁTICOS (User's provided screenshot as clean photo) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 space-y-5">
-          <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800">
-            Tiempos de Espera
-          </span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            3. Directorio de Parques y Tiempos de Espera en Vivo
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            Planifica tu día de visita con datos reales. Conectado a la API oficial de tiempos de espera para que sepas cuántos minutos de cola hay en cada momento:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Consulta si el parque está abierto y su afluencia estimada (Baja, Normal, Alta).</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Listado de todas las atracciones con sus minutos de espera en tiempo real.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Parques de España, Europa, Estados Unidos, Japón y el resto del mundo.</span>
-            </li>
-          </ul>
-          <div class="pt-2">
-            <a
-              routerLink="/parques"
-              class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
-            >
-              <span>Consultar directorio de parques</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Real Screenshot of Parques Screen as Clean Photo -->
-        <div class="lg:col-span-7">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/parques-app.png"
-              alt="Captura real del directorio de parques de RCManager con tiempos en vivo"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Feature 4: VIAJES -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 lg:order-2 space-y-5">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800">
-              Planificador Grupal
-            </span>
-            <span class="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
-              Requiere cuenta
-            </span>
-          </div>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            4. Organiza Viajes y Escapadas a Parques
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            La sección de <strong>Viajes</strong> te ayuda a preparar tu visita en grupo de forma organizada. Guarda la fecha de tu viaje y añade a tus amigos:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Contador en vivo con los días, horas y minutos restantes hasta el viaje.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Añade amigos registrados para coordinar itinerarios conjuntos.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Selecciona las atracciones prioritarias que no queréis perderos.</span>
-            </li>
-          </ul>
-
-          <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              (click)="navigateToViajes()"
-              class="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 text-sm shadow-sm transition-colors cursor-pointer"
-            >
-              <span>Ir a Mis Viajes</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-            <span class="text-xs text-slate-500 italic">
-              (Si no estás conectado, se te pedirá iniciar sesión para proteger tus viajes)
-            </span>
-          </div>
-        </div>
-
-        <!-- Real Screenshot of Viajes Screen as Clean Photo -->
-        <div class="lg:col-span-7 lg:order-1">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/viajes-app.png"
-              alt="Captura real de la pantalla de Viajes de RCManager"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Feature 5: RANKING -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 space-y-5">
-          <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
-            Clasificaciones
-          </span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            5. Ranking Global Oficial
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            Compara y descubre las experiencias más destacadas del sector, con información basada en los premios <i>Golden Ticket Awards</i> y el reporte anual de TEA/AECOM:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Mejores montañas rusas de acero y de madera del planeta.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Listado de los mejores parques temáticos y parques acuáticos mundiales.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Puntuaciones y filtros por categorías de experiencia.</span>
-            </li>
-          </ul>
-          <div class="pt-2">
-            <a
-              routerLink="/ranking"
-              class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
-            >
-              <span>Ver Ranking Global</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Real Screenshot of Ranking Screen as Clean Photo -->
-        <div class="lg:col-span-7">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/ranking-app.png"
-              alt="Captura real del Ranking Global de RCManager"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Feature 6: PARKSIA (Sin emojis) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div class="lg:col-span-5 lg:order-2 space-y-5">
-          <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-violet-50 text-violet-700 border-violet-200/80 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800">
-            Herramienta Externa
-          </span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            6. ParksIA: Asistente Inteligente
-          </h3>
-          <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            <strong>ParksIA</strong> es una plataforma complementaria creada para responder preguntas y ayudarte a planificar tu recorrido en cualquier parque con inteligencia artificial:
-          </p>
-          <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Genera rutas óptimas de atracciones para minimizar colas.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Resuelve dudas sobre récords de velocidad, alturas e historia de fabricantes.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Acceso directo y gratuito en una pestaña nueva.</span>
-            </li>
-          </ul>
-          <div class="pt-2">
-            <a
-              href="https://parks-ia.vercel.app"
-              target="_blank"
-              class="inline-flex items-center gap-2 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 text-white dark:text-slate-900 font-bold px-5 py-2.5 text-sm shadow-sm transition-colors cursor-pointer"
-            >
-              <span>Abrir ParksIA</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Real Screenshot of ParksIA as Clean Photo -->
-        <div class="lg:col-span-7 lg:order-1">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white dark:bg-slate-800">
-            <img
-              src="/screenshots/parksia-app.png"
-              alt="Captura real de la plataforma ParksIA"
-              class="w-full h-auto max-h-[380px] object-cover object-top hover:scale-[1.02] transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        </div>
+        }
       </div>
 
     </div>
@@ -515,31 +380,341 @@
 
 
   <!-- ═════════════════════════════════════════════════════════════════════════
-       FINAL CALL TO ACTION: Clean, Simple & Direct
+       SECTION 3: HIGH-IMPACT FEATURED BANNER (CrypGo Section-3 Concept)
        ═════════════════════════════════════════════════════════════════════════ -->
-  <section class="py-20 sm:py-24 bg-white dark:bg-slate-900 text-center border-t border-slate-100 dark:border-slate-800">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-6">
+  <section class="w-full max-w-full overflow-x-hidden py-12 sm:py-16">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       
-      <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-inner">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 sm:p-14 shadow-2xl shadow-blue-600/25">
+        
+        <!-- Ambient Decor Circles -->
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+        <div class="absolute -left-20 -top-20 w-64 h-64 rounded-full bg-blue-400/20 blur-xl pointer-events-none"></div>
+
+        <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Left Info -->
+          <div class="lg:col-span-8 space-y-3 text-center lg:text-left">
+            <span class="inline-block text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full backdrop-blur-xs">
+              Ecosistema Integral Coaster
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              Más de 4,500 montañas rusas y tiempos en vivo en tu bolsillo.
+            </h2>
+            <p class="text-sm sm:text-base text-blue-100 max-w-2xl leading-relaxed">
+              Únete a la mayor comunidad de habla hispana de aficionados a parques temáticos. 100% libre, sin costes ocultos.
+            </p>
+          </div>
+
+          <!-- Right Action -->
+          <div class="lg:col-span-4 flex flex-wrap items-center justify-center lg:justify-end gap-3.5">
+            <a
+              routerLink="/register"
+              class="rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-bold px-6 py-3.5 text-sm sm:text-base shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+            >
+              Crear Cuenta Gratis
+            </a>
+            <a
+              routerLink="/credits"
+              class="rounded-xl bg-blue-700/60 hover:bg-blue-700 text-white font-bold px-5 py-3.5 text-sm sm:text-base border border-white/25 transition-all cursor-pointer"
+            >
+              Ver Catálogo
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       SECTION 4: PORTFOLIO & PASSPORT DEEP-DIVE (CrypGo #portfolio Concept)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="portfolio" class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        
+        <!-- Left: Image Showcase (Viajes Screenshot) -->
+        <div class="lg:col-span-6">
+          <div class="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700/80 shadow-2xl bg-white dark:bg-slate-800">
+            <img
+              src="/screenshots/viajes-app.png"
+              alt="Planificador de Viajes y Diario Coaster en RCManager"
+              class="w-full h-auto max-h-[460px] object-cover object-top hover:scale-[1.01] transition-transform duration-500"
+              loading="lazy"
+            />
+            
+            <!-- Bottom Overlay Tag -->
+            <div class="absolute bottom-4 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-md flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white">Planificador de Viajes con Amigos</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Cuenta atrás en vivo y sincronización grupal</p>
+              </div>
+              <button
+                type="button"
+                (click)="navigateToViajes()"
+                class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors cursor-pointer"
+              >
+                Probar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Structured Feature Rows (CrypGo Portfolio Table Concept) -->
+        <div class="lg:col-span-6 space-y-6">
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+            Tu Pasaporte Coaster <span class="text-slate-400 dark:text-slate-600">/ En Tu Bolsillo</span>
+          </p>
+          <h2 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+            Gestiona tu pasión coaster como nunca antes.
+          </h2>
+          <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+            Olvídate de listas desordenadas en notas o aplicaciones sin tiempos en vivo. RCManager centraliza tu historial en un entorno visual y moderno.
+          </p>
+
+          <!-- Feature Rows -->
+          <div class="space-y-4 pt-2">
+            
+            <!-- Row 1 -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Diario de Visitas y Puntuaciones</h4>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  Puntúa cada montaña rusa del 1 al 10, cuenta repeticiones y consulta en qué fecha te subiste por última vez.
+                </p>
+              </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Organización de Viajes en Grupo</h4>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  Invita a tus compañeros de ruta, seguid la cuenta atrás y marcad las atracciones prioritarias de la jornada.
+                </p>
+              </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold shrink-0">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Asistente Inteligente ParksIA</h4>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  Genera itinerarios inteligentes y resuelve dudas técnicas sobre fabricantes y récords con IA especializada.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       SECTION 5: QUALITY STANDARDS & GUARANTEES (CrypGo #upgrade Concept)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="upgrade" class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 border-b border-slate-100 dark:border-slate-800">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Copy & 4 Guarantee Checkpoints -->
+        <div class="lg:col-span-6 space-y-6">
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+            Estándares de Calidad <span class="text-slate-400 dark:text-slate-600">/ Sin Compromisos</span>
+          </p>
+          <h2 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+            Diseñado con precisión por y para amantes de los parques.
+          </h2>
+          <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+            Una plataforma limpia, rápida y sin publicidad invasiva. Diseñada específicamente para cargarse al instante tanto en el ordenador de casa como en el móvil bajo el sol de la cola.
+          </p>
+
+          <!-- 4 Checkpoints in 2x2 Grid -->
+          <div class="grid sm:grid-cols-2 gap-4 pt-3">
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700">
+              <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+              <span class="text-sm font-bold text-slate-800 dark:text-slate-200">100% Gratuito</span>
+            </div>
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700">
+              <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+              <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Datos Oficiales GTA</span>
+            </div>
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700">
+              <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+              <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Tiempos API en Vivo</span>
+            </div>
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700">
+              <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+              <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Optimizado Móvil</span>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <a routerLink="/ranking" class="inline-flex items-center gap-2 font-bold text-sm text-blue-600 dark:text-blue-400 hover:underline">
+              <span>Consultar Ranking Oficial Golden Ticket Awards</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Ranking Preview Graphic -->
+        <div class="lg:col-span-6">
+          <div class="relative rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-700/80 shadow-2xl bg-white dark:bg-slate-800">
+            <img
+              src="/screenshots/ranking-app.png"
+              alt="Ranking Oficial de Parques y Montañas Rusas"
+              class="w-full h-auto max-h-[460px] object-cover object-top hover:scale-[1.01] transition-transform duration-500"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       SECTION 6: PERKS & COMMUNITY (CrypGo Section-6 Concept: "Always by your side")
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/30">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
+          Siempre Contigo <span class="text-slate-400 dark:text-slate-600">/ En cada parque</span>
+        </p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+          Todo lo que necesitas para tu próxima aventura.
+        </h2>
+        <p class="mt-4 text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Diseñado para disfrutar de los parques tanto solo como en compañía de tu grupo habitual.
+        </p>
+      </div>
+
+      <!-- 3 Featured Cards Grid (CrypGo Perks Concept) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (perk of perks; track perk.title) {
+          <div class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between text-center sm:text-left group">
+            
+            <div>
+              <!-- Circular Icon Badge -->
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-xl mb-6 mx-auto sm:mx-0 shadow-xs" [ngClass]="perk.iconBg">
+                @if (perk.title.includes('Comunidad')) {
+                  <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                } @else if (perk.title.includes('Ranking')) {
+                  <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                } @else {
+                  <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                }
+              </div>
+
+              <!-- Badge -->
+              <span class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 mb-3 inline-block">
+                {{ perk.badge }}
+              </span>
+
+              <!-- Title -->
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">
+                {{ perk.title }}
+              </h3>
+
+              <!-- Description -->
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                {{ perk.description }}
+              </p>
+            </div>
+
+            <!-- Action Link -->
+            <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+              @if (perk.route) {
+                <a [routerLink]="perk.route" class="inline-flex items-center gap-2 font-bold text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                  <span>{{ perk.linkText }}</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
+              } @else if (perk.externalUrl) {
+                <a [href]="perk.externalUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-bold text-xs sm:text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
+                  <span>{{ perk.linkText }}</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       FINAL CALL TO ACTION BANNER: Clean, Direct & High-Converting
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section class="w-full max-w-full overflow-x-hidden py-20 lg:py-28 bg-white dark:bg-slate-900 text-center">
+    <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-inner">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
       </div>
 
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-        Comienza a llevar el control de tus parques favoritos
-      </h2>
+      <div class="space-y-3">
+        <h2 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+          Comienza a llevar el control de tus parques favoritos
+        </h2>
+        <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          Crea tu cuenta gratis en 1 clic y empieza a registrar tus credits, consultar colas al minuto y planificar escapadas memorables.
+        </p>
+      </div>
 
-      <p class="text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-        Regístrate para guardar tus credits personales, organizar viajes con amigos y acceder a tus estadísticas desde cualquier dispositivo.
-      </p>
-
-      <div class="pt-4 flex flex-wrap items-center justify-center gap-3.5">
+      <div class="pt-2 flex flex-wrap items-center justify-center gap-4">
         <a
           routerLink="/register"
-          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-7 py-3.5 text-sm sm:text-base shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 text-sm sm:text-base shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <span>Crear cuenta gratuita</span>
+          <span>Crear Cuenta Gratuita</span>
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
@@ -547,9 +722,9 @@
 
         <a
           routerLink="/credits"
-          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold px-7 py-3.5 text-sm sm:text-base border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold px-8 py-4 text-sm sm:text-base border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
         >
-          <span>Explorar catálogo</span>
+          <span>Explorar Catálogo</span>
         </a>
       </div>
 

@@ -13,7 +13,7 @@ import { BlockScrollDirective } from './core/directives/block-scroll.directive';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'block w-full h-full',
+    class: 'block w-full max-w-full h-full overflow-x-hidden relative',
   },
 })
 export class App implements OnInit {
